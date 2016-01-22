@@ -2,7 +2,11 @@ language: csharp
 solution: ./Lux.sln
 mono:
   - nightly
+install:
+  - nuget restore ./Lux.sln
+  - nuget install NUnit.Runners -Version 3.0.1 -OutputDirectory testrunner
 script:
   - xbuild ./Lux.sln /p:Configuration=Release
+  - mono ./testrunner/NUnit.Runners.3.0.1/tools/nunit-console.exe ./Lux.Tests/bin/Release/Lux.Tests.dll
 notifications:
   email: false
