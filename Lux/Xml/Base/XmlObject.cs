@@ -12,7 +12,7 @@ namespace Lux.Xml
 
 
         protected XmlObject()
-            : this(XmlPattern.Default)
+            : this(XmlPattern.Instance)
         {
 
         }

@@ -6,7 +6,7 @@ namespace Lux.Xml
     public abstract class XmlNode : IXmlNode
     {
         protected XmlNode()
-            : this(XmlPattern.Default)
+            : this(XmlPattern.Instance)
         {
 
         }

@@ -13,7 +13,7 @@ namespace Lux.Xml
 
 
         protected XmlArray()
-            : this(XmlPattern.Default)
+            : this(XmlPattern.Instance)
         {
 
         }
