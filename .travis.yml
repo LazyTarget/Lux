@@ -1,0 +1,8 @@
+language: csharp
+solution: ./Lux.sln
+mono:
+  - nightly
+script:
+  - xbuild ./Lux.sln /p:Configuration=Release
+notifications:
+  email: false
