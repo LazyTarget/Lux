@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using Lux.Interfaces;
+using Lux.Serialization;
 
 namespace Lux.Xml
 {
-    public interface IXmlObject : IXmlNode, IEnumerable<KeyValuePair<string, object>>
+    public interface IXmlObject : IXmlNode, IEnumerable<IProperty>
     {
         IEnumerable<string> GetPropertyNames();
         bool HasProperty(string name);
-        object GetProperty(string name);
-        void SetProperty(string name, object value);
+        IProperty GetProperty(string name);
+        void SetPropertyValue(string name, object value);
         void Clear();
     }
 }

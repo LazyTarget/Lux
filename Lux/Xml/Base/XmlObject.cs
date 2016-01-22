@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
+using Lux.Serialization;
 
 namespace Lux.Xml
 {
     public abstract class XmlObject : XmlNode, IXmlObject
     {
-        protected readonly IDictionary<string, object> Data = new Dictionary<string, object>();
+        //protected readonly IDictionary<string, object> Data = new Dictionary<string, object>();
+        protected readonly IDictionary<string, IProperty> Data = new Dictionary<string, IProperty>();
 
 
         protected XmlObject()
@@ -29,6 +29,7 @@ namespace Lux.Xml
 
         }
 
+
         public virtual IEnumerable<string> GetPropertyNames()
         {
             return Data.Keys;
@@ -37,13 +38,14 @@ namespace Lux.Xml
         public virtual bool HasProperty(string name)
         {
             //var res = Data.ContainsKey(name);
+            //var res = GetPropertyNames().Contains(name);
             var res = GetPropertyNames().Contains(name);
             return res;
         }
 
-        public virtual object GetProperty(string name)
+        public virtual IProperty GetProperty(string name)
         {
-            object res = null;
+            IProperty res = null;
             var hasProp = HasProperty(name);
             if (hasProp)
             {
@@ -52,9 +54,22 @@ namespace Lux.Xml
             return res;
         }
 
-        public virtual void SetProperty(string name, object value)
+        protected virtual void SetProperty(string name, IProperty property)
         {
-            Data[name] = value;
+            Data[name] = property;
+        }
+
+        public virtual void SetPropertyValue(string name, object value)
+        {
+            var property = GetProperty(name);
+            if (property != null)
+            {
+                property.SetValue(value);
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Property '{name}' not found");
+            }
         }
 
         public virtual void Clear()
@@ -62,9 +77,9 @@ namespace Lux.Xml
             Data.Clear();
         }
 
-        public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public virtual IEnumerator<IProperty> GetEnumerator()
         {
-            return Data.GetEnumerator();
+            return Data.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
