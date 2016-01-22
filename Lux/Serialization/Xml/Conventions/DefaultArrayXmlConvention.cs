@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public class DefaultArrayXmlConvention : XmlConventionBase
     {

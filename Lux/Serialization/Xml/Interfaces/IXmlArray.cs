@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public interface IXmlArray : IXmlNode, IEnumerable
     {

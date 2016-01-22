@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public static class XmlNodeExtensions
     {

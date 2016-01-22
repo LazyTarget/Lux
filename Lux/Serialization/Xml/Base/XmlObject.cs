@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Lux.Serialization;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public abstract class XmlObject : XmlNode, IXmlObject
     {

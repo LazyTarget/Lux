@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Lux.Interfaces;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public class XmlInstantiator : IXmlInstantiator
     {

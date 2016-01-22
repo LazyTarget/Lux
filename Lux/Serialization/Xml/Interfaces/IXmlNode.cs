@@ -1,6 +1,6 @@
 ﻿using Lux.Interfaces;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public interface IXmlNode : INode, IXmlConfigurable, IXmlExportable
     {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public abstract class XmlArray<T> : XmlNode, IXmlArray, IEnumerable<T>
         where T : IXmlNode

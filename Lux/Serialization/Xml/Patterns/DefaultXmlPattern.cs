@@ -1,4 +1,4 @@
-﻿namespace Lux.Xml
+﻿namespace Lux.Serialization.Xml
 {
     public class DefaultXmlPattern : XmlPattern
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Linq;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public abstract class XmlNode : IXmlNode
     {

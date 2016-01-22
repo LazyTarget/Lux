@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public static class XmlInstantiatorExtensions
     {

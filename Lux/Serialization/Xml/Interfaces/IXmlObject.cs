@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using Lux.Interfaces;
-using Lux.Serialization;
 
-namespace Lux.Xml
+namespace Lux.Serialization.Xml
 {
     public interface IXmlObject : IXmlNode, IEnumerable<IProperty>
     {

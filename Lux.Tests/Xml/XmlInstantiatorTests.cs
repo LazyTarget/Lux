@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using Lux.Xml;
+using Lux.Serialization.Xml;
 using NUnit.Framework;
 
 namespace Lux.Tests.Xml
