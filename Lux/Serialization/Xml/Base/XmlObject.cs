@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,22 +17,27 @@ namespace Lux.Serialization.Xml
 
         }
 
-        protected XmlObject(XmlPattern pattern)
+        protected XmlObject(IXmlPattern pattern)
             : this(pattern, null)
         {
 
         }
 
-        protected XmlObject(XmlPattern pattern, IXmlNode parentNode)
+        protected XmlObject(IXmlPattern pattern, IXmlNode parentNode)
             : base(pattern, parentNode)
         {
 
         }
 
 
-        public virtual IEnumerable<string> GetPropertyNames()
+        public IEnumerable<string> GetPropertyNames()
         {
-            return Data.Keys;
+            return GetProperties().Where(x => x != null).Select(x => x.Name);
+        }
+
+        public virtual IEnumerable<IProperty> GetProperties()
+        {
+            return Data.Values.Where(x => x != null);
         }
 
         public virtual bool HasProperty(string name)
@@ -53,9 +59,16 @@ namespace Lux.Serialization.Xml
             return res;
         }
 
-        protected virtual void SetProperty(string name, IProperty property)
+        protected virtual void SetProperty(IProperty property)
         {
-            Data[name] = property;
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+            if (string.IsNullOrEmpty(property.Name))
+                throw new ArgumentNullException(nameof(property.Name));
+
+            Data[property.Name] = property;
+
+            //SetPropertyValue(property.Name, property.Value);
         }
 
         public virtual void SetPropertyValue(string name, object value)
@@ -74,16 +87,6 @@ namespace Lux.Serialization.Xml
         public virtual void Clear()
         {
             Data.Clear();
-        }
-
-        public virtual IEnumerator<IProperty> GetEnumerator()
-        {
-            return Data.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

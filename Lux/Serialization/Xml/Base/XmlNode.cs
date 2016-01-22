@@ -11,13 +11,13 @@ namespace Lux.Serialization.Xml
 
         }
 
-        protected XmlNode(XmlPattern pattern)
+        protected XmlNode(IXmlPattern pattern)
             : this(pattern, null)
         {
             
         }
 
-        protected XmlNode(XmlPattern pattern, IXmlNode parentNode)
+        protected XmlNode(IXmlPattern pattern, IXmlNode parentNode)
         {
             if (pattern == null)
                 throw new ArgumentNullException(nameof(pattern));
@@ -25,7 +25,7 @@ namespace Lux.Serialization.Xml
             ParentNode = parentNode;
         }
 
-        public XmlPattern Pattern { get; }
+        public IXmlPattern Pattern { get; }
 
         public IXmlNode ParentNode { get; }
 

@@ -10,6 +10,14 @@ namespace Lux.Serialization.Xml
         {
             return array.Nodes().OfType<TNode>();
         }
+        
+        public static object GetPropertyValue(this IXmlObject obj, string name)
+        {
+            if (obj == null)
+                return null;
+            var prop = obj.GetProperty(name);
+            return prop != null ? prop.Value : null;
+        }
 
     }
 }

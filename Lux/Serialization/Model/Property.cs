@@ -11,6 +11,8 @@ namespace Lux.Serialization
 
         public Property(string name, Type type, object value)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
             Name = name;
             Type = type;
             Value = value;

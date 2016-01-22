@@ -6,51 +6,29 @@ namespace Lux.Serialization.Xml
 {
     public abstract class XmlConventionBase : IXmlConfigurator, IXmlExporter
     {
-        private IConverter _converter;
-        private ITypeInstantiator _typeInstantiator;
-        private IXmlInstantiator _xmlInstantiator;
+        private XmlSettings _xmlSettings;
 
         protected XmlConventionBase()
         {
-            _converter = new Converter();
-            _typeInstantiator = new TypeInstantiator();
-            _xmlInstantiator = new XmlInstantiator();
+            _xmlSettings = new XmlSettings();
         }
 
-        public virtual IConverter Converter
+        public virtual XmlSettings XmlSettings
         {
-            get { return _converter; }
+            get { return _xmlSettings; }
             set
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
-                _converter = value;
+                _xmlSettings = value;
             }
         }
 
-        public virtual ITypeInstantiator TypeInstantiator
-        {
-            get { return _typeInstantiator; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
-                _typeInstantiator = value;
-            }
-        }
+        protected IConverter Converter                  => XmlSettings.Converter;
+        protected ITypeInstantiator TypeInstantiator    => XmlSettings.TypeInstantiator;
+        protected IXmlInstantiator XmlInstantiator      => XmlSettings.XmlInstantiator;
 
-        public virtual IXmlInstantiator XmlInstantiator
-        {
-            get { return _xmlInstantiator; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
-                _xmlInstantiator = value;
-            }
-        }
 
-        
         public abstract void Configure(IXmlConfigurable configurable, XElement element);
         
         public abstract void Export(IXmlExportable exportable, XElement element);

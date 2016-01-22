@@ -10,8 +10,14 @@ namespace Lux
         private ITypeInstantiator _typeInstantiator;
         
         public Converter()
+            : this(new TypeInstantiator())
         {
-            _typeInstantiator = new TypeInstantiator();
+            
+        }
+
+        public Converter(ITypeInstantiator typeInstantiator)
+        {
+            _typeInstantiator = typeInstantiator;
         }
 
         public bool ThrowOnError { get; set; }
@@ -121,6 +127,8 @@ namespace Lux
 
         public virtual object Convert(object value, Type targetType)
         {
+            if (targetType == null)
+                throw new ArgumentNullException(nameof(targetType));
             object result = null;
             try
             {

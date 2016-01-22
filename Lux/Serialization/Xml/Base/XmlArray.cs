@@ -16,13 +16,13 @@ namespace Lux.Serialization.Xml
 
         }
 
-        protected XmlArray(XmlPattern pattern)
+        protected XmlArray(IXmlPattern pattern)
             : this(pattern, null)
         {
 
         }
 
-        protected XmlArray(XmlPattern pattern, IXmlNode parentNode)
+        protected XmlArray(IXmlPattern pattern, IXmlNode parentNode)
             : base(pattern, parentNode)
         {
             

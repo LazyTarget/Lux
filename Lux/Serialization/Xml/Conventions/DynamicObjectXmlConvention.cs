@@ -4,14 +4,14 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class DefaultObjectXmlConvention : ObjectXmlConventionBase
+    public class DynamicObjectXmlConvention : ObjectXmlConventionBase
     {
-        public DefaultObjectXmlConvention()
+        public DynamicObjectXmlConvention()
         {
-            ConvertValues = true;
+            
         }
 
-        public bool ConvertValues { get; set; }
+
 
 
         //public override void Configure(IXmlConfigurable configurable, XElement element)
@@ -34,38 +34,14 @@ namespace Lux.Serialization.Xml
                     try
                     {
                         object value = XmlInstantiator.InstantiateElement(elem);
-                        ////if (obj is IHasProperties)
-                        ////{
-                        ////    var hasProps = (IHasProperties) obj;
-                        ////    hasProps.Properties[propertyName] = value;
-                        ////}
-                        ////else
-                        //{
-                        //    var propertyInfo = obj.GetType().GetProperty(propertyName);
-                        //    if (propertyInfo != null)
-                        //    {
-                        //        value = Converter.Convert(value, propertyInfo.PropertyType);
-                        //        propertyInfo.SetValue(obj, value, null);
-                        //    }
-                        //    else
-                        //        throw new Exception($"Property not found {propertyName}");
-                        //}
-
-                        var property = obj.GetProperty(propertyName);
-                        if (property != null)
+                        var propertyInfo = obj.GetType().GetProperty(propertyName);
+                        if (propertyInfo != null)
                         {
-                            if (property.Type != null)
-                            {
-                                if (ConvertValues)
-                                    value = Converter.Convert(value, property.Type);
-                            }
-                            property.SetValue(value);
+                            value = Converter.Convert(value, propertyInfo.PropertyType);
+                            propertyInfo.SetValue(obj, value, null);
                         }
                         else
-                        {
-                            // todo: Set either way?, create a property?
-                            throw new Exception($"Property '{propertyName}' not found");
-                        }
+                            throw new Exception($"Property not found {propertyName}");
                     }
                     catch (Exception ex)
                     {
@@ -86,6 +62,8 @@ namespace Lux.Serialization.Xml
 
         protected override void ExportObject(IXmlObject obj, XElement element)
         {
+            throw new NotImplementedException();
+
             var properties = obj.GetProperties();
             foreach (var property in properties)
             {

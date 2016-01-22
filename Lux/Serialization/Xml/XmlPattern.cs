@@ -4,14 +4,14 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class XmlPattern
+    public class XmlPattern : IXmlPattern
     {
-        public static XmlPattern Default => new DefaultXmlPattern();
-        public static readonly XmlPattern Instance = Default;
+        public static IXmlPattern Default               => new DefaultXmlPattern();
+        public static readonly IXmlPattern Instance     = Default;
 
         static XmlPattern()
         {
-            
+
         }
 
 
@@ -39,6 +39,8 @@ namespace Lux.Serialization.Xml
             {
                 convention.Configure(configurable, element);
             }
+
+            configurable.Configure(element);
         }
 
         public virtual void Export(IXmlExportable exportable, XElement element)
@@ -47,6 +49,8 @@ namespace Lux.Serialization.Xml
             {
                 convention.Export(exportable, element);
             }
+
+            exportable.Export(element);
         }
 
     }

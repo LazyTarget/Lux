@@ -6,11 +6,18 @@ namespace Lux.Serialization.Xml
 {
     public class DefaultArrayXmlConvention : XmlConventionBase
     {
+        public DefaultArrayXmlConvention()
+        {
+
+        }
+
+
+
+
         public override void Configure(IXmlConfigurable configurable, XElement element)
         {
             ConfigureArray(configurable, element);
         }
-
 
         protected virtual void ConfigureArray(IXmlConfigurable configurable, XElement element)
         {
@@ -42,12 +49,10 @@ namespace Lux.Serialization.Xml
 
 
 
-
         public override void Export(IXmlExportable exportable, XElement element)
         {
             ExportArray(exportable, element);
         }
-
 
         protected virtual void ExportArray(IXmlExportable exportable, XElement element)
         {
@@ -55,6 +60,7 @@ namespace Lux.Serialization.Xml
             if (array == null)
                 return;
 
+            // Clear
             element.Elements("item").Remove();
 
             var nodes = array.Nodes().Where(x => x != null).ToList();
@@ -62,10 +68,16 @@ namespace Lux.Serialization.Xml
             {
                 foreach (var node in nodes)
                 {
+                    if (node == null)
+                        continue;
+
                     var type = node.GetType();
+                    var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
+
+                    // Append items
                     var elem = new XElement("item");
                     element.Add(elem);
-                    elem.SetAttributeValue("type", type.FullName + ", " + type.Assembly.GetName().Name);
+                    elem.SetAttributeValue("type", typeString);
                     node.Export(elem);
                 }
             }

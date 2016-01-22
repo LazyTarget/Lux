@@ -1,39 +1,35 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
-using Lux.Interfaces;
 
 namespace Lux.Serialization.Xml
 {
     public class XmlInstantiator : IXmlInstantiator
     {
-        private IConverter _converter;
-        private ITypeInstantiator _typeInstantiator;
+        private XmlSettings _xmlSettings;
 
         public XmlInstantiator()
+            : this(new XmlSettings())
         {
-            _converter = new Converter();
+            //_xmlSettings.XmlInstantiator = this;
         }
 
-        public virtual IConverter Converter
+        public XmlInstantiator(XmlSettings settings)
         {
-            get { return _converter; }
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            _xmlSettings = settings;
+        }
+
+
+        public virtual XmlSettings XmlSettings
+        {
+            get { return _xmlSettings; }
             set
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
-                _converter = value;
-            }
-        }
-
-        public virtual ITypeInstantiator TypeInstantiator
-        {
-            get { return _typeInstantiator; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
-                _typeInstantiator = value;
+                _xmlSettings = value;
             }
         }
 
@@ -76,7 +72,7 @@ namespace Lux.Serialization.Xml
                     }
                     else
                     {
-                        value = Converter.Convert(propertyValue, type);
+                        value = XmlSettings.Converter.Convert(propertyValue, type);
                     }
                 }
                 else if (element.Attribute("type") != null)
@@ -100,7 +96,7 @@ namespace Lux.Serialization.Xml
             object arguments = null;
             // todo: use xml attributes use for CreateInstance with args
 
-            var obj = _typeInstantiator.Instantiate(type, arguments);
+            var obj = XmlSettings.TypeInstantiator.Instantiate(type, arguments);
             return obj;
         }
 
@@ -109,82 +105,6 @@ namespace Lux.Serialization.Xml
         public virtual void Configure(IXmlConfigurable configurable, XElement element)
         {
             configurable.Configure(element);
-        }
-
-        public virtual void ConfigureProperties(IXmlConfigurable configurable, XElement element)
-        {
-            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
-            if (propertyElems.Any())
-            {
-                foreach (var elem in propertyElems)
-                {
-                    var propertyName = elem.GetAttributeValue("name");
-                    if (string.IsNullOrEmpty(propertyName))
-                        continue;
-                    try
-                    {
-                        object value = InstantiateElement(elem);
-                        //if (configurable is IHasProperties)
-                        //{
-                        //    var hasProps = (IHasProperties) configurable;
-                        //    hasProps.Properties[propertyName] = value;
-                        //}
-                        //else
-                        {
-                            var propertyInfo = configurable.GetType().GetProperty(propertyName);
-                            if (propertyInfo != null)
-                            {
-                                value = _converter.Convert(value, propertyInfo.PropertyType);
-                                propertyInfo.SetValue(configurable, value, null);
-                            }
-                            else
-                                throw new Exception($"Property not found {propertyName}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        //_log.Error($"Error instantiating property '{propertyName}'", ex);
-                    }
-                }
-            }
-        }
-
-        public virtual void ConfigureArray(IXmlConfigurable configurable, XElement element)
-        {
-            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
-            if (propertyElems.Any())
-            {
-                foreach (var elem in propertyElems)
-                {
-                    var propertyName = elem.GetAttributeValue("name");
-                    if (string.IsNullOrEmpty(propertyName))
-                        continue;
-                    try
-                    {
-                        object value = InstantiateElement(elem);
-                        //if (configurable is IHasProperties)
-                        //{
-                        //    var hasProps = (IHasProperties) configurable;
-                        //    hasProps.Properties[propertyName] = value;
-                        //}
-                        //else
-                        {
-                            var propertyInfo = configurable.GetType().GetProperty(propertyName);
-                            if (propertyInfo != null)
-                            {
-                                value = _converter.Convert(value, propertyInfo.PropertyType);
-                                propertyInfo.SetValue(configurable, value, null);
-                            }
-                            else
-                                throw new Exception($"Property not found {propertyName}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        //_log.Error($"Error instantiating property '{propertyName}'", ex);
-                    }
-                }
-            }
         }
 
     }
