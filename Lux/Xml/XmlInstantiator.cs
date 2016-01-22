@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using Lux.Interfaces;
 
@@ -101,6 +102,89 @@ namespace Lux.Xml
 
             var obj = _typeInstantiator.Instantiate(type, arguments);
             return obj;
+        }
+
+
+
+        public virtual void Configure(IXmlConfigurable configurable, XElement element)
+        {
+            configurable.Configure(element);
+        }
+
+        public virtual void ConfigureProperties(IXmlConfigurable configurable, XElement element)
+        {
+            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
+            if (propertyElems.Any())
+            {
+                foreach (var elem in propertyElems)
+                {
+                    var propertyName = elem.GetAttributeValue("name");
+                    if (string.IsNullOrEmpty(propertyName))
+                        continue;
+                    try
+                    {
+                        object value = InstantiateElement(elem);
+                        //if (configurable is IHasProperties)
+                        //{
+                        //    var hasProps = (IHasProperties) configurable;
+                        //    hasProps.Properties[propertyName] = value;
+                        //}
+                        //else
+                        {
+                            var propertyInfo = configurable.GetType().GetProperty(propertyName);
+                            if (propertyInfo != null)
+                            {
+                                value = _converter.Convert(value, propertyInfo.PropertyType);
+                                propertyInfo.SetValue(configurable, value, null);
+                            }
+                            else
+                                throw new Exception($"Property not found {propertyName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //_log.Error($"Error instantiating property '{propertyName}'", ex);
+                    }
+                }
+            }
+        }
+
+        public virtual void ConfigureArray(IXmlConfigurable configurable, XElement element)
+        {
+            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
+            if (propertyElems.Any())
+            {
+                foreach (var elem in propertyElems)
+                {
+                    var propertyName = elem.GetAttributeValue("name");
+                    if (string.IsNullOrEmpty(propertyName))
+                        continue;
+                    try
+                    {
+                        object value = InstantiateElement(elem);
+                        //if (configurable is IHasProperties)
+                        //{
+                        //    var hasProps = (IHasProperties) configurable;
+                        //    hasProps.Properties[propertyName] = value;
+                        //}
+                        //else
+                        {
+                            var propertyInfo = configurable.GetType().GetProperty(propertyName);
+                            if (propertyInfo != null)
+                            {
+                                value = _converter.Convert(value, propertyInfo.PropertyType);
+                                propertyInfo.SetValue(configurable, value, null);
+                            }
+                            else
+                                throw new Exception($"Property not found {propertyName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //_log.Error($"Error instantiating property '{propertyName}'", ex);
+                    }
+                }
+            }
         }
 
     }
