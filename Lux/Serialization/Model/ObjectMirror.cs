@@ -99,7 +99,7 @@ namespace Lux.Serialization
             }
         }
 
-        public void Clear()
+        public void ClearProperties()
         {
             _properties.Clear();
         }

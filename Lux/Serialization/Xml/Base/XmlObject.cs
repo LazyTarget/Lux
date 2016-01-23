@@ -84,7 +84,7 @@ namespace Lux.Serialization.Xml
             }
         }
 
-        public virtual void Clear()
+        public virtual void ClearProperties()
         {
             Data.Clear();
         }

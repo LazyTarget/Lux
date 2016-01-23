@@ -73,8 +73,10 @@
     <Compile Include="Serialization\Xml\Interfaces\IXmlExportable.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlInstantiator.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlNode.cs" />
+    <Compile Include="Serialization\Xml\Interfaces\IXmlNodeContainer.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlObject.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlPattern.cs" />
+    <Compile Include="Serialization\Xml\XmlDocumentLoader.cs" />
     <Compile Include="Serialization\Xml\XmlNodeExtensions.cs" />
     <Compile Include="Serialization\Xml\Conventions\XmlConventionBase.cs" />
     <Compile Include="Serialization\Xml\Patterns\DefaultXmlPattern.cs" />

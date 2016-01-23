@@ -26,7 +26,7 @@ namespace Lux.Serialization.Xml
                 return;
 
             // Clear
-            array.Clear();
+            array.ClearItems();
 
             var itemElems = element.Elements("item").Where(x => x != null).ToList();
             if (itemElems.Any())
@@ -36,7 +36,7 @@ namespace Lux.Serialization.Xml
                     try
                     {
                         // Append items
-                        var node = XmlInstantiator.InstantiateNode(elem);
+                        var node = XmlInstantiator.InstantiateNode(array, elem);
                         array.AddItem(node);
                     }
                     catch (Exception ex)
@@ -63,7 +63,7 @@ namespace Lux.Serialization.Xml
             // Clear
             element.Elements("item").Remove();
 
-            var nodes = array.Nodes().Where(x => x != null).ToList();
+            var nodes = array.Items().Where(x => x != null).ToList();
             if (nodes.Any())
             {
                 foreach (var node in nodes)

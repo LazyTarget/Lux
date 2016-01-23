@@ -35,7 +35,7 @@ namespace Lux.Serialization.Xml
                     try
                     {
                         var property = MirrorProperty.Create(obj, propertyName);
-                        object value = XmlInstantiator.InstantiateElement(elem);
+                        object value = XmlInstantiator.InstantiateElement(obj, elem);
                         value = XmlSettings.Converter.Convert(value, property.Type);
                         property.SetValue(value);
 

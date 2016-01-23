@@ -9,6 +9,6 @@ namespace Lux.Serialization
         bool HasProperty(string name);
         IProperty GetProperty(string name);
         void SetPropertyValue(string name, object value);
-        void Clear();
+        void ClearProperties();
     }
 }

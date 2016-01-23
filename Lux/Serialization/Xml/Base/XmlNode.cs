@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
@@ -38,6 +39,21 @@ namespace Lux.Serialization.Xml
         public virtual void Export(XElement element)
         {
             Pattern.Export(this, element);
+        }
+
+        public IEnumerable<IXmlNode> Nodes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void AppendNode(IXmlNode node)
+        {
+            
+        }
+
+        public virtual void ClearNodes()
+        {
+            
         }
     }
 }

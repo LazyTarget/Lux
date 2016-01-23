@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public abstract class XmlArray<T> : XmlNode, IXmlArray, IEnumerable<T>
+    public abstract class XmlArray<T> : XmlNode, IXmlArray
         where T : IXmlNode
     {
         protected readonly IList<T> Data = new List<T>();
@@ -29,38 +29,32 @@ namespace Lux.Serialization.Xml
         }
 
 
-        public virtual IEnumerable<IXmlNode> Nodes()
+        public virtual IEnumerable<IXmlNode> Items()
         {
             return Data.Cast<IXmlNode>().AsEnumerable();
         }
-
         
+        IEnumerable<INode> IArray.Items()
+        {
+            return Items();
+        }
+
         public virtual void AddItem(object item)
         {
             var node = (IXmlNode) item;
             AddItem(node);
         }
 
-        public virtual void AddItem(IXmlNode node)
+        public virtual void AddItem(IXmlNode item)
         {
-            var obj = (T) node;
+            var obj = (T) item;
             Data.Add(obj);
         }
 
-        public virtual void Clear()
+        public virtual void ClearItems()
         {
             Data.Clear();
         }
-
         
-        public virtual IEnumerator<T> GetEnumerator()
-        {
-            return Data.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

@@ -5,10 +5,10 @@ namespace Lux.Serialization.Xml
 {
     public static class XmlNodeExtensions
     {
-        public static IEnumerable<TNode> Nodes<TNode>(this IXmlArray array)
+        public static IEnumerable<TNode> Items<TNode>(this IXmlArray array)
             where TNode : IXmlNode
         {
-            return array.Nodes().OfType<TNode>();
+            return array.Items().OfType<TNode>();
         }
         
         public static object GetPropertyValue(this IXmlObject obj, string name)

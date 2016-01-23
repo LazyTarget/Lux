@@ -35,14 +35,14 @@ namespace Lux.Serialization.Xml
 
 
 
-        public virtual IXmlNode InstantiateNode(XElement element)
+        public virtual IXmlNode InstantiateNode(IXmlNode parent, XElement element)
         {
-            var obj = InstantiateElement(element);
+            var obj = InstantiateElement(parent, element);
             var node = (IXmlNode) obj;
             return node;
         }
 
-        public virtual object InstantiateElement(XElement element)
+        public virtual object InstantiateElement(IXmlNode parent, XElement element)
         {
             try
             {
@@ -62,6 +62,13 @@ namespace Lux.Serialization.Xml
                     else if (typeof(IXmlConfigurable).IsAssignableFrom(type))
                     {
                         var obj = (IXmlConfigurable) InstantiateType(element, type);
+                        var node = obj as IXmlNode;
+                        if (node != null)
+                        {
+                            // todo: improve!!
+                            parent.AppendNode(node);
+                        }
+
                         obj.Configure(element);
                         value = obj;
                     }
@@ -100,12 +107,6 @@ namespace Lux.Serialization.Xml
             return obj;
         }
 
-
-
-        public virtual void Configure(IXmlConfigurable configurable, XElement element)
-        {
-            configurable.Configure(element);
-        }
 
     }
 }

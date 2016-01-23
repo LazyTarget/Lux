@@ -33,7 +33,7 @@ namespace Lux.Serialization.Xml
                         continue;
                     try
                     {
-                        object value = XmlInstantiator.InstantiateElement(elem);
+                        object value = XmlInstantiator.InstantiateElement(obj, elem);
                         ////if (obj is IHasProperties)
                         ////{
                         ////    var hasProps = (IHasProperties) obj;

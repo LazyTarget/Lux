@@ -40,7 +40,7 @@ namespace Lux.Serialization.Xml
                 convention.Configure(configurable, element);
             }
 
-            configurable.Configure(element);
+            //configurable.Configure(element);
         }
 
         public virtual void Export(IXmlExportable exportable, XElement element)
@@ -50,7 +50,7 @@ namespace Lux.Serialization.Xml
                 convention.Export(exportable, element);
             }
 
-            exportable.Export(element);
+            //exportable.Export(element);
         }
 
     }

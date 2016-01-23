@@ -3,19 +3,21 @@ using System.Collections.Generic;
 
 namespace Lux.Serialization.Xml
 {
-    public interface IXmlArray : IXmlNode, IArray, IEnumerable
+    public interface IXmlArray : IXmlNode, IArray
     {
-        IEnumerable<IXmlNode> Nodes();
+        new IEnumerable<IXmlNode> Items();
 
-        void AddItem(IXmlNode node);
-        //void Clear();
+        void AddItem(IXmlNode item);
+        //void ClearItems();
     }
 
 
-    public interface IXmlArray<TNode> : IXmlArray, IEnumerable<TNode>
+    public interface IXmlArray<TNode> : IXmlArray
         where TNode : IXmlNode
     {
-        void AddItem(TNode node);
+        new IEnumerable<TNode> Items();
+
+        void AddItem(TNode item);
 
         // todo: add more?
     }

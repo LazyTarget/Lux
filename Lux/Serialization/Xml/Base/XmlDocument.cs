@@ -5,6 +5,8 @@ namespace Lux.Serialization.Xml
 {
     public abstract class XmlDocument : XmlNode, IXmlDocument
     {
+        private string _rootElementName;
+
         protected XmlDocument()
             : this(XmlPattern.Instance)
         {
@@ -17,12 +19,35 @@ namespace Lux.Serialization.Xml
             RootElementName = "Document";
         }
 
-        public string RootElementName { get; set; }
+        public string RootElementName
+        {
+            get { return _rootElementName; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                _rootElementName = value;
+            }
+        }
 
+
+        public void Configure(XDocument document)
+        {
+            var rootElement = GetRootElem(document, RootElementName);
+            if (rootElement != null)
+                Configure(rootElement);
+        }
 
         public override void Configure(XElement element)
         {
             base.Configure(element);
+        }
+
+
+        public void Export(XDocument document)
+        {
+            var rootElement = GetOrCreateRootElem(document, RootElementName);
+            Export(rootElement);
         }
 
         public override void Export(XElement element)
@@ -30,12 +55,19 @@ namespace Lux.Serialization.Xml
             base.Export(element);
         }
 
-        public void Export(XDocument document)
+
+        private XElement GetRootElem(XDocument document, string rootElementName)
         {
-            var rootElement = GetOrCreateRootElem(document, RootElementName);
-            Export(rootElement);
+            var rootElement = document.Element(rootElementName);
+            if (rootElement == null)
+            {
+                if (document.Root != null)
+                    rootElement = document.Root.Element(rootElementName);
+                else
+                    rootElement = document.Element(rootElementName);
+            }
+            return rootElement;
         }
-        
 
         private XElement GetOrCreateRootElem(XDocument document, string rootElementName)
         {
