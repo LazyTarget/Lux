@@ -40,14 +40,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\XmlExtensions.cs" />
     <Compile Include="Interfaces\IConverter.cs" />
+    <Compile Include="Object\DictionaryEx.cs" />
+    <Compile Include="Serialization\Extensions\ModelExtensions.cs" />
+    <Compile Include="Serialization\Interfaces\IArray.cs" />
+    <Compile Include="Serialization\Interfaces\IObject.cs" />
     <Compile Include="Serialization\Interfaces\IProperty.cs" />
     <Compile Include="Interfaces\ITypeInstantiator.cs" />
     <Compile Include="Object\TypeInstantiator.cs" />
     <Compile Include="Object\Converter.cs" />
     <Compile Include="Serialization\Interfaces\INode.cs" />
+    <Compile Include="Serialization\Model\ObjectMirror.cs" />
+    <Compile Include="Serialization\Model\MirrorProperty.cs" />
     <Compile Include="Serialization\Model\StronglyTypedProperty.cs" />
     <Compile Include="Serialization\Xml\Base\XmlDocument.cs" />
     <Compile Include="Serialization\Xml\Base\XmlObject.cs" />
@@ -55,7 +63,7 @@
     <Compile Include="Serialization\Xml\Base\XmlArray.cs" />
     <Compile Include="Serialization\Model\Property.cs" />
     <Compile Include="Serialization\Xml\Conventions\ObjectXmlConventionBase.cs" />
-    <Compile Include="Serialization\Xml\Conventions\DynamicObjectXmlConvention.cs" />
+    <Compile Include="Serialization\Xml\Conventions\MirrorObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultArrayXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlConfigurator.cs" />

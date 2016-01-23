@@ -4,9 +4,9 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class DynamicObjectXmlConvention : ObjectXmlConventionBase
+    public class MirrorObjectXmlConvention : ObjectXmlConventionBase
     {
-        public DynamicObjectXmlConvention()
+        public MirrorObjectXmlConvention()
         {
             
         }
@@ -31,17 +31,22 @@ namespace Lux.Serialization.Xml
                     var propertyName = elem.GetAttributeValue("name");
                     if (string.IsNullOrEmpty(propertyName))
                         continue;
+                    
                     try
                     {
+                        var property = MirrorProperty.Create(obj, propertyName);
                         object value = XmlInstantiator.InstantiateElement(elem);
-                        var propertyInfo = obj.GetType().GetProperty(propertyName);
-                        if (propertyInfo != null)
-                        {
-                            value = Converter.Convert(value, propertyInfo.PropertyType);
-                            propertyInfo.SetValue(obj, value, null);
-                        }
-                        else
-                            throw new Exception($"Property not found {propertyName}");
+                        value = XmlSettings.Converter.Convert(value, property.Type);
+                        property.SetValue(value);
+
+                        //var propertyInfo = obj.GetType().GetProperty(propertyName);
+                        //if (propertyInfo != null)
+                        //{
+                        //    value = Converter.Convert(value, propertyInfo.PropertyType);
+                        //    propertyInfo.SetValue(obj, value, null);
+                        //}
+                        //else
+                        //    throw new Exception($"Property not found {propertyName}");
                     }
                     catch (Exception ex)
                     {
@@ -62,9 +67,10 @@ namespace Lux.Serialization.Xml
 
         protected override void ExportObject(IXmlObject obj, XElement element)
         {
-            throw new NotImplementedException();
+            var mirror = new ObjectMirror(obj);
 
-            var properties = obj.GetProperties();
+            //var properties = obj.GetProperties();
+            var properties = mirror.GetProperties();
             foreach (var property in properties)
             {
                 if (property == null)

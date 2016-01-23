@@ -20,7 +20,7 @@ namespace Lux.Serialization
 
         public string Name { get; }
         public Type Type { get; }
-        public object Value { get; private set; }
+        public virtual object Value { get; private set; }
 
         public virtual void SetValue(object value)
         {

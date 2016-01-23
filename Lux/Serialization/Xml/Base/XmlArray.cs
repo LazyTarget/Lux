@@ -34,6 +34,12 @@ namespace Lux.Serialization.Xml
             return Data.Cast<IXmlNode>().AsEnumerable();
         }
 
+        
+        public virtual void AddItem(object item)
+        {
+            var node = (IXmlNode) item;
+            AddItem(node);
+        }
 
         public virtual void AddItem(IXmlNode node)
         {

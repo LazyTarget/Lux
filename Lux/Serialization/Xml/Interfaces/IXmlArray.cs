@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Lux.Serialization.Xml
 {
-    public interface IXmlArray : IXmlNode, IEnumerable
+    public interface IXmlArray : IXmlNode, IArray, IEnumerable
     {
         IEnumerable<IXmlNode> Nodes();
 
         void AddItem(IXmlNode node);
-        void Clear();
+        //void Clear();
     }
 
 
