@@ -44,6 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\DirectoryManagerWithRealFileSystem_Tests.cs" />
+    <Compile Include="IO\FileSystemHelperTests.cs" />
+    <Compile Include="IO\Helpers\DataFactory.cs" />
+    <Compile Include="IO\MockFileSystemTests.cs" />
+    <Compile Include="IO\PathHelperTests.cs" />
+    <Compile Include="IO\ZipFileCompressorMockTests.cs" />
+    <Compile Include="IO\ZipFileCompressorMockWithRealFileSystem_Tests.cs" />
+    <Compile Include="IO\ZipFileMockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xml\XmlInstantiatorTests.cs" />
   </ItemGroup>
@@ -56,6 +64,7 @@
       <Name>Lux</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,21 +3,22 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public abstract class XmlDocument : XmlNode, IXmlDocument
+    public class XmlDocument : XmlNode, IXmlDocument
     {
         private string _rootElementName;
 
-        protected XmlDocument()
+        public XmlDocument()
             : this(XmlPattern.Instance)
         {
 
         }
 
-        private XmlDocument(IXmlPattern pattern)
+        public XmlDocument(IXmlPattern pattern)
             : base(pattern)
         {
             RootElementName = "Document";
         }
+
 
         public string RootElementName
         {

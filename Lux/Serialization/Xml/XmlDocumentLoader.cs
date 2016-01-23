@@ -8,13 +8,21 @@ namespace Lux.Serialization.Xml
     public class XmlDocumentLoader
     {
         public XmlDocumentLoader()
-            : this(new Lux.Serialization.Xml.docum)
         {
-            
+            var pattern = XmlPattern.Instance;
+            Document = new XmlDocument(pattern);
+
+            XmlReaderSettings = new XmlReaderSettings();
+            XmlReaderSettings.DtdProcessing = DtdProcessing.Parse;
+
+            XmlWriterSettings = new XmlWriterSettings();
+            XmlWriterSettings.Indent = true;
         }
 
         public XmlDocumentLoader(IXmlDocument document)
         {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
             Document = document;
 
             XmlReaderSettings = new XmlReaderSettings();
@@ -24,20 +32,16 @@ namespace Lux.Serialization.Xml
             XmlWriterSettings.Indent = true;
         }
 
+
         public IXmlDocument Document { get; }
-        public IXmlPattern Pattern { get; set; }
         public XmlReaderSettings XmlReaderSettings { get; }
         public XmlWriterSettings XmlWriterSettings { get; }
-        
 
-        public virtual bool Load(Stream stream)
+
+        protected virtual XDocument LoadXDocument(Stream stream)
         {
-            if (Document == null)
-                throw new ArgumentNullException(nameof(Document));
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-
-            var res = false;
             XDocument xdoc = null;
             try
             {
@@ -47,12 +51,26 @@ namespace Lux.Serialization.Xml
                     {
                         xdoc = XDocument.Load(xmlReader);
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return xdoc;
+        }
 
-                    if (xdoc != null)
-                    {
-                        Document.Configure(xdoc);
-                        res = true;
-                    }
+
+        public virtual bool Load(Stream stream)
+        {
+            var res = false;
+            try
+            {
+                var xdoc = LoadXDocument(stream);
+                if (xdoc != null)
+                {
+                    Document.Configure(xdoc);
+                    res = true;
                 }
             }
             catch (Exception ex)
@@ -69,12 +87,12 @@ namespace Lux.Serialization.Xml
                 throw new NotSupportedException("The stream cannot be written to");
             try
             {
+                var xdoc = LoadXDocument(stream);
+
                 using (var xmlWriter = XmlWriter.Create(stream, XmlWriterSettings))
                 {
-                    var xdoc = _xdoc ?? new XDocument();
-                    Export(xdoc);
+                    Document.Export(xdoc);
                     xdoc.Save(xmlWriter);
-                    _xdoc = xdoc;
                 }
                 return true;
             }

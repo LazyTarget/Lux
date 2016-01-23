@@ -30,8 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +51,27 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\XmlExtensions.cs" />
     <Compile Include="Interfaces\IConverter.cs" />
+    <Compile Include="IO\Helpers\FileSystemHelper.cs" />
+    <Compile Include="IO\FileSystem\MemoryFileSystem.cs" />
+    <Compile Include="Object\NotifyableStream.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="IO\Helpers\PathComparer.cs" />
+    <Compile Include="IO\Helpers\PathHelper.cs" />
+    <Compile Include="IO\Helpers\PathSorter.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="IO\Helpers\SubPathComparer.cs" />
+    <Compile Include="IO\Interfaces\IFileCompressor.cs" />
+    <Compile Include="IO\Interfaces\IFileSystem.cs" />
+    <Compile Include="IO\Consts.cs" />
+    <Compile Include="IO\Mock\DebugMock.cs" />
+    <Compile Include="IO\FileSystem\FileSystemMock.cs" />
+    <Compile Include="IO\FileCompressor\ZipFileCompressorMock.cs" />
+    <Compile Include="IO\Models\DirectoryMock.cs" />
+    <Compile Include="IO\Models\FileMock.cs" />
+    <Compile Include="IO\Models\PathInfo.cs" />
+    <Compile Include="IO\Models\ZipFileMock.cs" />
+    <Compile Include="IO\FileSystem\FileSystem.cs" />
+    <Compile Include="IO\FileCompressor\ZipFileCompressor.cs" />
     <Compile Include="Object\DictionaryEx.cs" />
     <Compile Include="Serialization\Extensions\ModelExtensions.cs" />
     <Compile Include="Serialization\Interfaces\IArray.cs" />
@@ -87,7 +114,13 @@
     <Compile Include="Serialization\Xml\Interfaces\IXmlArray.cs" />
     <Compile Include="Serialization\Xml\XmlSettings.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO\Components\" />
+    <Folder Include="IO\Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
