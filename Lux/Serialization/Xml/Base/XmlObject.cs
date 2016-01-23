@@ -1,35 +1,39 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public abstract class XmlObject : XmlNode, IXmlObject
+    public class XmlObject : IXmlObject
     {
-        //protected readonly IDictionary<string, object> Data = new Dictionary<string, object>();
-        protected readonly IDictionary<string, IProperty> Data = new Dictionary<string, IProperty>();
+        public XElement Element { get; internal set; }
+        public IXmlPattern Pattern { get; internal set; }
+        protected IDictionary<string, IProperty> Properties { get; }
 
-
-        protected XmlObject()
-            : this(XmlPattern.Instance)
+        public XmlObject()
+            : this(null)
         {
-
         }
 
-        protected XmlObject(IXmlPattern pattern)
-            : this(pattern, null)
+        protected internal XmlObject(XElement element)
+            : this(element, XmlPattern.Default)
         {
-
         }
 
-        protected XmlObject(IXmlPattern pattern, IXmlNode parentNode)
-            : base(pattern, parentNode)
+        protected internal XmlObject(XElement element, IXmlPattern pattern)
         {
+            //if (element == null)
+            //    throw new ArgumentNullException(nameof(element));
+            if (pattern == null)
+                throw new ArgumentNullException(nameof(pattern));
 
+            Properties = new Dictionary<string, IProperty>();
+            Pattern = pattern;
+            Element = element;
         }
 
-
+        
         public IEnumerable<string> GetPropertyNames()
         {
             return GetProperties().Where(x => x != null).Select(x => x.Name);
@@ -37,7 +41,7 @@ namespace Lux.Serialization.Xml
 
         public virtual IEnumerable<IProperty> GetProperties()
         {
-            return Data.Values.Where(x => x != null);
+            return Properties.Values.Where(x => x != null);
         }
 
         public virtual bool HasProperty(string name)
@@ -54,21 +58,24 @@ namespace Lux.Serialization.Xml
             var hasProp = HasProperty(name);
             if (hasProp)
             {
-                res = Data[name];
+                res = Properties[name];
             }
             return res;
         }
 
-        protected virtual void SetProperty(IProperty property)
+        protected virtual void DefineProperty(IProperty property)
         {
             if (property == null)
                 throw new ArgumentNullException(nameof(property));
             if (string.IsNullOrEmpty(property.Name))
                 throw new ArgumentNullException(nameof(property.Name));
 
-            Data[property.Name] = property;
+            if (Properties.ContainsKey(property.Name))
+                throw new InvalidOperationException($"Property '{property.Name}' already defined");
 
-            //SetPropertyValue(property.Name, property.Value);
+            Properties[property.Name] = property;
+
+            SetPropertyValue(property.Name, property.Value);
         }
 
         public virtual void SetPropertyValue(string name, object value)
@@ -80,13 +87,28 @@ namespace Lux.Serialization.Xml
             }
             else
             {
-                throw new KeyNotFoundException($"Property '{name}' not found");
+                //throw new KeyNotFoundException($"Property '{name}' not found");
+
+                var type = value?.GetType();
+                var prop = new Property(name, type, value);
+                DefineProperty(prop);
             }
         }
 
         public virtual void ClearProperties()
         {
-            Data.Clear();
+            Properties.Clear();
+        }
+
+
+        public virtual void Configure(XElement element)
+        {
+            //Pattern.Configure(this, element);
+        }
+
+        public virtual void Export(XElement element)
+        {
+            //Pattern.Export(this, element);
         }
     }
 }

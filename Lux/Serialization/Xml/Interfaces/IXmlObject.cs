@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace Lux.Serialization.Xml
+﻿namespace Lux.Serialization.Xml
 {
     public interface IXmlObject : IXmlNode, IObject
     {
+        //System.Xml.Linq.XElement Element { get; }
+
         //IEnumerable<string> GetPropertyNames();
         //IEnumerable<IProperty> GetProperties(); 
         //bool HasProperty(string name);

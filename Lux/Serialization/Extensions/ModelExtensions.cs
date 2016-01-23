@@ -17,5 +17,28 @@ namespace Lux.Serialization
         //    return prop;
         //}
 
+
+        public static T GetPropertyValue<T>(this T obj, Expression<Func<T, object>> propertyLambda)
+            where T : IObject
+        {
+            var res = default(T);
+            var propertyInfo = propertyLambda.GetPropertyFromExpression();
+            if (propertyInfo != null)
+            {
+                var val = GetPropertyValue(obj, propertyInfo.Name);
+                res = (T) val;
+            }
+            return res;
+        }
+
+        public static object GetPropertyValue(this IObject obj, string propertyName)
+        {
+            object res = null;
+            var prop = obj?.GetProperty(propertyName);
+            if (prop != null)
+                res = prop.Value;
+            return res;
+        }
+
     }
 }

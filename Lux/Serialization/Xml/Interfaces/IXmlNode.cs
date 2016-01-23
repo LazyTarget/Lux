@@ -1,8 +1,10 @@
 ﻿namespace Lux.Serialization.Xml
 {
-    public interface IXmlNode : INode, IXmlNodeContainer, IXmlConfigurable, IXmlExportable
+    public interface IXmlNode : INode
+                                //, IXmlNodeContainer
+                                , IXmlConfigurable
+                                , IXmlExportable
     {
-        IXmlPattern Pattern { get; }
-        IXmlNode ParentNode { get; }
+        //IXmlPattern Pattern { get; }
     }
 }

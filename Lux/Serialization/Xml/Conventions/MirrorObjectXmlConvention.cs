@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class MirrorObjectXmlConvention : ObjectXmlConventionBase
+    public class MirrorObjectXmlConvention : XmlConventionBase
     {
         public MirrorObjectXmlConvention()
         {
@@ -13,17 +13,10 @@ namespace Lux.Serialization.Xml
 
 
 
-
-        //public override void Configure(IXmlConfigurable configurable, XElement element)
-        //{
-        //    var obj = configurable as IXmlObject;
-        //    if (obj != null)
-        //        ConfigureObject(obj, element);
-        //}
-
-        protected override void ConfigureObject(IXmlObject obj, XElement element)
+        
+        public override void Configure(IXmlObject obj, XElement source)
         {
-            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
+            var propertyElems = source.Elements("property").Where(x => x != null).ToList();
             if (propertyElems.Any())
             {
                 foreach (var elem in propertyElems)
@@ -35,15 +28,15 @@ namespace Lux.Serialization.Xml
                     try
                     {
                         var property = MirrorProperty.Create(obj, propertyName);
-                        object value = XmlInstantiator.InstantiateElement(obj, elem);
+                        object value = XmlInstantiator.InstantiateFromElement(elem, obj);
                         value = XmlSettings.Converter.Convert(value, property.Type);
                         property.SetValue(value);
 
-                        //var propertyInfo = obj.GetType().GetProperty(propertyName);
+                        //var propertyInfo = target.GetType().GetProperty(propertyName);
                         //if (propertyInfo != null)
                         //{
                         //    value = Converter.Convert(value, propertyInfo.PropertyType);
-                        //    propertyInfo.SetValue(obj, value, null);
+                        //    propertyInfo.SetValue(target, value, null);
                         //}
                         //else
                         //    throw new Exception($"Property not found {propertyName}");
@@ -57,25 +50,18 @@ namespace Lux.Serialization.Xml
         }
 
 
-
-        //public override void Export(IXmlExportable exportable, XElement element)
-        //{
-        //    var obj = exportable as IXmlObject;
-        //    if (obj != null)
-        //        ExportObject(obj, element);
-        //}
-
-        protected override void ExportObject(IXmlObject obj, XElement element)
+        
+        public override void Export(IXmlObject obj, XElement target)
         {
             var mirror = new ObjectMirror(obj);
 
-            //var properties = obj.GetProperties();
+            //var properties = target.GetProperties();
             var properties = mirror.GetProperties();
             foreach (var property in properties)
             {
                 if (property == null)
                     continue;
-                GetOrUpdateProperty(element, property);
+                GetOrUpdateProperty(target, property);
             }
         }
 

@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class DefaultObjectXmlConvention : ObjectXmlConventionBase
+    public class DefaultObjectXmlConvention : XmlConventionBase
     {
         public DefaultObjectXmlConvention()
         {
@@ -13,17 +13,10 @@ namespace Lux.Serialization.Xml
 
         public bool ConvertValues { get; set; }
 
-
-        //public override void Configure(IXmlConfigurable configurable, XElement element)
-        //{
-        //    var obj = configurable as IXmlObject;
-        //    if (obj != null)
-        //        ConfigureObject(obj, element);
-        //}
-
-        protected override void ConfigureObject(IXmlObject obj, XElement element)
+        
+        public override void Configure(IXmlObject obj, XElement source)
         {
-            var propertyElems = element.Elements("property").Where(x => x != null).ToList();
+            var propertyElems = source.Elements("property").Where(x => x != null).ToList();
             if (propertyElems.Any())
             {
                 foreach (var elem in propertyElems)
@@ -33,19 +26,19 @@ namespace Lux.Serialization.Xml
                         continue;
                     try
                     {
-                        object value = XmlInstantiator.InstantiateElement(obj, elem);
-                        ////if (obj is IHasProperties)
+                        object value = XmlInstantiator.InstantiateFromElement(elem, obj);
+                        ////if (target is IHasProperties)
                         ////{
-                        ////    var hasProps = (IHasProperties) obj;
+                        ////    var hasProps = (IHasProperties) target;
                         ////    hasProps.Properties[propertyName] = value;
                         ////}
                         ////else
                         //{
-                        //    var propertyInfo = obj.GetType().GetProperty(propertyName);
+                        //    var propertyInfo = target.GetType().GetProperty(propertyName);
                         //    if (propertyInfo != null)
                         //    {
                         //        value = Converter.Convert(value, propertyInfo.PropertyType);
-                        //        propertyInfo.SetValue(obj, value, null);
+                        //        propertyInfo.SetValue(target, value, null);
                         //    }
                         //    else
                         //        throw new Exception($"Property not found {propertyName}");
@@ -63,8 +56,9 @@ namespace Lux.Serialization.Xml
                         }
                         else
                         {
-                            // todo: Set either way?, create a property?
-                            throw new Exception($"Property '{propertyName}' not found");
+                            //throw new Exception($"Property '{propertyName}' not found");
+                            
+                            obj.SetPropertyValue(propertyName, value);
                         }
                     }
                     catch (Exception ex)
@@ -76,22 +70,15 @@ namespace Lux.Serialization.Xml
         }
 
 
-
-        //public override void Export(IXmlExportable exportable, XElement element)
-        //{
-        //    var obj = exportable as IXmlObject;
-        //    if (obj != null)
-        //        ExportObject(obj, element);
-        //}
-
-        protected override void ExportObject(IXmlObject obj, XElement element)
+        
+        public override void Export(IXmlObject obj, XElement target)
         {
             var properties = obj.GetProperties();
             foreach (var property in properties)
             {
                 if (property == null)
                     continue;
-                GetOrUpdateProperty(element, property);
+                GetOrUpdateProperty(target, property);
             }
         }
 

@@ -14,29 +14,26 @@ namespace Lux.Serialization.Xml
 
 
 
-        public override void Configure(IXmlConfigurable configurable, XElement element)
+        public override void Configure(IXmlObject obj, XElement source)
         {
-            ConfigureArray(configurable, element);
-        }
-
-        protected virtual void ConfigureArray(IXmlConfigurable configurable, XElement element)
-        {
-            var array = configurable as IXmlArray;
+            var array = obj as IXmlArray;
             if (array == null)
                 return;
 
             // Clear
             array.ClearItems();
 
-            var itemElems = element.Elements("item").Where(x => x != null).ToList();
+            var itemElems = source.Elements("item").ToList();
             if (itemElems.Any())
             {
                 foreach (var elem in itemElems)
                 {
+                    if (elem == null)
+                        continue;
                     try
                     {
                         // Append items
-                        var node = XmlInstantiator.InstantiateNode(array, elem);
+                        var node = XmlInstantiator.InstantiateNode(elem, array);
                         array.AddItem(node);
                     }
                     catch (Exception ex)
@@ -49,36 +46,38 @@ namespace Lux.Serialization.Xml
 
 
 
-        public override void Export(IXmlExportable exportable, XElement element)
+        public override void Export(IXmlObject obj, XElement target)
         {
-            ExportArray(exportable, element);
-        }
-
-        protected virtual void ExportArray(IXmlExportable exportable, XElement element)
-        {
-            var array = exportable as IXmlArray;
+            var array = obj as IXmlArray;
             if (array == null)
                 return;
-
+            
             // Clear
-            element.Elements("item").Remove();
+            target.Elements("item").Remove();
 
-            var nodes = array.Items().Where(x => x != null).ToList();
+            var nodes = array.Items().ToList();
             if (nodes.Any())
             {
-                foreach (var node in nodes)
+                foreach (var subNode in nodes)
                 {
-                    if (node == null)
+                    if (subNode == null)
                         continue;
 
-                    var type = node.GetType();
+                    var type = subNode.GetType();
                     var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
 
                     // Append items
                     var elem = new XElement("item");
-                    element.Add(elem);
+                    target.Add(elem);
                     elem.SetAttributeValue("type", typeString);
-                    node.Export(elem);
+                    //node.Export(elem);
+
+                    var subObj = subNode as XmlObject;
+                    if (subObj != null)
+                    {
+                        var pattern = (obj as XmlObject)?.Pattern ?? subObj.Pattern;
+                        pattern.Export(subObj, elem);
+                    }
                 }
             }
         }

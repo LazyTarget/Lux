@@ -8,12 +8,14 @@ namespace Lux.Serialization.Xml
         private IConverter _converter;
         private ITypeInstantiator _typeInstantiator;
         private IXmlInstantiator _xmlInstantiator;
+        private IXmlPattern _xmlPattern;
 
         public XmlSettings()
         {
             _typeInstantiator = new TypeInstantiator();
             _converter = new Converter(_typeInstantiator);
-            _xmlInstantiator = new XmlInstantiator(this);
+            _xmlInstantiator = new XmlSerializer(this);
+            _xmlPattern = Xml.XmlPattern.Default;
         }
 
 
@@ -47,6 +49,17 @@ namespace Lux.Serialization.Xml
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 _xmlInstantiator = value;
+            }
+        }
+
+        public virtual IXmlPattern XmlPattern
+        {
+            get { return _xmlPattern; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                _xmlPattern = value;
             }
         }
 

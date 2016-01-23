@@ -3,18 +3,18 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class XmlDocument : XmlNode, IXmlDocument
+    public class XmlDocument : XmlObject, IXmlDocument
     {
         private string _rootElementName;
 
         public XmlDocument()
-            : this(XmlPattern.Instance)
+            : this(XmlPattern.Default)
         {
 
         }
 
         public XmlDocument(IXmlPattern pattern)
-            : base(pattern)
+            : base(null, pattern)
         {
             RootElementName = "Document";
         }

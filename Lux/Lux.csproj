@@ -84,15 +84,15 @@
     <Compile Include="Serialization\Model\ObjectMirror.cs" />
     <Compile Include="Serialization\Model\MirrorProperty.cs" />
     <Compile Include="Serialization\Model\StronglyTypedProperty.cs" />
-    <Compile Include="Serialization\Xml\Base\XmlDocument.cs" />
+    <Compile Include="Serialization\Xml\Base\XmlList.cs" />
     <Compile Include="Serialization\Xml\Base\XmlObject.cs" />
-    <Compile Include="Serialization\Xml\Base\XmlNode.cs" />
-    <Compile Include="Serialization\Xml\Base\XmlArray.cs" />
+    <Compile Include="Serialization\Xml\Base\XmlDocument.cs" />
     <Compile Include="Serialization\Model\Property.cs" />
-    <Compile Include="Serialization\Xml\Conventions\ObjectXmlConventionBase.cs" />
     <Compile Include="Serialization\Xml\Conventions\MirrorObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultArrayXmlConvention.cs" />
+    <Compile Include="Serialization\Xml\Interfaces\IXmlSerializer.cs" />
+    <Compile Include="Serialization\Xml\Interfaces\IXmlObject.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlConfigurator.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlConfigurable.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlDocument.cs" />
@@ -101,7 +101,6 @@
     <Compile Include="Serialization\Xml\Interfaces\IXmlInstantiator.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlNode.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlNodeContainer.cs" />
-    <Compile Include="Serialization\Xml\Interfaces\IXmlObject.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlPattern.cs" />
     <Compile Include="Serialization\Xml\XmlDocumentLoader.cs" />
     <Compile Include="Serialization\Xml\XmlNodeExtensions.cs" />
@@ -109,7 +108,7 @@
     <Compile Include="Serialization\Xml\Patterns\DefaultXmlPattern.cs" />
     <Compile Include="Serialization\Xml\XmlPattern.cs" />
     <Compile Include="Serialization\Xml\XmlInstantiatorExtensions.cs" />
-    <Compile Include="Serialization\Xml\XmlInstantiator.cs" />
+    <Compile Include="Serialization\Xml\XmlSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlArray.cs" />
     <Compile Include="Serialization\Xml\XmlSettings.cs" />
@@ -117,6 +116,7 @@
   <ItemGroup>
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />
+    <Folder Include="Serialization\Json\Base\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -10,26 +10,33 @@ namespace Lux
 
         public T Instantiate<T>()
         {
-            var obj = Instantiate(typeof(T));
-            var res = (T)obj;
+            var res = Instantiate<T>(null);
             return res;
         }
 
-        public T Instantiate<T>(params object[] arguments)
+        public virtual T Instantiate<T>(object[] arguments)
         {
             var obj = Instantiate(typeof(T), arguments);
             var res = (T)obj;
             return res;
         }
 
+        public T InstantiateWithParams<T>(params object[] arguments)
+        {
+            var obj = Instantiate<T>(arguments);
+            var res = (T)obj;
+            return res;
+        }
+
+
 
         public object Instantiate(Type type)
         {
-            var obj = Instantiate(type, null);
-            return obj;
+            var res = Instantiate(type, null);
+            return res;
         }
 
-        public virtual object Instantiate(Type type, params object[] arguments)
+        public virtual object Instantiate(Type type, object[] arguments)
         {
             try
             {
@@ -48,5 +55,10 @@ namespace Lux
             }
         }
 
+        public object InstantiateWithParams(Type type, params object[] arguments)
+        {
+            var obj = Instantiate(type, arguments);
+            return obj;
+        }
     }
 }

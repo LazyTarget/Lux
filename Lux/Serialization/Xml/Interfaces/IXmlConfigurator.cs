@@ -4,6 +4,6 @@ namespace Lux.Serialization.Xml
 {
     public interface IXmlConfigurator
     {
-        void Configure(IXmlConfigurable configurable, XElement element);
+        void Configure(IXmlObject obj, XElement source);
     }
 }

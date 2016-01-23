@@ -6,7 +6,8 @@ namespace Lux.Serialization.Xml
 {
     public class XmlPattern : IXmlPattern
     {
-        public static IXmlPattern Default               => new DefaultXmlPattern();
+        //public static IXmlPattern Default               => new DefaultXmlPattern();
+        public static IXmlPattern Default               = new DefaultXmlPattern();
         public static readonly IXmlPattern Instance     = Default;
 
         static XmlPattern()
@@ -14,7 +15,7 @@ namespace Lux.Serialization.Xml
 
         }
 
-
+        
         private IList<XmlConventionBase> _conventions;
 
         public XmlPattern()
@@ -33,24 +34,24 @@ namespace Lux.Serialization.Xml
             }
         }
 
-        public virtual void Configure(IXmlConfigurable configurable, XElement element)
+        public virtual void Configure(IXmlObject obj, XElement source)
         {
             foreach (var convention in Conventions)
             {
-                convention.Configure(configurable, element);
+                convention.Configure(obj, source);
             }
 
-            //configurable.Configure(element);
+            //obj.Configure(target);
         }
 
-        public virtual void Export(IXmlExportable exportable, XElement element)
+        public virtual void Export(IXmlObject obj, XElement target)
         {
             foreach (var convention in Conventions)
             {
-                convention.Export(exportable, element);
+                convention.Export(obj, target);
             }
 
-            //exportable.Export(element);
+            //obj.Export(target);
         }
 
     }

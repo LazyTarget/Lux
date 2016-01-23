@@ -4,8 +4,10 @@ namespace Lux.Serialization.Xml
 {
     public interface IXmlInstantiator
     {
-        IXmlNode InstantiateNode(IXmlNode parent, XElement element);
+        IXmlNode InstantiateNode(XElement element);
 
-        object InstantiateElement(IXmlNode parent, XElement element);
+        IXmlNode InstantiateNode(XElement element, IXmlNode parent);
+
+        object InstantiateFromElement(XElement element, IXmlNode parent);
     }
 }

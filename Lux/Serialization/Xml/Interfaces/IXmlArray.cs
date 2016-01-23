@@ -1,23 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Lux.Serialization.Xml
 {
     public interface IXmlArray : IXmlNode, IArray
     {
-        new IEnumerable<IXmlNode> Items();
+        //IEnumerable<object> Items();
 
-        void AddItem(IXmlNode item);
+        //void AddItem(object item);
         //void ClearItems();
     }
-
-
-    public interface IXmlArray<TNode> : IXmlArray
+    
+    public interface IXmlArray<TNode> : IXmlArray, IArray<TNode>
         where TNode : IXmlNode
     {
-        new IEnumerable<TNode> Items();
+        //IEnumerable<TNode> Items();
 
-        void AddItem(TNode item);
+        //new void AddItem(TNode item);
 
         // todo: add more?
     }

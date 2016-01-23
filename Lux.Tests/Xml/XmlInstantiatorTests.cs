@@ -9,9 +9,9 @@ namespace Lux.Tests.Xml
     [TestFixture]
     public class XmlInstantiatorTests
     {
-        private XmlInstantiator GetSUT()
+        private IXmlInstantiator GetSUT()
         {
-            return new XmlInstantiator();
+            return new XmlSerializer();
         }
 
 
@@ -24,7 +24,7 @@ namespace Lux.Tests.Xml
             var elem = new XElement("tag");
             elem.SetValue(expected);
 
-            var actual = sut.InstantiateElement(null, elem);
+            var actual = sut.InstantiateFromElement(elem, null);
             Assert.AreEqual(expected, actual);
         }
 
@@ -38,7 +38,7 @@ namespace Lux.Tests.Xml
             var elem = new XElement("tag");
             elem.SetValue(expected);
 
-            var actual = sut.InstantiateElement(null, elem);
+            var actual = sut.InstantiateFromElement(elem, null);
             Assert.AreEqual(expected.ToString(), actual);
         }
 

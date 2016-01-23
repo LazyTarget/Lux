@@ -28,10 +28,10 @@ namespace Lux.Serialization.Xml
         protected ITypeInstantiator TypeInstantiator    => XmlSettings.TypeInstantiator;
         protected IXmlInstantiator XmlInstantiator      => XmlSettings.XmlInstantiator;
 
-
-        public abstract void Configure(IXmlConfigurable configurable, XElement element);
         
-        public abstract void Export(IXmlExportable exportable, XElement element);
+        public abstract void Configure(IXmlObject obj, XElement source);
+        
+        public abstract void Export(IXmlObject obj, XElement target);
 
     }
 }

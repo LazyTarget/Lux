@@ -4,7 +4,7 @@ namespace Lux.Serialization.Xml
 {
     public static class XmlInstantiatorExtensions
     {
-        private static readonly IXmlInstantiator XmlInstantiator = new XmlInstantiator();
+        private static readonly IXmlInstantiator XmlInstantiator = new XmlSerializer();
 
 
         public static IXmlInstantiator Instantiator(this IXmlNode node)
@@ -17,7 +17,7 @@ namespace Lux.Serialization.Xml
             return instantiator;
         }
 
-        public static IXmlInstantiator Instantiator(this IXmlNode node, Func<XmlInstantiator> instantiator)
+        public static IXmlInstantiator Instantiator(this IXmlNode node, Func<XmlSerializer> instantiator)
         {
             return instantiator();
         }
