@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace Lux.Tests.Xml
 {
     [TestFixture]
-    public class XmlInstantiatorTests
+    public class XmlInstantiatorTests : TestBase
     {
         private IXmlInstantiator GetSUT()
         {

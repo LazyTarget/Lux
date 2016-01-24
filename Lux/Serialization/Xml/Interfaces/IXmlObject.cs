@@ -1,6 +1,6 @@
 ﻿namespace Lux.Serialization.Xml
 {
-    public interface IXmlObject : IXmlNode, IObject
+    public interface IXmlObject : IXmlNode, IXmlElement, IObject
     {
         //System.Xml.Linq.XElement Element { get; }
 

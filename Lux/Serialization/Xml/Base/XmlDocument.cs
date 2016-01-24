@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
+using Lux.Xml;
 
 namespace Lux.Serialization.Xml
 {

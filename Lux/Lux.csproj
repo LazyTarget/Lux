@@ -49,7 +49,16 @@
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
-    <Compile Include="Extensions\XmlExtensions.cs" />
+    <Compile Include="Unittest\AssertConfig.cs" />
+    <Compile Include="Unittest\IAsserter.cs" />
+    <Compile Include="Unittest\EmptyAsserter.cs" />
+    <Compile Include="Xml\XNodeNavigatorExtensions.cs" />
+    <Compile Include="Xml\FluentXElementBuilderOfT.cs" />
+    <Compile Include="Xml\XElementBuilderOfT.cs" />
+    <Compile Include="Xml\Interfaces\IXNodeNavigator.cs" />
+    <Compile Include="Xml\XNodeNavigatorBuilderExtensions.cs" />
+    <Compile Include="Xml\XNodeNavigator.cs" />
+    <Compile Include="Xml\XmlExtensions.cs" />
     <Compile Include="Interfaces\IConverter.cs" />
     <Compile Include="IO\Helpers\FileSystemHelper.cs" />
     <Compile Include="IO\FileSystem\MemoryFileSystem.cs" />
@@ -84,10 +93,15 @@
     <Compile Include="Serialization\Model\ObjectMirror.cs" />
     <Compile Include="Serialization\Model\MirrorProperty.cs" />
     <Compile Include="Serialization\Model\StronglyTypedProperty.cs" />
+    <Compile Include="Serialization\Xml\Base\XmlContainer.cs" />
     <Compile Include="Serialization\Xml\Base\XmlList.cs" />
     <Compile Include="Serialization\Xml\Base\XmlObject.cs" />
     <Compile Include="Serialization\Xml\Base\XmlDocument.cs" />
     <Compile Include="Serialization\Model\Property.cs" />
+    <Compile Include="Serialization\Xml\Interfaces\IXmlElement.cs" />
+    <Compile Include="Interfaces\Fluent\IFluentReturn.cs" />
+    <Compile Include="Xml\XElementBuilder.cs" />
+    <Compile Include="Xml\Interfaces\IXElementBuilder.cs" />
     <Compile Include="Serialization\Xml\Conventions\MirrorObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultObjectXmlConvention.cs" />
     <Compile Include="Serialization\Xml\Conventions\DefaultArrayXmlConvention.cs" />
@@ -112,6 +126,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlArray.cs" />
     <Compile Include="Serialization\Xml\XmlSettings.cs" />
+    <Compile Include="Xml\XNodeNavigatorAssertionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IO\Components\" />

@@ -1,22 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public abstract class XmlList<T> : XmlObject, IXmlArray<T>, IArray<T>
+    public class XmlList<T> : XmlObject, IXmlArray<T>, IArray<T>
         where T : IXmlNode
     {
         protected readonly IList<T> Data = new List<T>();
 
 
-        protected XmlList(System.Xml.Linq.XElement element)
-            : base(element)
+        public XmlList()
+            : this("list")
         {
-
         }
 
-        protected XmlList(System.Xml.Linq.XElement element, IXmlPattern pattern)
+        public XmlList(string tagName)
+            : this(new XElement(tagName))
+        {
+        }
+
+        public XmlList(XElement element)
+            : this(element, XmlPattern.Default)
+        {
+        }
+
+        public XmlList(XElement element, IXmlPattern pattern)
             : base(element, pattern)
         {
             

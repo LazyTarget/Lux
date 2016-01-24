@@ -5,14 +5,19 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
-    public class XmlObject : IXmlObject
+    public class XmlObject : XmlContainer, IXmlObject
     {
         public XElement Element { get; internal set; }
         public IXmlPattern Pattern { get; internal set; }
-        protected IDictionary<string, IProperty> Properties { get; }
+        private readonly IDictionary<string, IProperty> _properties;
 
         public XmlObject()
-            : this(null)
+            : this("object")
+        {
+        }
+
+        public XmlObject(string tagName)
+            : this(new XElement(tagName))
         {
         }
 
@@ -28,12 +33,15 @@ namespace Lux.Serialization.Xml
             if (pattern == null)
                 throw new ArgumentNullException(nameof(pattern));
 
-            Properties = new Dictionary<string, IProperty>();
+            _properties = new Dictionary<string, IProperty>();
             Pattern = pattern;
             Element = element;
         }
 
-        
+
+        public string TagName { get; set; }
+
+
         public IEnumerable<string> GetPropertyNames()
         {
             return GetProperties().Where(x => x != null).Select(x => x.Name);
@@ -41,7 +49,7 @@ namespace Lux.Serialization.Xml
 
         public virtual IEnumerable<IProperty> GetProperties()
         {
-            return Properties.Values.Where(x => x != null);
+            return _properties.Values.Where(x => x != null);
         }
 
         public virtual bool HasProperty(string name)
@@ -58,7 +66,7 @@ namespace Lux.Serialization.Xml
             var hasProp = HasProperty(name);
             if (hasProp)
             {
-                res = Properties[name];
+                res = _properties[name];
             }
             return res;
         }
@@ -70,10 +78,10 @@ namespace Lux.Serialization.Xml
             if (string.IsNullOrEmpty(property.Name))
                 throw new ArgumentNullException(nameof(property.Name));
 
-            if (Properties.ContainsKey(property.Name))
+            if (_properties.ContainsKey(property.Name))
                 throw new InvalidOperationException($"Property '{property.Name}' already defined");
 
-            Properties[property.Name] = property;
+            _properties[property.Name] = property;
 
             SetPropertyValue(property.Name, property.Value);
         }
@@ -97,7 +105,7 @@ namespace Lux.Serialization.Xml
 
         public virtual void ClearProperties()
         {
-            Properties.Clear();
+            _properties.Clear();
         }
 
 
@@ -110,5 +118,6 @@ namespace Lux.Serialization.Xml
         {
             //Pattern.Export(this, element);
         }
+
     }
 }

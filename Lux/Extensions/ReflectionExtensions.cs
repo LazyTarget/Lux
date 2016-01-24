@@ -19,7 +19,7 @@ namespace Lux
                     expression = (MemberExpression)unary.Operand;
                 }
                 else
-                    throw new ArgumentException();
+                    throw new ArgumentException("Invalid property selector");
             }
             else if (propertyLambda.Body is MemberExpression)
             {
@@ -27,9 +27,10 @@ namespace Lux
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Invalid property selector");
             }
-            var propInfo = (PropertyInfo)expression.Member;
+
+            var propInfo = (PropertyInfo) expression.Member;
             return propInfo;
         }
 

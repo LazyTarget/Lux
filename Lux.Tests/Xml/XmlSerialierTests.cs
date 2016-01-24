@@ -4,12 +4,13 @@ using System.Linq;
 using System.Xml.Linq;
 using Lux.Serialization;
 using Lux.Serialization.Xml;
+using Lux.Xml;
 using NUnit.Framework;
 
 namespace Lux.Tests.Xml
 {
     [TestFixture]
-    public class XmlSerialierTests
+    public class XmlSerialierTests : TestBase
     {
         private IXmlSerializer GetSUT()
         {
