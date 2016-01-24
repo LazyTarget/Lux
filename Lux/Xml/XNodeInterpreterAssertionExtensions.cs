@@ -6,30 +6,30 @@ using Lux.Unittest;
 
 namespace Lux.Xml
 {
-    public static class XNodeNavigatorAssertionExtensions
+    public static class XNodeInterpreterAssertionExtensions
     {
         private static IAsserter Assert = AssertConfig.Asserter;
 
 
 
-        public static IXNodeNavigator<TNode> AssertHasChildren<TNode>(this IXNodeNavigator<TNode> navigator, int? count = null)
+        public static IXNodeInterpreter<TNode> AssertHasChildren<TNode>(this IXNodeInterpreter<TNode> interpreter, int? count = null)
             where TNode : XNode
         {
-            var node = navigator.GetNode();
+            var node = interpreter.GetNode();
             var container = (XContainer) (object) node;
             var children = container.Nodes().ToList();
             if (count.HasValue)
                 Assert.AreEqual(count.Value, children.Count, "Tag children count not equal to expectation");
             else
                 Assert.IsTrue(children.Count > 0, "Tag has no children");
-            return navigator;
+            return interpreter;
         }
 
 
-        public static IXNodeNavigator<TNode> AssertHasAttribute<TNode>(this IXNodeNavigator<TNode> navigator, string attributeName)
+        public static IXNodeInterpreter<TNode> AssertHasAttribute<TNode>(this IXNodeInterpreter<TNode> interpreter, string attributeName)
             where TNode : XNode
         {
-            var node = navigator.GetNode();
+            var node = interpreter.GetNode();
             var elem = (XElement)(object)node;
 
             var attr = elem.Attribute(attributeName);
@@ -37,14 +37,14 @@ namespace Lux.Xml
             {
                 Assert.Fail($"Element doesn't have attribute '{attributeName}'");
             }
-            return navigator;
+            return interpreter;
         }
 
 
-        public static IXNodeNavigator<TNode> AssertAttributeValue<TNode>(this IXNodeNavigator<TNode> navigator, string attributeName, object attributeValue)
+        public static IXNodeInterpreter<TNode> AssertAttributeValue<TNode>(this IXNodeInterpreter<TNode> interpreter, string attributeName, object attributeValue)
             where TNode : XNode
         {
-            var node = navigator.GetNode();
+            var node = interpreter.GetNode();
             var elem = (XElement) (object) node;
 
             var attr = elem.Attribute(attributeName);
@@ -57,23 +57,23 @@ namespace Lux.Xml
             {
                 Assert.Fail($"Element doesn't have attribute '{attributeName}'");
             }
-            return navigator;
+            return interpreter;
         }
 
 
-        public static IXNodeNavigator<TNode> AssertPropertyValue<TNode>(this IXNodeNavigator<TNode> navigator, Expression<Func<TNode, object>> propertyLambda, object value)
+        public static IXNodeInterpreter<TNode> AssertPropertyValue<TNode>(this IXNodeInterpreter<TNode> interpreter, Expression<Func<TNode, object>> propertyLambda, object value)
             where TNode : XNode
         {
             var propertyInfo = propertyLambda.GetPropertyFromExpression();
             if (propertyInfo != null)
             {
-                var node = navigator.GetNode();
+                var node = interpreter.GetNode();
                 var currentValue = propertyInfo.GetValue(node);
                 Assert.AreEqual(value, currentValue, "Property values are not equal");
             }
             else
                 throw new InvalidOperationException("Invalid property");
-            return navigator;
+            return interpreter;
         }
 
     }

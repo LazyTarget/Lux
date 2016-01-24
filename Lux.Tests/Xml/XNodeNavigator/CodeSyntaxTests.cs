@@ -43,6 +43,12 @@ namespace Lux.Tests.Xml.XNodeNavigator
 
             //public IEnumerable<PropertyElement> Properties { get { return Elements().OfType<PropertyElement>(); } }
             public IDictionary<string, PropertyElement> Properties { get { return Elements().OfType<PropertyElement>().ToDictionary(x => x.PropertyName, x => x); } }
+
+
+            public void SetProperty(PropertyElement property)
+            {
+                Properties[property.PropertyName] = property;
+            }
         }
 
         public class PropertyElement : XElement
@@ -76,45 +82,53 @@ namespace Lux.Tests.Xml.XNodeNavigator
             }
 
 
-            public string PropertyName => this.GetAttributeValue("name");
+            public string PropertyName
+            {
+                get { return this.GetAttributeValue("name"); }
+                set { this.SetAttributeValue("name", value); }
+            }
 
-            public string PropertyValue => this.GetAttributeValue("value");
+            public string PropertyValue
+            {
+                get { return this.GetAttributeValue("value"); }
+                set { this.SetAttributeValue("value", value); }
+            }
+
+
+            public static PropertyElement Create(string name, string value)
+            {
+                var prop = new PropertyElement();
+                prop.PropertyName = name;
+                prop.PropertyValue = value;
+                return prop;
+            }
         }
 
-        
-        
-        //[TestCase]
-        //public void CodeSyntax_XElementBuilder()
-        //{
-        //    XNode x = new XElement("");
-        //    XPathNavigator nav = x.CreateNavigator();
 
-        //    IXNodeNavigator mav;
 
-        //    var builder = new Lux.Xml.XElementBuilder();
-        //    var doc = builder
-        //        .SetTagName(DocumentElement.TAGNAME)
-        //        .SetAttribute("version", "1.0")
-        //        .AppendChild(
-        //            new Lux.Xml.XElementBuilder()
-        //                .SetTagName(PropertyElement.TAGNAME)
-        //                .SetAttribute("name", "FirstName")
-        //                .SetAttribute("value", "Peter")
-        //                .Create()
-        //        )
-        //        .Create();
+        [TestCase]
+        public void CodeSyntax_XNodeInterpreter_BuildAndAppend()
+        {
+            var doc = new DocumentElement();
+            doc.SetProperty(PropertyElement.Create("FirstName", "Peter"));
+            doc.SetProperty(PropertyElement.Create("LastName", "Åslund"));
 
-        //    Assert.IsNotNull(doc);
-        //    Assert.AreEqual(DocumentElement.TAGNAME, doc.Name.ToString());
-        //    Assert.AreEqual("1.0", doc.GetAttributeValue("version"));
+            //doc.CreateInterpreter().BuildAndAppend()..To<XElement>().GetChild(0).To<XElement>().
+            //doc.CreateInterpreter().BuildAndAppend<>()
+            
 
-        //    Assert.AreEqual(1, doc.Elements().Count());
 
-        //    var propertyElement = doc.Elements().First();
-        //    Assert.AreEqual(PropertyElement.TAGNAME, propertyElement.Name.ToString());
-        //    Assert.AreEqual("FirstName", propertyElement.GetAttributeValue("name"));
-        //    Assert.AreEqual("Peter", propertyElement.GetAttributeValue("value"));
-        //}
+            Assert.IsNotNull(doc);
+            Assert.AreEqual(DocumentElement.TAGNAME, doc.Name.ToString());
+            Assert.AreEqual("1.0", doc.GetAttributeValue("version"));
+
+            Assert.AreEqual(1, doc.Elements().Count());
+
+            var propertyElement = doc.Elements().First();
+            Assert.AreEqual(PropertyElement.TAGNAME, propertyElement.Name.ToString());
+            Assert.AreEqual("FirstName", propertyElement.GetAttributeValue("name"));
+            Assert.AreEqual("Peter", propertyElement.GetAttributeValue("value"));
+        }
 
     }
 }
