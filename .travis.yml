@@ -7,6 +7,6 @@ install:
   - nuget install NUnit.Runners -Version 3.0.1 -OutputDirectory testrunner
 script:
   - xbuild ./Lux.sln /p:Configuration=Release
-  - mono ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Lux.Tests/bin/Release/Lux.Tests.dll
+  - mono ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Lux.Tests/bin/Release/Lux.Tests.dll /exclude:ExcludeBuildAgent|IntegrationTest
 notifications:
   email: false
