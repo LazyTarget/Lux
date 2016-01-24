@@ -55,9 +55,10 @@
     <Compile Include="NUnitAsserter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="Xml\XmlBuilder\CodeSyntaxTests.cs" />
+    <Compile Include="Xml\XElementBuilder\CodeSyntaxTests.cs" />
     <Compile Include="Xml\XmlSerialierTests.cs" />
     <Compile Include="Xml\XmlInstantiatorTests.cs" />
+    <Compile Include="Xml\XNodeNavigator\CodeSyntaxTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

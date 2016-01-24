@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Lux.Xml;
 using NUnit.Framework;
 
-namespace Lux.Tests.Xml.XmlBuilder
+namespace Lux.Tests.Xml.XElementBuilder
 {
     [TestFixture]
     public class CodeSyntaxTests : TestBase
@@ -86,12 +85,12 @@ namespace Lux.Tests.Xml.XmlBuilder
         [TestCase]
         public void CodeSyntax_XElementBuilder()
         {
-            var builder = new XElementBuilder();
+            var builder = new Lux.Xml.XElementBuilder();
             var doc = builder
                 .SetTagName(DocumentElement.TAGNAME)
                 .SetAttribute("version", "1.0")
                 .AppendChild(
-                    new XElementBuilder()
+                    new Lux.Xml.XElementBuilder()
                         .SetTagName(PropertyElement.TAGNAME)
                         .SetAttribute("name", "FirstName")
                         .SetAttribute("value", "Peter")

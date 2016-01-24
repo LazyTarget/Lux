@@ -5,7 +5,7 @@ namespace Lux.Xml
 {
     public static class XNodeNavigatorBuilderExtensions
     {
-        public static IFluentXElementBuilder<TNode, IXNodeNavigator<TNode>> Build<TNode>(this IXNodeNavigator<TNode> navigator)
+        public static IFluentXElementBuilder<TNode, IXNodeNavigator<TNode>> BuildAndAppend<TNode>(this IXNodeNavigator<TNode> navigator)
             where TNode : XElement, new()
         {
             var builder = new FluentXElementBuilder<TNode, IXNodeNavigator<TNode>>(navigator);

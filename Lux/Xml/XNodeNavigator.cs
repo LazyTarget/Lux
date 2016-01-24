@@ -1,30 +1,24 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
-using Lux.Interfaces;
 
 namespace Lux.Xml
 {
     public class XNodeNavigator
     {
-        //public static XNodeNavigator<IXmlDocument> Create(IXmlDocument document)
-        //{
-        //    // method is simply a shortcut to XNodeNavigator<IXmlDocument>.Create(..)
+        public static IXNodeNavigator<XNode> Create(XNode node)
+        {
+            var navigator = XNodeNavigator<XNode, XNode>.Create(node);
+            return navigator;
+        }
 
-        //    var navigator = XNodeNavigator<IXmlDocument>.Create(document);
-        //    return navigator;
-        //}
-
-        //public static XNodeNavigator<TNode> Create<TNode>(TNode node)
-        //    where TNode : IXmlNode
-        //{
-        //    // method is simply a shortcut to XNodeNavigator<IXmlDocument>.Create(..)
-
-        //    var navigator = XNodeNavigator<TNode>.Create(node);
-        //    return navigator;
-        //}
+        public static IXNodeNavigator<TNode> Create<TNode>(TNode node)
+            where TNode : XNode
+        {
+            var navigator = Create((XNode) node).To<TNode>();
+            return navigator;
+        }
     }
-    
 
 
     public class XNodeNavigator<TNode, TParent> : IXNodeNavigator<TNode, TParent> //IFluentReturn<TParent>
@@ -66,11 +60,9 @@ namespace Lux.Xml
         }
 
 
-        public static IXNodeNavigator<XDocument> Create(XObject node)
+        public static IXNodeNavigator<XNode> Create(XNode node)
         {
-            var document = node.Document;
-
-            var navigator = new XNodeNavigator<XDocument, TParent>(document);
+            var navigator = new XNodeNavigator<XNode, TParent>(node);
             return navigator;
         }
 
