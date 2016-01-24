@@ -8,7 +8,9 @@ namespace Lux.Tests.IO
 #else
     [Ignore("Integration tests disabled")]
 #endif
+
     [TestFixture]
+    [Category("IntegrationTest")]
     public class DirectoryManagerWithRealFileSystem_Tests
     {
         [TestCase]
