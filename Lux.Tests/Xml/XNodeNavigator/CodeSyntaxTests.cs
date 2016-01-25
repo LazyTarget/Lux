@@ -40,14 +40,14 @@ namespace Lux.Tests.Xml.XNodeNavigator
             {
             }
 
-
-            //public IEnumerable<PropertyElement> Properties { get { return Elements().OfType<PropertyElement>(); } }
-            public IDictionary<string, PropertyElement> Properties { get { return Elements().OfType<PropertyElement>().ToDictionary(x => x.PropertyName, x => x); } }
+            
+            public IReadOnlyDictionary<string, PropertyElement> Properties { get { return Elements().OfType<PropertyElement>().ToDictionary(x => x.PropertyName, x => x); } }
 
 
             public void SetProperty(PropertyElement property)
             {
-                Properties[property.PropertyName] = property;
+                //Properties[property.PropertyName] = property;
+                Add(property);
             }
         }
 
@@ -110,24 +110,17 @@ namespace Lux.Tests.Xml.XNodeNavigator
         public void CodeSyntax_XNodeInterpreter_BuildAndAppend()
         {
             var doc = new DocumentElement();
-            doc.SetProperty(PropertyElement.Create("FirstName", "Peter"));
-            doc.SetProperty(PropertyElement.Create("LastName", "Åslund"));
+            var expected1 = PropertyElement.Create("FirstName", "Peter");
+            var expected2 = PropertyElement.Create("LastName", "Åslund");
 
-            //doc.CreateInterpreter().BuildAndAppend()..To<XElement>().GetChild(0).To<XElement>().
-            //doc.CreateInterpreter().BuildAndAppend<>()
+            doc.SetProperty(expected1);
+            doc.SetProperty(expected2);
             
+            var actual1 = doc.CreateInterpreter().GetChild(0).To<XElement>().GetNode();
+            var actual2 = doc.CreateInterpreter().GetChildAs<XElement>(1).GetNode();
 
-
-            Assert.IsNotNull(doc);
-            Assert.AreEqual(DocumentElement.TAGNAME, doc.Name.ToString());
-            Assert.AreEqual("1.0", doc.GetAttributeValue("version"));
-
-            Assert.AreEqual(1, doc.Elements().Count());
-
-            var propertyElement = doc.Elements().First();
-            Assert.AreEqual(PropertyElement.TAGNAME, propertyElement.Name.ToString());
-            Assert.AreEqual("FirstName", propertyElement.GetAttributeValue("name"));
-            Assert.AreEqual("Peter", propertyElement.GetAttributeValue("value"));
+            Assert.AreSame(expected1, actual1);
+            Assert.AreSame(expected2, actual2);
         }
 
     }
