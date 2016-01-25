@@ -1,12 +1,12 @@
 language: csharp
-solution: ./Lux.sln
+solution: ./src/Lux.sln
 mono:
   - nightly
 install:
-  - nuget restore ./Lux.sln
+  - nuget restore ./src/Lux.sln
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
-  - xbuild ./Lux.sln /p:Configuration=Release
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Lux.Tests/bin/Release/Lux.Tests.dll /exclude:ExcludeBuildAgent|IntegrationTests
+  - xbuild ./src/Lux.sln /p:Configuration=Release
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./src/Lux.Tests/bin/Release/Lux.Tests.dll /exclude:ExcludeBuildAgent|IntegrationTests
 notifications:
   email: false
