@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Lux
+namespace Lux.Extensions
 {
     public static class ListExtensions
     {

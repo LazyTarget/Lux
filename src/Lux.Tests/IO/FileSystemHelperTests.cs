@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Lux.Extensions;
 using Lux.IO;
 using NUnit.Framework;
 

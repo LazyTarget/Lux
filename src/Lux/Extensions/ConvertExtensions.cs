@@ -1,4 +1,4 @@
-﻿namespace Lux
+﻿namespace Lux.Extensions
 {
     public class ConvertExtensions
     {

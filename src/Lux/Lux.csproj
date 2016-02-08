@@ -49,6 +49,7 @@
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Unittest\AssertConfig.cs" />
     <Compile Include="Unittest\IAsserter.cs" />

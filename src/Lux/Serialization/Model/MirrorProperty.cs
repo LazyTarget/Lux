@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Lux.Extensions;
 using Lux.Interfaces;
 
 namespace Lux.Serialization

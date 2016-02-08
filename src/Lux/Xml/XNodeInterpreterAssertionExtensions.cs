@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml.Linq;
+using Lux.Extensions;
 using Lux.Unittest;
 
 namespace Lux.Xml

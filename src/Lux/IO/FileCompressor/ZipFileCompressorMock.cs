@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Lux.Extensions;
 
 namespace Lux.IO
 {
