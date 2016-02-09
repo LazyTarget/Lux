@@ -71,7 +71,7 @@ namespace Lux.Serialization
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
-            var propertyInfo = propertyLambda.GetPropertyFromExpression();
+            var propertyInfo = propertyLambda.GetPropertyInfoByExpression();
             var prop = Create(instance, propertyInfo);
             return prop;
         }
@@ -81,7 +81,7 @@ namespace Lux.Serialization
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
-            var propertyInfo = propertyLambda.GetPropertyFromExpression();
+            var propertyInfo = propertyLambda.GetPropertyInfoByExpression();
             var prop = Create(instance, propertyInfo, converter);
             return prop;
         }

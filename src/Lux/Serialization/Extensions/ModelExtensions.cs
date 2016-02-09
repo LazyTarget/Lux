@@ -23,7 +23,7 @@ namespace Lux.Serialization
             where T : IObject
         {
             var res = default(T);
-            var propertyInfo = propertyLambda.GetPropertyFromExpression();
+            var propertyInfo = propertyLambda.GetPropertyInfoByExpression();
             if (propertyInfo != null)
             {
                 var val = GetPropertyValue(obj, propertyInfo.Name);

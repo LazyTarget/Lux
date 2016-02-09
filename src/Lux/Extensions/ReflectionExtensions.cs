@@ -6,32 +6,57 @@ namespace Lux.Extensions
 {
     public static class ReflectionExtensions
     {
-        public static PropertyInfo GetPropertyFromExpression<T>(this Expression<Func<T, object>> propertyLambda)
+        public static PropertyInfo GetPropertyInfoByExpression<TObj, TVal>(this Expression<Func<TObj, TVal>> expression)
         {
-            MemberExpression expression = null;
+            MemberExpression memberExpression;
 
             //this line is necessary, because sometimes the expression comes in as Convert(originalexpression)
-            if (propertyLambda.Body is UnaryExpression)
+            if (expression.Body is UnaryExpression)
             {
-                var unary = (UnaryExpression)propertyLambda.Body;
+                var unary = (UnaryExpression)expression.Body;
                 if (unary.Operand is MemberExpression)
                 {
-                    expression = (MemberExpression)unary.Operand;
+                    memberExpression = (MemberExpression)unary.Operand;
                 }
                 else
                     throw new ArgumentException("Invalid property selector");
             }
-            else if (propertyLambda.Body is MemberExpression)
+            else if (expression.Body is MemberExpression)
             {
-                expression = (MemberExpression)propertyLambda.Body;
+                memberExpression = (MemberExpression)expression.Body;
             }
             else
             {
                 throw new ArgumentException("Invalid property selector");
             }
 
-            var propInfo = (PropertyInfo) expression.Member;
+            var propInfo = (PropertyInfo) memberExpression.Member;
             return propInfo;
+        }
+
+        
+        public static TValue TryGetValueByObjectExpression<TObj, TValue>(this TObj obj, Expression<Func<TObj, TValue>> expression)
+        {
+            TValue value;
+            try
+            {
+                PropertyInfo propInfo = null;
+                //propInfo = GetPropertyInfoByExpression(expression);
+                if (propInfo != null)
+                {
+                    var o = propInfo.GetValue(obj);
+                    value = (TValue) o;
+                }
+                else
+                {
+                    value = expression.Compile().Invoke(obj);
+                }
+            }
+            catch (Exception ex)
+            {
+                value = default(TValue);
+            }
+            return value;
         }
 
     }

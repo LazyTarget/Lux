@@ -65,7 +65,7 @@ namespace Lux.Xml
         public static IXNodeInterpreter<TNode> AssertPropertyValue<TNode>(this IXNodeInterpreter<TNode> interpreter, Expression<Func<TNode, object>> propertyLambda, object value)
             where TNode : XNode
         {
-            var propertyInfo = propertyLambda.GetPropertyFromExpression();
+            var propertyInfo = propertyLambda.GetPropertyInfoByExpression();
             if (propertyInfo != null)
             {
                 var node = interpreter.GetNode();

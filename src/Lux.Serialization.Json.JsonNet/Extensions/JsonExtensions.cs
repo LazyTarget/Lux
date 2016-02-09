@@ -4,9 +4,20 @@ namespace Lux.Serialization.Json.JsonNet
 {
     public static class JsonExtensions
     {
+        public static TToken SelectTokenOrDefault<TToken>(this JToken token, string path)
+            where TToken : JToken
+        {
+            if (token == null)
+                return null;
+            var t = token.SelectToken(path);
+            var res = t as TToken;
+            return res;
+        }
+
+
         public static TObj ToObjectOrDefault<TObj>(this JToken obj)
         {
-            var res = obj.ToObjectOrDefault<TObj>(default(TObj));
+            var res = ToObjectOrDefault<TObj>(obj, default(TObj));
             return res;
         }
 
@@ -28,7 +39,7 @@ namespace Lux.Serialization.Json.JsonNet
             var prop = obj.Property(propertyName);
             if (prop == null)
                 return default(TValue);
-            var res = prop.Value.ToObjectOrDefault<TValue>();
+            var res = ToObjectOrDefault<TValue>(prop.Value);
             return res;
         }
     }
