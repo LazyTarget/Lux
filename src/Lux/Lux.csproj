@@ -46,6 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\Interfaces\ILog.cs" />
+    <Compile Include="Diagnostics\Interfaces\ILogFactory.cs" />
+    <Compile Include="Diagnostics\Log\AggregateLog.cs" />
+    <Compile Include="Diagnostics\Log\LogProxy.cs" />
+    <Compile Include="Diagnostics\Log\NullObjectLog.cs" />
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
