@@ -7,6 +7,56 @@ namespace Lux.Diagnostics
     /// </summary>
     public interface ILog
     {
+        /// <summary>
+		/// Checks if this logger is enabled for the "Debug" level.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this logger is enabled for "Debug" events, <c>false</c> otherwise.
+		/// </value>
+		/// <seealso cref="M:Debug(object)"/>
+		/// <seealso cref="M:DebugFormat(IFormatProvider, string, object[])"/>
+		bool IsDebugEnabled { get; }
+
+        /// <summary>
+        /// Checks if this logger is enabled for the "Info" level.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this logger is enabled for "Info" events, <c>false</c> otherwise.
+        /// </value>
+        /// <seealso cref="M:Info(object)"/>
+        /// <seealso cref="M:InfoFormat(IFormatProvider, string, object[])"/>
+        bool IsInfoEnabled { get; }
+
+        /// <summary>
+        /// Checks if this logger is enabled for the "Warn" level.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this logger is enabled for "Warn" events, <c>false</c> otherwise.
+        /// </value>
+        /// <seealso cref="M:Warn(object)"/>
+        /// <seealso cref="M:WarnFormat(IFormatProvider, string, object[])"/>
+        bool IsWarnEnabled { get; }
+
+        /// <summary>
+        /// Checks if this logger is enabled for the "Error" level.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this logger is enabled for "Error" events, <c>false</c> otherwise.
+        /// </value>
+        /// <seealso cref="M:Error(object)"/>
+        /// <seealso cref="M:ErrorFormat(IFormatProvider, string, object[])"/>
+        bool IsErrorEnabled { get; }
+
+        /// <summary>
+        /// Checks if this logger is enabled for the "Fatal" level.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this logger is enabled for "Fatal" events, <c>false</c> otherwise.
+        /// </value>
+        /// <seealso cref="M:Fatal(object)"/>
+        /// <seealso cref="M:FatalFormat(IFormatProvider, string, object[])"/>
+        bool IsFatalEnabled { get; }
+
         /// <overloads>Log a message object with the "Debug" level.</overloads>
         /// <summary>
         /// Log a message object with the "Debug" level.
@@ -286,55 +336,5 @@ namespace Lux.Diagnostics
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void FatalFormat(IFormatProvider provider, string format, params object[] args);
-
-        /// <summary>
-		/// Checks if this logger is enabled for the "Debug" level.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if this logger is enabled for "Debug" events, <c>false</c> otherwise.
-		/// </value>
-		/// <seealso cref="M:Debug(object)"/>
-		/// <seealso cref="M:DebugFormat(IFormatProvider, string, object[])"/>
-		bool IsDebugEnabled { get; }
-
-        /// <summary>
-        /// Checks if this logger is enabled for the "Info" level.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this logger is enabled for "Info" events, <c>false</c> otherwise.
-        /// </value>
-        /// <seealso cref="M:Info(object)"/>
-        /// <seealso cref="M:InfoFormat(IFormatProvider, string, object[])"/>
-        bool IsInfoEnabled { get; }
-
-        /// <summary>
-        /// Checks if this logger is enabled for the "Warn" level.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this logger is enabled for "Warn" events, <c>false</c> otherwise.
-        /// </value>
-        /// <seealso cref="M:Warn(object)"/>
-        /// <seealso cref="M:WarnFormat(IFormatProvider, string, object[])"/>
-        bool IsWarnEnabled { get; }
-
-        /// <summary>
-        /// Checks if this logger is enabled for the "Error" level.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this logger is enabled for "Error" events, <c>false</c> otherwise.
-        /// </value>
-        /// <seealso cref="M:Error(object)"/>
-        /// <seealso cref="M:ErrorFormat(IFormatProvider, string, object[])"/>
-        bool IsErrorEnabled { get; }
-
-        /// <summary>
-        /// Checks if this logger is enabled for the "Fatal" level.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this logger is enabled for "Fatal" events, <c>false</c> otherwise.
-        /// </value>
-        /// <seealso cref="M:Fatal(object)"/>
-        /// <seealso cref="M:FatalFormat(IFormatProvider, string, object[])"/>
-        bool IsFatalEnabled { get; }
     }
 }

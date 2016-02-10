@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lux.Diagnostics.Log
+namespace Lux.Diagnostics
 {
     public class AggregateLog : ILog
     {
@@ -38,6 +38,52 @@ namespace Lux.Diagnostics.Log
             return list.AsEnumerable();
         }
 
+
+        public bool IsDebugEnabled
+        {
+            get
+            {
+                var res = GetEnumerable().Any(x => x.IsDebugEnabled);
+                return res;
+            }
+        }
+
+        public bool IsInfoEnabled
+        {
+            get
+            {
+                var res = GetEnumerable().Any(x => x.IsInfoEnabled);
+                return res;
+            }
+        }
+
+        public bool IsWarnEnabled
+        {
+            get
+            {
+                var res = GetEnumerable().Any(x => x.IsWarnEnabled);
+                return res;
+            }
+        }
+
+        public bool IsErrorEnabled
+        {
+            get
+            {
+                var res = GetEnumerable().Any(x => x.IsErrorEnabled);
+                return res;
+            }
+        }
+
+        public bool IsFatalEnabled
+        {
+            get
+            {
+                var res = GetEnumerable().Any(x => x.IsFatalEnabled);
+                return res;
+            }
+        }
+        
 
         public void Debug(object message)
         {
@@ -316,51 +362,6 @@ namespace Lux.Diagnostics.Log
             foreach (var logger in GetEnumerable())
             {
                 logger.FatalFormat(provider, format, args);
-            }
-        }
-
-        public bool IsDebugEnabled
-        {
-            get
-            {
-                var res = GetEnumerable().Any(x => x.IsDebugEnabled);
-                return res;
-            }
-        }
-
-        public bool IsInfoEnabled
-        {
-            get
-            {
-                var res = GetEnumerable().Any(x => x.IsInfoEnabled);
-                return res;
-            }
-        }
-
-        public bool IsWarnEnabled
-        {
-            get
-            {
-                var res = GetEnumerable().Any(x => x.IsWarnEnabled);
-                return res;
-            }
-        }
-
-        public bool IsErrorEnabled
-        {
-            get
-            {
-                var res = GetEnumerable().Any(x => x.IsErrorEnabled);
-                return res;
-            }
-        }
-
-        public bool IsFatalEnabled
-        {
-            get
-            {
-                var res = GetEnumerable().Any(x => x.IsFatalEnabled);
-                return res;
             }
         }
     }

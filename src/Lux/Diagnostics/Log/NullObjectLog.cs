@@ -1,12 +1,18 @@
 ﻿using System;
 
-namespace Lux.Diagnostics.Log
+namespace Lux.Diagnostics
 {
     /// <summary>
     /// An instance of ILog that doesn't do anything. Used to follow the "Null Object Design Pattern"
     /// </summary>
     public class NullObjectLog : ILog
     {
+        public bool IsDebugEnabled => false;
+        public bool IsInfoEnabled  => false;
+        public bool IsWarnEnabled  => false;
+        public bool IsErrorEnabled => false;
+        public bool IsFatalEnabled => false;
+        
         public void Debug(object message)
         {
         }
@@ -146,11 +152,5 @@ namespace Lux.Diagnostics.Log
         public void FatalFormat(IFormatProvider provider, string format, params object[] args)
         {
         }
-
-        public bool IsDebugEnabled => false;
-        public bool IsInfoEnabled  => false;
-        public bool IsWarnEnabled  => false;
-        public bool IsErrorEnabled => false;
-        public bool IsFatalEnabled => false;
     }
 }

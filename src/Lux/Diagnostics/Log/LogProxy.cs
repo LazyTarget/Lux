@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lux.Diagnostics.Log
+namespace Lux.Diagnostics
 {
     public abstract class LogProxyBase : ILog
     {
@@ -12,6 +12,13 @@ namespace Lux.Diagnostics.Log
                 throw new ArgumentNullException(nameof(log));
             Log = log;
         }
+        
+
+        public bool IsDebugEnabled => Log?.IsDebugEnabled ?? false;
+        public bool IsInfoEnabled  => Log?.IsInfoEnabled ?? false;
+        public bool IsWarnEnabled  => Log?.IsWarnEnabled ?? false;
+        public bool IsErrorEnabled => Log?.IsErrorEnabled ?? false;
+        public bool IsFatalEnabled => Log?.IsFatalEnabled ?? false;
 
 
         public virtual void Debug(object message)
@@ -188,11 +195,5 @@ namespace Lux.Diagnostics.Log
         {
             Log?.FatalFormat(provider, format, args);
         }
-
-        public bool IsDebugEnabled => Log?.IsDebugEnabled ?? false;
-        public bool IsInfoEnabled  => Log?.IsInfoEnabled ?? false;
-        public bool IsWarnEnabled  => Log?.IsWarnEnabled ?? false;
-        public bool IsErrorEnabled => Log?.IsErrorEnabled ?? false;
-        public bool IsFatalEnabled => Log?.IsFatalEnabled ?? false;
     }
 }

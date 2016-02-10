@@ -4,17 +4,30 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Lux.Diagnostics;
 
 namespace Lux.IO
 {
     public class MemoryFileSystem : IFileSystem
     {
-        private readonly SortedDictionary<string, DirectoryMock> _directories; 
+        private readonly SortedDictionary<string, DirectoryMock> _directories;
+        private ILog _log;
 
         public MemoryFileSystem()
         {
             DefaultEncoding = Encoding.UTF8;
             _directories = new SortedDictionary<string, DirectoryMock>(new PathComparer());
+            _log = new NullObjectLog();
+
+#if DEBUG
+            _log = new NullObjectLog();
+#endif
+        }
+
+        public MemoryFileSystem(ILog log)
+            : this()
+        {
+            _log = log;
         }
 
 
@@ -25,24 +38,28 @@ namespace Lux.IO
         {
             get { return new ReadOnlyDictionary<string, DirectoryMock>(_directories); }
         }
-
         
         public Encoding DefaultEncoding { get; set; }
 
-
-        private void Debug(string message)
+        public ILog Log
         {
-            System.Diagnostics.Debug.WriteLine(message);
+            get { return _log; }
+            set
+            {
+                if (value == null)
+                    _log = new NullObjectLog();
+                else
+                    _log = value;
+            }
         }
-
+        
 
         public FileMock GetFile(string path)
         {
             var file = GetFileOrDefault(path);
             if (file == null)
             {
-                Debug(string.Format("GetFile() Path: {0}; Error: {1}",
-                                    path, Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND));
+                _log.Debug($"GetFile() Path: {path}; Error: {Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND}");
                 throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND, path);
             }
             return file;
@@ -96,16 +113,15 @@ namespace Lux.IO
             var directory = GetDirectory(path);
             if (directory != null)
             {
-                Debug(string.Format("EnumerateDirectories() Path: {0}, SearchPattern: {1}, SearchOption: {2}", path,
-                                  searchPattern, searchOption));
+                _log.Debug($"EnumerateDirectories() Path: {path}, SearchPattern: {searchPattern}, SearchOption: {searchOption}");
                 var directories = directory.EnumerateDirectories(searchPattern, searchOption);
                 var paths = directories.Select(x => x.Path);
                 return paths;
             }
             else
             {
-                Debug(string.Format("EnumerateDirectories() Path: {0}, SearchPattern: {1}, SearchOption: {2}; Error: {3}", path,
-                                  searchPattern, searchOption, Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                _log.Debug($"EnumerateDirectories() Path: {path}, SearchPattern: {searchPattern}, SearchOption: {searchOption}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
             }
         }
@@ -115,16 +131,15 @@ namespace Lux.IO
             var directory = GetDirectory(path);
             if (directory != null)
             {
-                Debug(string.Format("EnumerateFiles() Path: {0}, SearchPattern: {1}, SearchOption: {2}", path,
-                                  searchPattern, searchOption));
+                _log.Debug($"EnumerateFiles() Path: {path}, SearchPattern: {searchPattern}, SearchOption: {searchOption}");
                 var files = directory.EnumerateFiles(searchPattern, searchOption);
                 var paths = files.Select(x => x.Path);
                 return paths;
             }
             else
             {
-                Debug(string.Format("EnumerateFiles() Path: {0}, SearchPattern: {1}, SearchOption: {2}; Error: {3}", path,
-                                  searchPattern, searchOption, Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                _log.Debug($"EnumerateFiles() Path: {path}, SearchPattern: {searchPattern}, SearchOption: {searchOption}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
             }
         }
@@ -137,7 +152,7 @@ namespace Lux.IO
             var exists = file != null;
             var isDeleted = exists && file.IsDeleted;
             var res = exists && !isDeleted;
-            Debug(string.Format("Exists() Path: {0}; Result: {1}, IsDeleted: {2}", path, res, isDeleted));
+            _log.Debug($"Exists() Path: {path}; Result: {res}, IsDeleted: {isDeleted}");
             return res;
         }
 
@@ -145,24 +160,24 @@ namespace Lux.IO
         {
             if (PathHelper.AreEquivalent(sourceFileName, destFileName))
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE}");
                 throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE);
             }
 
             var file = GetFileOrDefault(sourceFileName);
             if (file == null)
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND}");
                 throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND, sourceFileName);
             }
 
             var targetFile = GetFileOrDefault(destFileName);
             if (targetFile != null)
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS}");
                 throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS);
             }
 
@@ -170,8 +185,8 @@ namespace Lux.IO
             var sourceDir = GetDirectory(sourceDirPath);
             if (sourceDir == null)
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                 Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND);
             }
 
@@ -179,29 +194,29 @@ namespace Lux.IO
             var targetDir = GetDirectory(targetDirPath);
             if (targetDir == null)
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND);
             }
 
             sourceDir.MoveFile(file, destFileName, targetDir);
-            Debug(string.Format("MoveFile() Source: {0}, Target: {1}", sourceFileName, destFileName));
+            _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}");
         }
 
         public void CopyFile(string sourceFileName, string destFileName, bool overwrite)
         {
             if (PathHelper.AreEquivalent(sourceFileName, destFileName))
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE));
+                _log.Debug($"MoveFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE}");
                 throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE);
             }
 
             var file = GetFileOrDefault(sourceFileName);
             if (file == null)
             {
-                Debug(string.Format("CopyFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                    Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND));
+                _log.Debug($"CopyFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND}");
                 throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_FILE_NOT_FOUND, sourceFileName);
             }
 
@@ -210,8 +225,8 @@ namespace Lux.IO
                 var targetFile = GetFileOrDefault(destFileName);
                 if (targetFile != null)
                 {
-                    Debug(string.Format("CopyFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                        Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS));
+                    _log.Debug($"CopyFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                               $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS}");
                     throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_FILE_ALREADY_EXISTS);
                 }
             }
@@ -220,8 +235,8 @@ namespace Lux.IO
             var sourceDir = GetDirectory(sourceDirPath);
             if (sourceDir == null)
             {
-                Debug(string.Format("CopyFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                    Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND));
+                _log.Debug($"CopyFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND);
             }
 
@@ -229,14 +244,14 @@ namespace Lux.IO
             var targetDir = GetDirectory(targetDirPath);
             if (targetDir == null)
             {
-                Debug(string.Format("CopyFile() Source: {0}, Target: {1}; Error: {2}", sourceFileName, destFileName,
-                                    Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND));
+                _log.Debug($"CopyFile() Source: {sourceFileName}, Target: {destFileName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND);
             }
 
             var newFile = FileMock.Copy(file, destFileName);
             targetDir.AddFile(newFile);
-            Debug(string.Format("CopyFile() Source: {0}, Target: {1}", sourceFileName, destFileName));
+            _log.Debug($"CopyFile() Source: {sourceFileName}, Target: {destFileName}");
         }
 
         public void DeleteFile(string path)
@@ -248,41 +263,47 @@ namespace Lux.IO
                 var dir = GetDirectory(dirPath);
                 if (dir != null)
                 {
-                    Debug(string.Format("DeleteFile() Path: {0}", path));
+                    _log.Debug($"DeleteFile() Path: {path}");
                     dir.DeleteFile(file);
                 }
                 else
                 {
-                    Debug(string.Format("DeleteFile() Path: {0}; Error: {1}", path, Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                    _log.Debug($"DeleteFile() Path: {path}; Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                     throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
                 }
             }
             else
             {
-                Debug(string.Format("DeleteFile() Path: {0}; Error: {1}", path, Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND));
+                _log.Debug($"DeleteFile() Path: {path}; Error: {Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND}");
                 throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND, path);
             }
         }
-        
-        public Stream OpenFile(string path, FileMode mode, FileAccess access)
+
+
+        public Stream OpenFile(string fileName, FileMode mode, FileAccess access)
+        {
+            return OpenFile(fileName, mode, access, FileShare.None);
+        }
+
+        public Stream OpenFile(string fileName, FileMode mode, FileAccess access, FileShare share)
         {
             bool fileCreated = false;
-            var file = GetFileOrDefault(path);
+            var file = GetFileOrDefault(fileName);
             if (file == null)
             {
                 if (mode != FileMode.CreateNew && mode != FileMode.OpenOrCreate)
                 {
-                    Debug(string.Format("Open() Path: {0}, FileMode: {1}, FileAccess: {2}; Error: {3}",
-                                        path, mode, access, Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND));
-                    throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND, path);
+                    _log.Debug($"Open() FileName: {fileName}, FileMode: {mode}, FileAccess: {access}; " +
+                               $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND}");
+                    throw new FileNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_FILE_NOT_FOUND, fileName);
                 }
-                file = FileMock.Create(path);
-                var dirPath = PathHelper.GetParent(path);
+                file = FileMock.Create(fileName);
+                var dirPath = PathHelper.GetParent(fileName);
                 var dir = GetDirectory(dirPath);
                 if (dir == null)
                 {
-                    Debug(string.Format("Open() Path: {0}, FileMode: {1}, FileAccess: {2}; Error: {3}",
-                                        path, mode, access, Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                    _log.Debug($"Open() FileName: {fileName}, FileMode: {mode}, FileAccess: {access}; " +
+                               $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                     throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
                 }
                 file.Encoding = DefaultEncoding;
@@ -297,21 +318,16 @@ namespace Lux.IO
                 else
                     stream.Position = 0;
             }
-            Debug(string.Format("Open() Path: {0}, FileMode: {1}, FileAccess: {2}; Stream length: {3}, Stream position: {4}, Created: {5}",
-                                path, mode, access, stream.Length, stream.Position, fileCreated));
+            _log.Debug($"Open() FileName: {fileName}, FileMode: {mode}, FileAccess: {access}; " +
+                       $"Stream length: {stream.Length}, Stream position: {stream.Position}, Created: {fileCreated}");
             return stream;
-        }
-
-        public Stream OpenFile( string fileName, FileMode mode, FileAccess access, FileShare share )
-        {
-            return OpenFile( fileName, mode, access );
         }
 
 
         public DirectoryMock GetDirectory(string path)
         {
             if (string.IsNullOrEmpty(path))
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             //var res = _directories.ContainsKey(path) ? _directories[path] : null;
             DirectoryMock res = null;
             var comparer = new SubPathComparer();
@@ -368,7 +384,7 @@ namespace Lux.IO
             var exists = dir != null;
             var isDeleted = exists && dir.IsDeleted;
             var res = exists && !isDeleted;
-            Debug(string.Format("DirExists() Path: {0}; Result: {1}, IsDeleted: {2}", path, res, isDeleted));
+            _log.Debug($"DirExists() Path: {path}; Result: {res}, IsDeleted: {isDeleted}");
             return res;
         }
         
@@ -376,7 +392,7 @@ namespace Lux.IO
         public DirectoryMock CreateDirectory(string path)
         {
             if (string.IsNullOrEmpty(path))
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             var closest = GetClosestDirectory(path);
             if (closest == null)
             {
@@ -404,7 +420,7 @@ namespace Lux.IO
             var res = PathHelper.AreEquivalent(dir.Path, path)
                           ? dir
                           : null;
-            Debug(string.Format("CreateDirectory() Path: {0}; Result: {1}", path, res != null));
+            _log.Debug($"CreateDirectory() Path: {path}; Result: {res != null}");
             if (res == null)
                 throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_CREATING_DIR);
             return res;
@@ -419,26 +435,26 @@ namespace Lux.IO
         {
             if (PathHelper.AreEquivalent(sourceDirName, destDirName))
             {
-                Debug(string.Format("MoveFile() Source: {0}, Target: {1}; Error: {2}", sourceDirName, destDirName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE));
+                _log.Debug($"MoveFile() Source: {sourceDirName}, Target: {destDirName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE}");
                 throw new IOException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_SAME_AS_SOURCE);
             }
 
             var dir = GetDirectory(sourceDirName);
             if (dir == null)
             {
-                Debug(string.Format("MoveDirectory() Source: {0}, Target: {1}; Error: {2}", sourceDirName, destDirName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND));
+                _log.Debug($"MoveDirectory() Source: {sourceDirName}, Target: {destDirName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_SOURCE_DIR_NOT_FOUND);
             }
             var targetDir = GetDirectory(destDirName);
             if (targetDir == null)
             {
-                Debug(string.Format("MoveDirectory() Source: {0}, Target: {1}; Error: {2}", sourceDirName, destDirName,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND));
+                _log.Debug($"MoveDirectory() Source: {sourceDirName}, Target: {destDirName}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_TARGET_DIR_NOT_FOUND);
             }
-            Debug(string.Format("MoveDirectory() Source: {0}, Target: {1}", sourceDirName, destDirName));
+            _log.Debug($"MoveDirectory() Source: {sourceDirName}, Target: {destDirName}");
             MoveDirectory(dir, targetDir);
         }
         
@@ -448,8 +464,8 @@ namespace Lux.IO
             var parentDir = GetDirectory(parentDirPath);
             if (parentDir == null)
             {
-                Debug(string.Format("MoveDirectory() Source: {0}, Target: {1}; Error: {2}", directory, target,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                _log.Debug($"MoveDirectory() Source: {directory}, Target: {target}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
             }
             parentDir.MoveSubDirectory(directory, target);
@@ -483,20 +499,20 @@ namespace Lux.IO
                 var parentDir = GetDirectory(parentDirPath);
                 if (parentDir != null)
                 {
-                    Debug(string.Format("DeleteDirectory() Path: {0}, Recursive: {1}", path, recursive));
+                    _log.Debug($"DeleteDirectory() Path: {path}, Recursive: {recursive}");
                     parentDir.DeleteDirectory(dir, recursive);
                 }
                 else
                 {
-                    Debug(string.Format("DeleteDirectory() Path: {0}, Recursive: {1}; Error: {2}", path, recursive,
-                                      Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                    _log.Debug($"DeleteDirectory() Path: {path}, Recursive: {recursive}; " +
+                               $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                     throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
                 }
             }
             else
             {
-                Debug(string.Format("DeleteDirectory() Path: {0}, Recursive: {1}; Error: {2}", path, recursive,
-                                  Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND));
+                _log.Debug($"DeleteDirectory() Path: {path}, Recursive: {recursive}; " +
+                           $"Error: {Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND}");
                 throw new DirectoryNotFoundException(Lux.IO.Consts.ErrorMessages.ERROR_DIR_NOT_FOUND);
             }
         }
