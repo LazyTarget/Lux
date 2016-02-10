@@ -46,10 +46,62 @@ namespace Lux.Tests.Config
             Assert.AreEqual(expected.AppVersion, actual.AppVersion);
         }
 
+
+        [TestCase]
+        public void Save()
+        {
+            var sut = GetSUT();
+
+            var target = new XmlConfigSource
+            {
+                Uri = new Uri("C:/app.config"),
+                RootElementName = "Root",
+            };
+            var expected = new MyAppConfig
+            {
+                AppName = "MyAppName",
+                AppVersion = "1.0.0.0",
+            };
+
+            var canSave = sut.CanSave<MyAppConfig>(expected, target);
+            Assert.IsTrue(canSave);
+
+            sut.Save<MyAppConfig>(expected, target);
+            
+
+            // Assert
+            var actual = new MyAppConfig();
+            LoadFromFile(target, sut.FileSystem, actual);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(expected.AppName, actual.AppName);
+            Assert.AreEqual(expected.AppVersion, actual.AppVersion);
+        }
+
+
         #endregion
 
 
         #region Helpers
+
+        
+        private void LoadFromFile(XmlConfigSource source, IFileSystem fileSystem, IXmlConfigurable configurable)
+        {
+            XDocument xdocument;
+            var fileName = source.Uri.LocalPath;
+            if (fileSystem.FileExists(fileName))
+            {
+                using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    xdocument = XDocument.Load(stream);
+                }
+            }
+            else
+                throw new FileNotFoundException("The requested file was not found", fileName);
+
+            var rootElement = xdocument.GetOrCreateElement(source.RootElementName);
+            configurable.Configure(rootElement);
+        }
 
         private void SaveToFile(XmlConfigSource target, IFileSystem fileSystem, IXmlExportable exportable)
         {
@@ -64,7 +116,6 @@ namespace Lux.Tests.Config
             using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 xdocument.Save(stream);
-                stream.Flush();
             }
         }
 
@@ -121,7 +172,10 @@ namespace Lux.Tests.Config
                 }
                 else
                 {
-                    stream = FileSystem.OpenFile(fileName, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                    var dirPath = PathHelper.GetParent(fileName);
+                    if (!FileSystem.DirExists(dirPath))
+                        FileSystem.CreateDir(dirPath);
+                    stream = FileSystem.OpenFile(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                 }
                 //stream = base.GetStreamFromSource(source);
                 return stream;

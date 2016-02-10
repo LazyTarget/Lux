@@ -139,7 +139,7 @@ namespace Lux.Config
                 {
                     //throw new FileNotFoundException("Config file not found", fileInfo.FullName);
 
-                    var fileStream = File.Open(fileInfo.FullName, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                    var fileStream = File.Open(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                     return fileStream;
                 }
             }
