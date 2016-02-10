@@ -65,7 +65,6 @@
     <Compile Include="Framework.cs" />
     <Compile Include="Config\IConfigManager.cs" />
     <Compile Include="Object\DisposableLock.cs" />
-    <Compile Include="Unittest\AssertConfig.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />
     <Compile Include="Xml\XNodeInterpreterExtensions.cs" />

@@ -35,7 +35,7 @@ namespace Lux.Config
             if (xmlConfigSource.Uri == null)
                 return false;
 
-            if (typeof (IXmlConfigurable).IsAssignableFrom(typeof (TConfig)))
+            if (typeof (TConfig).IsAssignableFrom(typeof (IXmlConfigurable)))
                 return false;   // todo: extend, use a XmlSerializer?
 
             return true;
@@ -70,7 +70,7 @@ namespace Lux.Config
             if (!xmlConfigTarget.Uri.IsFile)
                 return false;
 
-            if (typeof(IXmlExportable).IsAssignableFrom(typeof(TConfig)))
+            if (typeof(TConfig).IsAssignableFrom(typeof(IXmlExportable)))
                 return false;   // todo: extend, use a XmlSerializer?
 
             return true;
@@ -131,12 +131,16 @@ namespace Lux.Config
                 var fileInfo = new FileInfo(configUri.LocalPath);
                 if (fileInfo.Exists)
                 {
+                    // todo: truncate?
                     var fileStream = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
                     return fileStream;
                 }
                 else
                 {
-                    throw new FileNotFoundException("Config file not found", fileInfo.FullName);
+                    //throw new FileNotFoundException("Config file not found", fileInfo.FullName);
+
+                    var fileStream = File.Open(fileInfo.FullName, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                    return fileStream;
                 }
             }
             else

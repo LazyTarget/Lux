@@ -9,7 +9,7 @@ namespace Lux.Xml
 {
     public static class XNodeInterpreterAssertionExtensions
     {
-        private static IAsserter Assert = AssertConfig.Asserter;
+        private static IAsserter Assert = Framework.Asserter;
 
 
 

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\XmlConfigManagerTests.cs" />
     <Compile Include="IO\DirectoryManagerWithRealFileSystem_Tests.cs" />
     <Compile Include="IO\FileSystemHelperTests.cs" />
     <Compile Include="IO\Helpers\DataFactory.cs" />

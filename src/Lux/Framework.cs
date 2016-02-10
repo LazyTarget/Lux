@@ -1,6 +1,7 @@
 ﻿using System;
 using Lux.Config;
 using Lux.Interfaces;
+using Lux.Unittest;
 
 namespace Lux
 {
@@ -8,11 +9,13 @@ namespace Lux
     {
         private static IConfigManager _configManager;
         private static ITypeInstantiator _typeInstantiator;
+        private static IAsserter _asserter;
 
         static Framework()
         {
             TypeInstantiator = new TypeInstantiator();
             ConfigManager = new XmlConfigManager();
+            Asserter = new EmptyAsserter();
         }
 
 
@@ -37,5 +40,17 @@ namespace Lux
                 _configManager = value;
             }
         }
+        
+        public static IAsserter Asserter
+        {
+            get { return _asserter; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                _asserter = value;
+            }
+        }
+
     }
 }
