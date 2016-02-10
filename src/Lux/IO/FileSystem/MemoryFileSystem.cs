@@ -17,17 +17,13 @@ namespace Lux.IO
         {
             DefaultEncoding = Encoding.UTF8;
             _directories = new SortedDictionary<string, DirectoryMock>(new PathComparer());
-            _log = new NullObjectLog();
-
-#if DEBUG
-            _log = new NullObjectLog();
-#endif
+            Log = Framework.LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public MemoryFileSystem(ILog log)
             : this()
         {
-            _log = log;
+            Log = log;
         }
 
 
