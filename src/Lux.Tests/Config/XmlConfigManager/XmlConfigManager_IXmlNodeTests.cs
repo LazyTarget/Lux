@@ -22,17 +22,17 @@ namespace Lux.Tests.Config.XmlConfigManager
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
             };
-            var expected = new MyAppConfig
+            var expected = new MyConfig
             {
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
             };
             SaveToFile(source, sut.FileSystem, expected);
 
-            var canLoad = sut.CanLoad<MyAppConfig>(source);
+            var canLoad = sut.CanLoad<MyConfig>(source);
             Assert.IsTrue(canLoad);
 
-            var actual = sut.Load<MyAppConfig>(source);
+            var actual = sut.Load<MyConfig>(source);
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.AppName, actual.AppName);
             Assert.AreEqual(expected.AppVersion, actual.AppVersion);
@@ -49,20 +49,20 @@ namespace Lux.Tests.Config.XmlConfigManager
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
             };
-            var expected = new MyAppConfig
+            var expected = new MyConfig
             {
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
             };
 
-            var canSave = sut.CanSave<MyAppConfig>(expected, target);
+            var canSave = sut.CanSave<MyConfig>(expected, target);
             Assert.IsTrue(canSave);
 
-            sut.Save<MyAppConfig>(expected, target);
+            sut.Save<MyConfig>(expected, target);
             
 
             // Assert
-            var actual = new MyAppConfig();
+            var actual = new MyConfig();
             LoadFromFile(target, sut.FileSystem, actual);
 
             Assert.IsNotNull(actual);
@@ -82,7 +82,7 @@ namespace Lux.Tests.Config.XmlConfigManager
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
             };
-            var original = new MyAppConfig
+            var original = new MyConfig
             {
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
@@ -90,10 +90,10 @@ namespace Lux.Tests.Config.XmlConfigManager
             SaveToFile(source, sut.FileSystem, original);
 
             // Act
-            var canLoad = sut.CanLoad<MyAppConfig>(source);
+            var canLoad = sut.CanLoad<MyConfig>(source);
             Assert.IsTrue(canLoad);
 
-            var edited = sut.Load<MyAppConfig>(source);
+            var edited = sut.Load<MyConfig>(source);
 
             // Assert
             Assert.IsNotNull(edited);
@@ -105,14 +105,14 @@ namespace Lux.Tests.Config.XmlConfigManager
             edited.AppVersion = "2.0.0.0";
             
             // Act
-            var canSave = sut.CanSave<MyAppConfig>(edited, source);
+            var canSave = sut.CanSave<MyConfig>(edited, source);
             Assert.IsTrue(canSave);
 
-            sut.Save<MyAppConfig>(edited, source);
+            sut.Save<MyConfig>(edited, source);
 
 
             // Assert
-            var actual = new MyAppConfig();
+            var actual = new MyConfig();
             LoadFromFile(source, sut.FileSystem, actual);
 
             Assert.IsNotNull(actual);
@@ -126,7 +126,7 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         #region Classes
 
-        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable
+        public class MyConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable
         {
             public IConfigLocation Location { get; set; }
 

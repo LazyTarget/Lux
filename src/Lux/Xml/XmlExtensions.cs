@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Lux.Xml
 {
@@ -45,6 +46,64 @@ namespace Lux.Xml
                 container.Add(elem);
             }
             return elem;
+        }
+
+
+
+
+        
+        public static XElement GetElementByPath(this XContainer node, string path)
+        {
+            XElement rootElement = null;
+            try
+            {
+                var expr = XPathExpression.Compile(path);
+                var navigator = node.CreateNavigator();
+                var iterator = (XPathNodeIterator) navigator.Evaluate(expr);
+                if (iterator != null)
+                {
+                    while (iterator.MoveNext())
+                    {
+                        if (iterator.Current.IsNode && iterator.Current.NodeType == XPathNodeType.Element)
+                        {
+                            rootElement = (XElement) iterator.Current.UnderlyingObject;
+                            break;
+                        }
+                    }
+                }
+                return rootElement;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        
+        public static XElement GetOrCreateElementAtPath(this XContainer node, string path)
+        {
+            try
+            {
+                var parts = path.Split('/');
+                XContainer parentNode = node;
+                for (var i = 1; i < parts.Length + 1; i++)
+                {
+                    var p = string.Join("/", parts.Take(i));
+                    var element = GetElementByPath(node, p);
+                    if (element == null)
+                    {
+                        var elementName = parts.Skip(Math.Max(0, i - 1)).Take(1).First();
+                        element = new XElement(elementName);
+                        parentNode.Add(element);
+                    }
+                    parentNode = element;
+                }
+                var elem = (XElement) parentNode;
+                return elem;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

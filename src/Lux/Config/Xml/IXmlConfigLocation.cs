@@ -6,6 +6,6 @@ namespace Lux.Config
     {
         Uri Uri { get; set; }
         string RootElementName { get; set; }
-        string RootElementExpression { get; set; }
+        string RootElementPath { get; set; }
     }
 }

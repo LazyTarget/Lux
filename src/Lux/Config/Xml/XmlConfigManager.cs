@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Lux.Extensions;
 using Lux.Serialization.Xml;
 using Lux.Xml;
@@ -13,12 +13,16 @@ namespace Lux.Config
     {
         public XmlConfigManager()
         {
+            //DefaultLocationFactory = new AppConfigLocationFactory();
+
             XmlReaderSettings = new XmlReaderSettings();
             XmlReaderSettings.DtdProcessing = DtdProcessing.Parse;
 
             XmlWriterSettings = new XmlWriterSettings();
             XmlWriterSettings.Indent = true;
         }
+
+        public IConfigLocationFactory DefaultLocationFactory { get; set; }
 
         public XmlReaderSettings XmlReaderSettings { get; }
 
@@ -30,7 +34,8 @@ namespace Lux.Config
         public bool CanLoad<TConfig>(IConfigLocation location)
             where TConfig : IConfig
         {
-            location = GetLocationOrDefault(location);
+            if (location == null)
+                location = GetDefaultLocation<TConfig>();
             ValidateLocation(location);
 
             var xmlConfigLocation = (IXmlConfigLocation)location;
@@ -47,7 +52,8 @@ namespace Lux.Config
         public TConfig Load<TConfig>(IConfigLocation location)
             where TConfig : IConfig
         {
-            location = GetLocationOrDefault(location);
+            if (location == null)
+                location = GetDefaultLocation<TConfig>();
             ValidateLocation(location);
 
             var xmlConfigLocation = (IXmlConfigLocation)location;
@@ -67,7 +73,8 @@ namespace Lux.Config
         public bool CanSave<TConfig>(TConfig config, IConfigLocation location)
             where TConfig : IConfig
         {
-            location = GetLocationOrDefault(location);
+            if (location == null)
+                location = GetDefaultLocation<TConfig>();
             ValidateLocation(location);
 
             var xmlConfigLocation = (IXmlConfigLocation)location;
@@ -86,7 +93,8 @@ namespace Lux.Config
         public virtual object Save<TConfig>(TConfig config, IConfigLocation location)
             where TConfig : IConfig
         {
-            location = GetLocationOrDefault(location);
+            if (location == null)
+                location = GetDefaultLocation<TConfig>();
             ValidateLocation(location);
 
             var xmlConfigLocation = (IXmlConfigLocation)location;
@@ -121,12 +129,13 @@ namespace Lux.Config
 
 
 
-        protected virtual IConfigLocation GetLocationOrDefault(IConfigLocation location)
+        protected virtual IConfigLocation GetDefaultLocation<TConfig>()
+            where TConfig : IConfig
         {
-            if (location != null)
+            IConfigLocation location = null;
+            if (DefaultLocationFactory != null)
             {
-                if (!(location is IXmlConfigLocation))
-                    throw new NotSupportedException($"ConfigSource of type '{location.GetType()}' is not supported");
+                location = DefaultLocationFactory.CreateLocation<TConfig>();
             }
             return location;
         }
@@ -137,6 +146,15 @@ namespace Lux.Config
                 throw new ArgumentNullException(nameof(location));
             if (!(location is IXmlConfigLocation))
                 throw new NotSupportedException($"ConfigSource of type '{location.GetType()}' is not supported");
+
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+            if (xmlConfigLocation.RootElementName == null && xmlConfigLocation.RootElementPath == null)
+            {
+                throw new ArgumentException(
+                    $"Invalid root element identifier. Either '{nameof(IXmlConfigLocation.RootElementName)}'" +
+                    $" or '{nameof(IXmlConfigLocation.RootElementPath)}' must be defined",
+                    nameof(location));
+            }
         }
 
 
@@ -242,25 +260,23 @@ namespace Lux.Config
             if (document == null)
                 document = new XDocument();
 
-            var expr = xmlConfigLocation.RootElementExpression ?? xmlConfigLocation.RootElementName;
-            //var rootElement = GetRootElem(document, xmlConfigLocation.RootElementName);
-            var rootElement = GetRootElemByExpression(document, expr);
+            var path = xmlConfigLocation.RootElementPath ?? xmlConfigLocation.RootElementName;
+            var rootElement = document.GetElementByPath(path);
 
-            if (rootElement == null)
-            {
-
-            }
-
+            //TConfig config = default(TConfig);
             var config = Framework.TypeInstantiator.Instantiate<TConfig>();
-            config.Location = xmlConfigLocation;
-            var xmlConfigurable = config as IXmlConfigurable;
-            if (xmlConfigurable != null)
+            if (rootElement != null)
             {
-                xmlConfigurable.Configure(rootElement);
-            }
-            else
-            {
-                // todo: Use XmlSerializer?
+                config.Location = xmlConfigLocation;
+                var xmlConfigurable = config as IXmlConfigurable;
+                if (xmlConfigurable != null)
+                {
+                    xmlConfigurable.Configure(rootElement);
+                }
+                else
+                {
+                    // todo: Use XmlSerializer?
+                }
             }
             return config;
         }
@@ -274,24 +290,30 @@ namespace Lux.Config
             if (document == null)
                 document = new XDocument();
 
-            var expr = xmlConfigLocation.RootElementExpression ?? xmlConfigLocation.RootElementName;
-            //var rootElement = GetOrCreateRootElem(document, xmlConfigLocation.RootElementName);
-            var rootElement = GetOrCreateRootElemByExpression(document, expr);
-
-            var xmlExportable = config as IXmlExportable;
-            if (xmlExportable != null)
+            var path = xmlConfigLocation.RootElementPath ?? xmlConfigLocation.RootElementName;
+            var rootElement = document.GetOrCreateElementAtPath(path);
+            if (rootElement != null)
             {
-                xmlExportable.Export(rootElement);
+                var xmlExportable = config as IXmlExportable;
+                if (xmlExportable != null)
+                {
+                    xmlExportable.Export(rootElement);
+                }
+                else
+                {
+                    // todo: Use XmlSerializer?
+                }
             }
             else
             {
-                // todo: Use XmlSerializer?
+                
             }
             return document;
         }
 
 
 
+        [Obsolete]
         protected virtual XElement GetRootElem(XDocument document, string rootElementName)
         {
             var rootElement = document.Element(rootElementName);
@@ -305,6 +327,7 @@ namespace Lux.Config
             return rootElement;
         }
 
+        [Obsolete]
         protected virtual XElement GetOrCreateRootElem(XDocument document, string rootElementName)
         {
             var rootElement = document.Element(rootElementName);
@@ -317,54 +340,7 @@ namespace Lux.Config
             }
             return rootElement;
         }
+        
 
-
-
-        protected virtual XElement GetRootElemByExpression(XDocument document, string rootElementExpression)
-        {
-            try
-            {
-
-                var expr = XPathExpression.Compile(rootElementExpression);
-                var navigator = document.CreateNavigator();
-                var select = navigator.SelectSingleNode(expr);
-
-                var node = navigator.Evaluate(expr);
-                var rootElement = node as XElement;
-                if (rootElement == null)
-                {
-                    if (document.Root != null)
-                        rootElement = document.Root.Element(rootElementExpression);
-                    else
-                        rootElement = document.Element(rootElementExpression);
-                }
-                return rootElement;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        protected virtual XElement GetOrCreateRootElemByExpression(XDocument document, string rootElementExpression)
-        {
-            try
-            {
-
-                var rootElement = document.Element(rootElementExpression);
-                if (rootElement == null)
-                {
-                    if (document.Root != null)
-                        rootElement = document.Root.GetOrCreateElement(rootElementExpression);
-                    else
-                        rootElement = document.GetOrCreateElement(rootElementExpression);
-                }
-                return rootElement;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
     }
 }

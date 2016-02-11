@@ -18,7 +18,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         #region Helpers
 
         
-        protected void LoadFromFile(XmlConfigLocation location, IFileSystem fileSystem, IXmlConfigurable configurable)
+        protected void LoadFromFile(IXmlConfigLocation location, IFileSystem fileSystem, IXmlConfigurable configurable)
         {
             XDocument xdocument;
             var fileName = location.Uri.LocalPath;
@@ -31,15 +31,17 @@ namespace Lux.Tests.Config.XmlConfigManager
             }
             else
                 throw new FileNotFoundException("The requested file was not found", fileName);
-
-            var rootElement = xdocument.GetOrCreateElement(location.RootElementName);
+            
+            var path = location.RootElementPath ?? location.RootElementName;
+            var rootElement = xdocument.GetOrCreateElementAtPath(path);
             configurable.Configure(rootElement);
         }
 
-        protected void SaveToFile(XmlConfigLocation target, IFileSystem fileSystem, IXmlExportable exportable)
+        protected void SaveToFile(IXmlConfigLocation target, IFileSystem fileSystem, IXmlExportable exportable)
         {
             var xdocument = new XDocument();
-            var rootElement = xdocument.GetOrCreateElement(target.RootElementName);
+            var path = target.RootElementPath ?? target.RootElementName;
+            var rootElement = xdocument.GetOrCreateElementAtPath(path);
             exportable.Export(rootElement);
 
             var fileName = target.Uri.LocalPath;
@@ -50,6 +52,15 @@ namespace Lux.Tests.Config.XmlConfigManager
             {
                 xdocument.Save(stream);
             }
+        }
+        
+        protected IXmlConfigLocation GetAppConfigLocation<TConfig>()
+            where TConfig : IConfig
+        {
+            var factory = new AppConfigLocationFactory();
+            var location = factory.CreateLocation<TConfig>();
+            var result = (IXmlConfigLocation) location;
+            return result;
         }
 
         #endregion
