@@ -2,6 +2,6 @@
 {
     public interface IConfig
     {
-        ConfigSource Source { get; set; }
+        IConfigLocation Location { get; set; }
     }
 }

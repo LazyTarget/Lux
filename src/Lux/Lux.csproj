@@ -36,6 +36,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -47,11 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\ConfigBase.cs" />
-    <Compile Include="Config\ConfigSource.cs" />
-    <Compile Include="Config\IConfig.cs" />
+    <Compile Include="Config\AppXmlConfigManager.cs" />
+    <Compile Include="Config\Base\ConfigBase.cs" />
+    <Compile Include="Config\Base\ConfigLocationBase.cs" />
+    <Compile Include="Config\Base\IConfig.cs" />
+    <Compile Include="Config\Base\IConfigLocation.cs" />
+    <Compile Include="Config\Sources\IXmlConfigLocation.cs" />
     <Compile Include="Config\XmlConfigBase.cs" />
-    <Compile Include="Config\XmlConfigSource.cs" />
+    <Compile Include="Config\Sources\XmlConfigLocation.cs" />
     <Compile Include="Config\XmlConfigManager.cs" />
     <Compile Include="Diagnostics\Interfaces\ILog.cs" />
     <Compile Include="Diagnostics\Interfaces\ILogFactory.cs" />
@@ -68,7 +72,7 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Framework.cs" />
-    <Compile Include="Config\IConfigManager.cs" />
+    <Compile Include="Config\Base\IConfigManager.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />

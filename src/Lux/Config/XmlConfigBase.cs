@@ -5,10 +5,10 @@ namespace Lux.Config
 {
     public abstract class XmlConfigBase : ConfigBase, IXmlConfigurable, IXmlExportable
     {
-        public new XmlConfigSource Source
+        public new XmlConfigLocation Location
         {
-            get { return (XmlConfigSource)base.Source; }
-            set { base.Source = value; }
+            get { return (XmlConfigLocation)base.Location; }
+            set { base.Location = value; }
         }
 
         public abstract void Configure(XElement element);

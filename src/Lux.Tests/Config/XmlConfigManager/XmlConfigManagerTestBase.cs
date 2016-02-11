@@ -18,10 +18,10 @@ namespace Lux.Tests.Config.XmlConfigManager
         #region Helpers
 
         
-        protected void LoadFromFile(XmlConfigSource source, IFileSystem fileSystem, IXmlConfigurable configurable)
+        protected void LoadFromFile(XmlConfigLocation location, IFileSystem fileSystem, IXmlConfigurable configurable)
         {
             XDocument xdocument;
-            var fileName = source.Uri.LocalPath;
+            var fileName = location.Uri.LocalPath;
             if (fileSystem.FileExists(fileName))
             {
                 using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -32,11 +32,11 @@ namespace Lux.Tests.Config.XmlConfigManager
             else
                 throw new FileNotFoundException("The requested file was not found", fileName);
 
-            var rootElement = xdocument.GetOrCreateElement(source.RootElementName);
+            var rootElement = xdocument.GetOrCreateElement(location.RootElementName);
             configurable.Configure(rootElement);
         }
 
-        protected void SaveToFile(XmlConfigSource target, IFileSystem fileSystem, IXmlExportable exportable)
+        protected void SaveToFile(XmlConfigLocation target, IFileSystem fileSystem, IXmlExportable exportable)
         {
             var xdocument = new XDocument();
             var rootElement = xdocument.GetOrCreateElement(target.RootElementName);
@@ -62,10 +62,10 @@ namespace Lux.Tests.Config.XmlConfigManager
             public readonly IFileSystem FileSystem = new MemoryFileSystem();
 
 
-            protected override Stream GetStreamFromSource(ConfigSource source)
+            protected override Stream GetStreamFromLocation(IConfigLocation location)
             {
-                var xmlConfigSource = (XmlConfigSource) source;
-                var fileName = xmlConfigSource.Uri.LocalPath;
+                var xmlConfigLocation = (IXmlConfigLocation) location;
+                var fileName = xmlConfigLocation.Uri.LocalPath;
                 var exists = FileSystem.FileExists(fileName);
                 Stream stream = null;
                 if (exists)
@@ -80,7 +80,7 @@ namespace Lux.Tests.Config.XmlConfigManager
                         FileSystem.CreateDir(dirPath);
                     stream = FileSystem.OpenFile(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                 }
-                //stream = base.GetStreamFromSource(source);
+                //stream = base.GetStreamFromLocation(location);
                 return stream;
             }
         }

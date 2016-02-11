@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Lux.Extensions;
 using Lux.Serialization.Xml;
 using Lux.Xml;
@@ -26,48 +27,53 @@ namespace Lux.Config
         public bool SaveAndReplace { get; set; }
 
 
-        public bool CanLoad<TConfig>(ConfigSource source)
+        public bool CanLoad<TConfig>(IConfigLocation location)
             where TConfig : IConfig
         {
-            var xmlConfigSource = source as XmlConfigSource;
-            if (xmlConfigSource == null)
-                return false;
-            if (xmlConfigSource.Uri == null)
+            location = GetLocationOrDefault(location);
+            ValidateLocation(location);
+
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+            if (xmlConfigLocation.Uri == null)
                 return false;
 
-            if (typeof (TConfig).IsAssignableFrom(typeof (IXmlConfigurable)))
+            if (typeof(TConfig).IsAssignableFrom(typeof(IXmlConfigurable)))
                 return false;   // todo: extend, use a XmlSerializer?
 
             return true;
         }
 
 
-        public TConfig Load<TConfig>(ConfigSource source)
+        public TConfig Load<TConfig>(IConfigLocation location)
             where TConfig : IConfig
         {
-            var xmlConfigSource = source as XmlConfigSource;
-            if (xmlConfigSource == null)
-                throw new ArgumentNullException(nameof(xmlConfigSource), "Invalid configuration source");
-            
-            var stream = GetStreamFromSource(source);
+            location = GetLocationOrDefault(location);
+            ValidateLocation(location);
+
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+            if (xmlConfigLocation.Uri == null)
+                throw new ArgumentException("Invalid target uri", nameof(location));
+
+            var stream = GetStreamFromLocation(location);
             var document = LoadXDocument(stream);
 
             //var config = Framework.TypeInstantiator.Instantiate<TConfig>();
-            var config = ParseFromXDocument<TConfig>(document, source);
-            config.Source = xmlConfigSource;
+            var config = ParseFromXDocument<TConfig>(document, location);
+            config.Location = location;
             return config;
         }
 
 
-        public bool CanSave<TConfig>(TConfig config, ConfigSource target)
+        public bool CanSave<TConfig>(TConfig config, IConfigLocation location)
             where TConfig : IConfig
         {
-            var xmlConfigTarget = target as XmlConfigSource;
-            if (xmlConfigTarget == null)
+            location = GetLocationOrDefault(location);
+            ValidateLocation(location);
+
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+            if (xmlConfigLocation.Uri == null)
                 return false;
-            if (xmlConfigTarget.Uri == null)
-                return false;
-            if (!xmlConfigTarget.Uri.IsFile)
+            if (!xmlConfigLocation.Uri.IsFile)
                 return false;
 
             if (typeof(TConfig).IsAssignableFrom(typeof(IXmlExportable)))
@@ -77,15 +83,16 @@ namespace Lux.Config
         }
 
 
-        public virtual object Save<TConfig>(TConfig config, ConfigSource target)
+        public virtual object Save<TConfig>(TConfig config, IConfigLocation location)
             where TConfig : IConfig
         {
-            var xmlConfigTarget = target as XmlConfigSource;
-            if (xmlConfigTarget == null)
-                throw new NotSupportedException($"ConfigSource of type '{target.GetType()}' is not supported");
-            if (xmlConfigTarget.Uri == null)
-                throw new ArgumentException("Invalid target uri", nameof(target));
-            if (!xmlConfigTarget.Uri.IsFile)
+            location = GetLocationOrDefault(location);
+            ValidateLocation(location);
+
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+            if (xmlConfigLocation.Uri == null)
+                throw new ArgumentException("Invalid target uri", nameof(location));
+            if (!xmlConfigLocation.Uri.IsFile)
                 throw new NotSupportedException($"Saving against a network path is not supported");
 
 
@@ -97,29 +104,48 @@ namespace Lux.Config
             }
             else
             {
-                var source = (config.Source as XmlConfigSource) ?? target;
-                var sourceStream = GetStreamFromSource(source);
+                var source = (config.Location as IXmlConfigLocation) ?? location;
+                var sourceStream = GetStreamFromLocation(source);
                 xdoc = LoadXDocument(sourceStream);
             }
 
-            var document = ExportToXDocument(xdoc, config, target);
-            var targetStream = GetStreamFromSource(target);
-            var res = SaveXDocument(document, target, targetStream);
+            var document = ExportToXDocument(xdoc, config, location);
+            var targetStream = GetStreamFromLocation(location);
+            var res = SaveXDocument(document, targetStream);
             if (res)
             {
-                config.Source = target;
+                config.Location = location;
             }
             return res;
         }
 
 
-        protected virtual Stream GetStreamFromSource(ConfigSource source)
-        {
-            var xmlConfigSource = source as XmlConfigSource;
-            if (xmlConfigSource == null)
-                throw new NotSupportedException($"ConfigSource of type '{source.GetType()}' is not supported");
 
-            var configUri = xmlConfigSource.Uri;
+        protected virtual IConfigLocation GetLocationOrDefault(IConfigLocation location)
+        {
+            if (location != null)
+            {
+                if (!(location is IXmlConfigLocation))
+                    throw new NotSupportedException($"ConfigSource of type '{location.GetType()}' is not supported");
+            }
+            return location;
+        }
+
+        protected virtual void ValidateLocation(IConfigLocation location)
+        {
+            if (location == null)
+                throw new ArgumentNullException(nameof(location));
+            if (!(location is IXmlConfigLocation))
+                throw new NotSupportedException($"ConfigSource of type '{location.GetType()}' is not supported");
+        }
+
+
+        protected virtual Stream GetStreamFromLocation(IConfigLocation location)
+        {
+            ValidateLocation(location);
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+
+            var configUri = xmlConfigLocation.Uri;
             if (!configUri.IsAbsoluteUri)
             {
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configUri.ToString());
@@ -188,7 +214,7 @@ namespace Lux.Config
         }
 
 
-        protected virtual bool SaveXDocument(XDocument xdoc, ConfigSource target, Stream stream)
+        protected virtual bool SaveXDocument(XDocument xdoc, Stream stream)
         {
             if (!stream.CanWrite)
                 throw new NotSupportedException("The stream cannot be written to");
@@ -207,24 +233,26 @@ namespace Lux.Config
         }
 
 
-        protected virtual TConfig ParseFromXDocument<TConfig>(XDocument document, ConfigSource source)
+        protected virtual TConfig ParseFromXDocument<TConfig>(XDocument document, IConfigLocation location)
             where TConfig : IConfig
         {
-            var xmlConfigSource = source as XmlConfigSource;
-            if (xmlConfigSource == null)
-                throw new NotSupportedException($"ConfigSource of type '{source.GetType()}' is not supported");
+            ValidateLocation(location);
+            var xmlConfigLocation = (IXmlConfigLocation)location;
 
             if (document == null)
                 document = new XDocument();
-            //var rootElement = GetOrCreateRootElem(document, xmlConfigSource.RootElementName);
-            var rootElement = GetRootElem(document, xmlConfigSource.RootElementName);
+
+            var expr = xmlConfigLocation.RootElementExpression ?? xmlConfigLocation.RootElementName;
+            //var rootElement = GetRootElem(document, xmlConfigLocation.RootElementName);
+            var rootElement = GetRootElemByExpression(document, expr);
+
             if (rootElement == null)
             {
-                
+
             }
-            
+
             var config = Framework.TypeInstantiator.Instantiate<TConfig>();
-            config.Source = xmlConfigSource;
+            config.Location = xmlConfigLocation;
             var xmlConfigurable = config as IXmlConfigurable;
             if (xmlConfigurable != null)
             {
@@ -238,15 +266,17 @@ namespace Lux.Config
         }
 
 
-        protected virtual XDocument ExportToXDocument(XDocument document, IConfig config, ConfigSource target)
+        protected virtual XDocument ExportToXDocument(XDocument document, IConfig config, IConfigLocation location)
         {
-            var xmlConfigTarget = target as XmlConfigSource;
-            if (xmlConfigTarget == null)
-                throw new NotSupportedException($"ConfigSource of type '{target.GetType()}' is not supported");
+            ValidateLocation(location);
+            var xmlConfigLocation = (IXmlConfigLocation)location;
 
             if (document == null)
                 document = new XDocument();
-            var rootElement = GetOrCreateRootElem(document, xmlConfigTarget.RootElementName);
+
+            var expr = xmlConfigLocation.RootElementExpression ?? xmlConfigLocation.RootElementName;
+            //var rootElement = GetOrCreateRootElem(document, xmlConfigLocation.RootElementName);
+            var rootElement = GetOrCreateRootElemByExpression(document, expr);
 
             var xmlExportable = config as IXmlExportable;
             if (xmlExportable != null)
@@ -286,6 +316,55 @@ namespace Lux.Config
                     rootElement = document.GetOrCreateElement(rootElementName);
             }
             return rootElement;
+        }
+
+
+
+        protected virtual XElement GetRootElemByExpression(XDocument document, string rootElementExpression)
+        {
+            try
+            {
+
+                var expr = XPathExpression.Compile(rootElementExpression);
+                var navigator = document.CreateNavigator();
+                var select = navigator.SelectSingleNode(expr);
+
+                var node = navigator.Evaluate(expr);
+                var rootElement = node as XElement;
+                if (rootElement == null)
+                {
+                    if (document.Root != null)
+                        rootElement = document.Root.Element(rootElementExpression);
+                    else
+                        rootElement = document.Element(rootElementExpression);
+                }
+                return rootElement;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        protected virtual XElement GetOrCreateRootElemByExpression(XDocument document, string rootElementExpression)
+        {
+            try
+            {
+
+                var rootElement = document.Element(rootElementExpression);
+                if (rootElement == null)
+                {
+                    if (document.Root != null)
+                        rootElement = document.Root.GetOrCreateElement(rootElementExpression);
+                    else
+                        rootElement = document.GetOrCreateElement(rootElementExpression);
+                }
+                return rootElement;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

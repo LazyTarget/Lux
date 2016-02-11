@@ -17,7 +17,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         {
             var sut = GetSUT();
 
-            var source = new XmlConfigSource
+            var source = new XmlConfigLocation
             {
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
@@ -44,7 +44,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         {
             var sut = GetSUT();
 
-            var target = new XmlConfigSource
+            var target = new XmlConfigLocation
             {
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
@@ -77,7 +77,7 @@ namespace Lux.Tests.Config.XmlConfigManager
             var sut = GetSUT();
 
             // Arrange
-            var source = new XmlConfigSource
+            var source = new XmlConfigLocation
             {
                 Uri = new Uri("C:/app.config"),
                 RootElementName = "Root",
@@ -128,7 +128,7 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable
         {
-            public ConfigSource Source { get; set; }
+            public IConfigLocation Location { get; set; }
 
             public string AppName { get; set; }
             public string AppVersion { get; set; }
