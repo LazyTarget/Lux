@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Xml;
 using System.Xml.Linq;
 using Lux.Config;
+using Lux.Config.Xml;
 using Lux.IO;
 using Lux.Serialization.Xml;
 using Lux.Xml;
@@ -13,13 +14,22 @@ namespace Lux.Tests.Config.XmlConfigManager
     [TestFixture]
     public class XmlConfigManager_AppConfigDefaultLocationTests : XmlConfigManagerTestBase
     {
-        protected override TestableXmlConfigManager GetSUT()
+        protected override void SetUp()
         {
-            var sut = base.GetSUT();
-            sut.DefaultLocationFactory = new AppConfigLocationFactory();
-            //sut.FileSystem = new FileSystem();
-            return sut;
+            base.SetUp();
+            
+            //FileSystem = new FileSystem();
         }
+
+        //protected override TestableXmlConfigManager GetSUT()
+        //{
+        //    var sut = base.GetSUT();
+        //    sut.DefaultDescriptorFactory = new AppConfigDescriptorFactory
+        //    {
+        //        FileSystem = FileSystem,
+        //    };
+        //    return sut;
+        //}
 
 
         #region Tests
@@ -35,20 +45,19 @@ namespace Lux.Tests.Config.XmlConfigManager
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
             };
-            SaveToFile(expectedLocation, sut.FileSystem, expectedConfig);
+            SaveToFile(expectedLocation, FileSystem, expectedConfig);
             
-            var canLoad = sut.CanLoad<MyAppConfig>(location: null);
+            var canLoad = sut.CanLoad<MyAppConfig>(descriptor: null);
             Assert.IsTrue(canLoad);
 
-            var actualConfig = sut.Load<MyAppConfig>(location: null);
+            var actualConfig = sut.Load<MyAppConfig>(descriptor: null);
             Assert.IsNotNull(actualConfig);
-            Assert.AreEqual(expectedConfig.AppName, actualConfig.AppName);
-            Assert.AreEqual(expectedConfig.AppVersion, actualConfig.AppVersion);
+            Assert.AreNotSame(expectedConfig, actualConfig);
+            Assert.AreEqual(expectedConfig, actualConfig);
 
-            var actualLocation = (IXmlConfigLocation) actualConfig.Location;
-            Assert.AreEqual(expectedLocation.Uri, actualLocation.Uri);
-            Assert.AreEqual(expectedLocation.RootElementName, actualLocation.RootElementName);
-            Assert.AreEqual(expectedLocation.RootElementPath, actualLocation.RootElementPath);
+            var actualDescriptor = (XmlConfigDescriptor) actualConfig.Descriptor;
+            Assert.AreEqual(expectedLocation.Uri, actualDescriptor.Uri);
+            Assert.AreEqual(expectedLocation.RootElementPath, actualDescriptor.RootElementPath);
         }
 
 
@@ -64,19 +73,19 @@ namespace Lux.Tests.Config.XmlConfigManager
                 AppVersion = "1.0.0.0",
             };
 
-            var canSave = sut.CanSave<MyAppConfig>(expectedConfig, location: null);
+            var canSave = sut.CanSave<MyAppConfig>(expectedConfig, dataStore: null);
             Assert.IsTrue(canSave);
 
-            sut.Save<MyAppConfig>(expectedConfig, location: null);
+            sut.Save<MyAppConfig>(expectedConfig, dataStore: null);
             
 
             // Assert
             var actualConfig = new MyAppConfig();
-            LoadFromFile(expectedLocation, sut.FileSystem, actualConfig);
+            LoadFromFile(expectedLocation, FileSystem, actualConfig);
 
             Assert.IsNotNull(actualConfig);
-            Assert.AreEqual(expectedConfig.AppName, actualConfig.AppName);
-            Assert.AreEqual(expectedConfig.AppVersion, actualConfig.AppVersion);
+            Assert.AreNotSame(expectedConfig, actualConfig);
+            Assert.AreEqual(expectedConfig, actualConfig);
         }
 
 
@@ -86,28 +95,27 @@ namespace Lux.Tests.Config.XmlConfigManager
             var sut = GetSUT();
 
             // Arrange
-            var expectedLocation = GetAppConfigLocation<MyAppConfig>();
+            var expectedDescriptor = GetAppConfigDescriptor<MyAppConfig>();
             var originalConfig = new MyAppConfig
             {
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
             };
-            SaveToFile(expectedLocation, sut.FileSystem, originalConfig);
+            SaveToFile(expectedDescriptor, FileSystem, originalConfig);
 
             // Act
-            var canLoad = sut.CanLoad<MyAppConfig>(location: null);
+            var canLoad = sut.CanLoad<MyAppConfig>(descriptor: null);
             Assert.IsTrue(canLoad);
-            var loadedConfig = sut.Load<MyAppConfig>(location: null);
+            var loadedConfig = sut.Load<MyAppConfig>(descriptor: null);
 
             // Assert
             Assert.IsNotNull(loadedConfig);
-            Assert.AreEqual(originalConfig.AppName, loadedConfig.AppName);
-            Assert.AreEqual(originalConfig.AppVersion, loadedConfig.AppVersion);
+            Assert.AreNotSame(originalConfig, loadedConfig);
+            Assert.AreEqual(originalConfig, loadedConfig);
 
-            var loadedLocation = (IXmlConfigLocation)loadedConfig.Location;
-            Assert.AreEqual(expectedLocation.Uri, loadedLocation.Uri);
-            Assert.AreEqual(expectedLocation.RootElementName, loadedLocation.RootElementName);
-            Assert.AreEqual(expectedLocation.RootElementPath, loadedLocation.RootElementPath);
+            var loadedDescriptor = (XmlConfigDescriptor)loadedConfig.Descriptor;
+            Assert.AreEqual(expectedDescriptor.Uri, loadedDescriptor.Uri);
+            Assert.AreEqual(expectedDescriptor.RootElementPath, loadedDescriptor.RootElementPath);
 
 
             // Arrange
@@ -115,18 +123,18 @@ namespace Lux.Tests.Config.XmlConfigManager
             editedConfig.AppVersion = "2.0.0.0";
             
             // Act
-            var canSave = sut.CanSave<MyAppConfig>(editedConfig, location: null);
+            var canSave = sut.CanSave<MyAppConfig>(editedConfig, dataStore: null);
             Assert.IsTrue(canSave);
-            sut.Save<MyAppConfig>(editedConfig, location: null);
+            sut.Save<MyAppConfig>(editedConfig, dataStore: null);
 
 
             // Assert
             var actualConfig = new MyAppConfig();
-            LoadFromFile(expectedLocation, sut.FileSystem, actualConfig);
+            LoadFromFile(expectedDescriptor, FileSystem, actualConfig);
 
             Assert.IsNotNull(actualConfig);
-            Assert.AreEqual(editedConfig.AppName, actualConfig.AppName);
-            Assert.AreEqual(editedConfig.AppVersion, actualConfig.AppVersion);
+            Assert.AreNotSame(editedConfig, actualConfig);
+            Assert.AreEqual(editedConfig, actualConfig);
         }
 
 
@@ -135,12 +143,37 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         #region Classes
 
-        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable, IConfigurationSectionHandler
+        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable, IConfigurationSectionHandler, IEquatable<MyAppConfig>
         {
-            public IConfigLocation Location { get; set; }
+            public IConfigDescriptor Descriptor { get; set; }
+
 
             public string AppName { get; set; }
             public string AppVersion { get; set; }
+
+
+            public bool Equals(MyAppConfig other)
+            {
+                if (other == null)
+                    return false;
+
+                if (!string.Equals(AppName, other.AppName))
+                    return false;
+                if (!string.Equals(AppVersion, other.AppVersion))
+                    return false;
+                return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                var eq = base.Equals(obj);
+                if (!eq)
+                {
+                    if (obj is MyAppConfig)
+                        eq = Equals((MyAppConfig) obj);
+                }
+                return eq;
+            }
 
             public void Configure(XElement element)
             {
@@ -162,6 +195,7 @@ namespace Lux.Tests.Config.XmlConfigManager
                 element.GetOrCreateElement(nameof(AppName)).Value = AppName;
                 element.GetOrCreateElement(nameof(AppVersion)).Value = AppVersion;
             }
+
 
             public object Create(object parent, object configContext, XmlNode section)
             {

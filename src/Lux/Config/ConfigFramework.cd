@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Lux.Config.ConfigBase">
+    <Position X="0.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Config\Base\ConfigBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lux.Config.AppConfigLocationFactory">
+    <Position X="7.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Config\Xml\AppConfigLocationFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lux.Config.UriConfigLocation">
+    <Position X="4.5" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAEgAAAAAABAAAAAAACAAAAAAIAQA=</HashCode>
+      <FileName>Config\Generic\UriConfigLocation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lux.Config.XmlConfigManager">
+    <Position X="10.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAAIgICAAAAgAAAAAgAAEAACBAAGAAAAQAIEQAAAAIA=</HashCode>
+      <FileName>Config\Xml\XmlConfigManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lux.Config.ConfigLocationBase">
+    <Position X="4.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEgAAAAAABAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Config\Base\ConfigLocationBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lux.Config.XmlConfigLocation">
+    <Position X="2.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAgABAAAABAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Config\Xml\XmlConfigLocation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Lux.Config.IConfig">
+    <Position X="0.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAIAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Config\Base\IConfig.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lux.Config.IConfigLocation">
+    <Position X="4.5" Y="0.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEgAAAAAABAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Config\Base\IConfigLocation.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lux.Config.IConfigArguments">
+    <Position X="8.5" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Config\Base\IConfigArguments.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lux.Config.IConfigManager">
+    <Position X="12.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIAAAAAgAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Config\Base\IConfigManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lux.Config.IXmlConfigLocation">
+    <Position X="2.5" Y="2" Width="1.5" />
+    <InheritanceLine Type="Lux.Config.IConfigLocation" FixedFromPoint="true">
+      <Path>
+        <Point X="4.5" Y="2.25" />
+        <Point X="4" Y="2.25" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAABAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Config\Xml\IXmlConfigLocation.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lux.Config.IConfigLocationFactory">
+    <Position X="8.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Config\Base\IConfigLocationFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

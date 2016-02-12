@@ -1,15 +1,20 @@
-﻿namespace Lux.Config
+﻿using Lux.Data;
+
+namespace Lux.Config
 {
     public interface IConfigManager
     {
-        bool CanLoad<TConfig>(IConfigLocation location)
+        //IConfigDescriptor GetDefaultDescriptor<TConfig>()
+        //    where TConfig : IConfig;
+
+        bool CanLoad<TConfig>(IConfigDescriptor descriptor)
             where TConfig : IConfig;
-        TConfig Load<TConfig>(IConfigLocation location)
+        TConfig Load<TConfig>(IConfigDescriptor descriptor)
             where TConfig : IConfig;
 
-        bool CanSave<TConfig>(TConfig config, IConfigLocation location)
+        bool CanSave<TConfig>(TConfig config, IDataStore<IConfigDescriptor> dataStore)
             where TConfig : IConfig;
-        object Save<TConfig>(TConfig config, IConfigLocation location)
+        object Save<TConfig>(TConfig config, IDataStore<IConfigDescriptor> dataStore)
             where TConfig : IConfig;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lux.Config
+namespace Lux.Config.Xml
 {
     public interface IXmlConfigLocation : IConfigLocation
     {

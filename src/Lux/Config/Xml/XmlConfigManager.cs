@@ -1,52 +1,55 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
-using Lux.Extensions;
-using Lux.Serialization.Xml;
-using Lux.Xml;
+using Lux.Data;
 using Lux.IO;
+using Lux.Serialization.Xml;
 
-namespace Lux.Config
+namespace Lux.Config.Xml
 {
     public class XmlConfigManager : IConfigManager
     {
         public XmlConfigManager()
         {
-            //DefaultLocationFactory = new AppConfigLocationFactory();
-            FileSystem = new FileSystem();
-
-            XmlReaderSettings = new XmlReaderSettings();
-            XmlReaderSettings.DtdProcessing = DtdProcessing.Parse;
-
-            XmlWriterSettings = new XmlWriterSettings();
-            XmlWriterSettings.Indent = true;
+            DefaultDescriptorFactory = new AppConfigDescriptorFactory
+            {
+                FileSystem = new FileSystem(),
+            };
         }
 
-        public IConfigLocationFactory DefaultLocationFactory { get; set; }
-
-        public XmlReaderSettings XmlReaderSettings { get; }
-
-        public XmlWriterSettings XmlWriterSettings { get; }
-
-        public IFileSystem FileSystem { get; set; }
-
-        private bool CreateOnRead { get; set; }
+        public IConfigDescriptorFactory DefaultDescriptorFactory { get; set; }
 
         public bool SaveAndReplace { get; set; }
 
 
-        public bool CanLoad<TConfig>(IConfigLocation location)
+
+        public virtual IConfigDescriptor GetDefaultDescriptor<TConfig>()
             where TConfig : IConfig
         {
-            if (location == null)
-                location = GetDefaultLocation<TConfig>();
-            ValidateLocation(location);
+            IConfigDescriptor descriptor = null;
+            if (DefaultDescriptorFactory != null)
+            {
+                descriptor = DefaultDescriptorFactory.CreateDescriptor<TConfig>();
+            }
+            else
+            {
+                descriptor = new XmlConfigDescriptor();
+            }
+            return descriptor;
+        }
 
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-            if (xmlConfigLocation.Uri == null)
-                return false;
+        public bool CanLoad<TConfig>(IConfigDescriptor descriptor)
+            where TConfig : IConfig
+        {
+            if (descriptor == null)
+                descriptor = GetDefaultDescriptor<TConfig>();
+            ValidateDescriptor(descriptor);
+
+            var configXmlDataStore = descriptor.DataStore as ConfigXmlDataStore;
+            if (configXmlDataStore != null)
+            {
+                if (configXmlDataStore.Uri == null)
+                    return false;
+            }
 
             if (typeof(TConfig).IsAssignableFrom(typeof(IXmlConfigurable)))
                 return false;   // todo: extend, use a XmlSerializer?
@@ -55,43 +58,40 @@ namespace Lux.Config
         }
 
 
-        public TConfig Load<TConfig>(IConfigLocation location)
+        public TConfig Load<TConfig>(IConfigDescriptor descriptor)
             where TConfig : IConfig
         {
-            if (location == null)
-                location = GetDefaultLocation<TConfig>();
-            ValidateLocation(location);
+            if (descriptor == null)
+                descriptor = GetDefaultDescriptor<TConfig>();
+            ValidateDescriptor(descriptor);
 
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-            if (xmlConfigLocation.Uri == null)
-                throw new ArgumentException("Invalid target uri", nameof(location));
-
-            XDocument document = null;
-            using (var stream = GetStreamForRead(location))
-            {
-                if (stream != null)
-                    document = LoadXDocument(stream);
-            }
-
-            //var config = Framework.TypeInstantiator.Instantiate<TConfig>();
-            var config = ParseFromXDocument<TConfig>(document, location);
-            config.Location = location;
+            // Load
+            var obj = descriptor.DataStore.Load(descriptor);
+            var document = (XDocument) obj;
+            
+            // Parse
+            var config = descriptor.Parser.Parse<TConfig>(descriptor, document);
+            config.Descriptor = descriptor;
             return config;
         }
 
 
-        public bool CanSave<TConfig>(TConfig config, IConfigLocation location)
+        public bool CanSave<TConfig>(TConfig config, IDataStore<IConfigDescriptor> dataStore)
             where TConfig : IConfig
         {
-            if (location == null)
-                location = GetDefaultLocation<TConfig>();
-            ValidateLocation(location);
-
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-            if (xmlConfigLocation.Uri == null)
-                return false;
-            if (!xmlConfigLocation.Uri.IsFile)
-                return false;
+            var descriptor = config.Descriptor;
+            if (descriptor == null)
+                descriptor = GetDefaultDescriptor<TConfig>();
+            ValidateDescriptor(descriptor);
+            
+            var configXmlDataStore = dataStore as ConfigXmlDataStore;
+            if (configXmlDataStore != null)
+            {
+                if (configXmlDataStore.Uri == null)
+                    return false;
+                if (!configXmlDataStore.Uri.IsFile)
+                    return false;
+            }
 
             if (typeof(TConfig).IsAssignableFrom(typeof(IXmlExportable)))
                 return false;   // todo: extend, use a XmlSerializer?
@@ -100,20 +100,16 @@ namespace Lux.Config
         }
 
 
-        public virtual object Save<TConfig>(TConfig config, IConfigLocation location)
+        public virtual object Save<TConfig>(TConfig config, IDataStore<IConfigDescriptor> dataStore)
             where TConfig : IConfig
         {
-            if (location == null)
-                location = GetDefaultLocation<TConfig>();
-            ValidateLocation(location);
+            var descriptor = config.Descriptor;
+            if (descriptor == null)
+                descriptor = GetDefaultDescriptor<TConfig>();
+            ValidateDescriptor(descriptor);
 
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-            if (xmlConfigLocation.Uri == null)
-                throw new ArgumentException("Invalid target uri", nameof(location));
-            if (!xmlConfigLocation.Uri.IsFile)
-                throw new NotSupportedException($"Saving against a network path is not supported");
-
-
+            // Load
+            object obj;
             XDocument xdoc = null;
             if (SaveAndReplace)
             {
@@ -122,280 +118,39 @@ namespace Lux.Config
             }
             else
             {
-                var source = (config.Location as IXmlConfigLocation) ?? location;
-                using (var sourceStream = GetStreamForRead(source))
+                if (descriptor.DataStore != null)
                 {
-                    if (sourceStream != null)
-                        xdoc = LoadXDocument(sourceStream);
+                    obj = descriptor.DataStore.Load(descriptor);
+                    //xdoc = (XDocument) obj;
+                    xdoc = obj as XDocument;
                 }
             }
 
-            bool res;
-            var document = ExportToXDocument(xdoc, config, location);
-            using (var targetStream = GetStreamForWrite(location))
-            {
-                res = SaveXDocument(document, targetStream);
-            }
+            // Update
+            obj = descriptor.Parser.Export<TConfig>(config, xdoc);
+            xdoc = (XDocument) obj;
+
+            // Save
+            var targetDataStore = dataStore ?? descriptor.DataStore;
+            //var targetDataStore = dataStore;
+            if (targetDataStore == null)
+                throw new InvalidOperationException("Invalid save target");
+            var res = targetDataStore.Save(descriptor, xdoc);
+
             return res;
         }
 
 
-
-        protected virtual IConfigLocation GetDefaultLocation<TConfig>()
-            where TConfig : IConfig
+        protected virtual bool ValidateDescriptor(IConfigDescriptor descriptor)
         {
-            IConfigLocation location = null;
-            if (DefaultLocationFactory != null)
-            {
-                location = DefaultLocationFactory.CreateLocation<TConfig>();
-            }
-            return location;
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
+            //if (!(descriptor is XmlConfigDescriptor))
+            //    throw new NotSupportedException($"ConfigSource of type '{descriptor.GetType()}' is not supported");
+
+            return true;
         }
 
-        protected virtual void ValidateLocation(IConfigLocation location)
-        {
-            if (location == null)
-                throw new ArgumentNullException(nameof(location));
-            if (!(location is IXmlConfigLocation))
-                throw new NotSupportedException($"ConfigSource of type '{location.GetType()}' is not supported");
-
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-            if (xmlConfigLocation.RootElementName == null && xmlConfigLocation.RootElementPath == null)
-            {
-                throw new ArgumentException(
-                    $"Invalid root element identifier. Either '{nameof(IXmlConfigLocation.RootElementName)}'" +
-                    $" or '{nameof(IXmlConfigLocation.RootElementPath)}' must be defined",
-                    nameof(location));
-            }
-        }
-
-
-        protected virtual Stream GetStreamForRead(IConfigLocation location)
-        {
-            ValidateLocation(location);
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-
-            var configUri = xmlConfigLocation.Uri;
-            if (!configUri.IsAbsoluteUri)
-            {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configUri.ToString());
-                configUri = new Uri(path);
-            }
-
-            if (configUri.IsFile)
-            {
-                var fileInfo = new FileInfo(configUri.LocalPath);
-                if (fileInfo.Exists)
-                {
-                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    return fileStream;
-                }
-                else
-                {
-                    if (CreateOnRead)
-                    {
-                        var dirPath = PathHelper.GetParent(fileInfo.FullName);
-                        if (!FileSystem.DirExists(dirPath))
-                            FileSystem.CreateDir(dirPath);
-                        var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
-                        return fileStream;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            else
-            {
-                var client = new System.Net.Http.HttpClient();
-                try
-                {
-                    var task = client.GetAsync(configUri);
-                    var response = task.WaitForResult();
-                    response.EnsureSuccessStatusCode();
-
-                    var task2 = response.Content.ReadAsStreamAsync();
-                    var stream = task2.WaitForResult();
-                    return stream;
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-                throw new NotImplementedException("Network paths not implemented");
-            }
-        }
-
-
-        protected virtual Stream GetStreamForWrite(IConfigLocation location)
-        {
-            ValidateLocation(location);
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-
-            var configUri = xmlConfigLocation.Uri;
-            if (!configUri.IsAbsoluteUri)
-            {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configUri.ToString());
-                configUri = new Uri(path);
-            }
-
-            if (configUri.IsFile)
-            {
-                var fileInfo = new FileInfo(configUri.LocalPath);
-                if (fileInfo.Exists)
-                {
-                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
-                    return fileStream;
-                }
-                else
-                {
-                    var dirPath = PathHelper.GetParent(fileInfo.FullName);
-                    if (!FileSystem.DirExists(dirPath))
-                        FileSystem.CreateDir(dirPath);
-                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
-                    return fileStream;
-                }
-            }
-            else
-            {
-                throw new NotSupportedException($"Saving against a network path is not supported");
-            }
-        }
-
-
-        protected virtual XDocument LoadXDocument(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            XDocument xdoc = null;
-            try
-            {
-                using (var xmlReader = XmlReader.Create(stream, XmlReaderSettings))
-                {
-                    if (stream.Length > 0)
-                    {
-                        xdoc = XDocument.Load(xmlReader);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return xdoc;
-        }
-
-
-        protected virtual bool SaveXDocument(XDocument xdoc, Stream stream)
-        {
-            if (!stream.CanWrite)
-                throw new NotSupportedException("The stream cannot be written to");
-            try
-            {
-                using (var xmlWriter = XmlWriter.Create(stream, XmlWriterSettings))
-                {
-                    xdoc.Save(xmlWriter);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-
-        protected virtual TConfig ParseFromXDocument<TConfig>(XDocument document, IConfigLocation location)
-            where TConfig : IConfig
-        {
-            ValidateLocation(location);
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-
-            if (document == null)
-                document = new XDocument();
-
-            var path = xmlConfigLocation.RootElementPath ?? xmlConfigLocation.RootElementName;
-            var rootElement = document.GetElementByPath(path);
-
-            //TConfig config = default(TConfig);
-            var config = Framework.TypeInstantiator.Instantiate<TConfig>();
-            if (rootElement != null)
-            {
-                config.Location = xmlConfigLocation;
-                var xmlConfigurable = config as IXmlConfigurable;
-                if (xmlConfigurable != null)
-                {
-                    xmlConfigurable.Configure(rootElement);
-                }
-                else
-                {
-                    // todo: Use XmlSerializer?
-                }
-            }
-            return config;
-        }
-
-
-        protected virtual XDocument ExportToXDocument(XDocument document, IConfig config, IConfigLocation location)
-        {
-            ValidateLocation(location);
-            var xmlConfigLocation = (IXmlConfigLocation)location;
-
-            if (document == null)
-                document = new XDocument();
-
-            var path = xmlConfigLocation.RootElementPath ?? xmlConfigLocation.RootElementName;
-            var rootElement = document.GetOrCreateElementAtPath(path);
-            if (rootElement != null)
-            {
-                var xmlExportable = config as IXmlExportable;
-                if (xmlExportable != null)
-                {
-                    xmlExportable.Export(rootElement);
-                }
-                else
-                {
-                    // todo: Use XmlSerializer?
-                }
-            }
-            else
-            {
-                
-            }
-            return document;
-        }
-
-
-
-        [Obsolete]
-        protected virtual XElement GetRootElem(XDocument document, string rootElementName)
-        {
-            var rootElement = document.Element(rootElementName);
-            if (rootElement == null)
-            {
-                if (document.Root != null)
-                    rootElement = document.Root.Element(rootElementName);
-                else
-                    rootElement = document.Element(rootElementName);
-            }
-            return rootElement;
-        }
-
-        [Obsolete]
-        protected virtual XElement GetOrCreateRootElem(XDocument document, string rootElementName)
-        {
-            var rootElement = document.Element(rootElementName);
-            if (rootElement == null)
-            {
-                if (document.Root != null)
-                    rootElement = document.Root.GetOrCreateElement(rootElementName);
-                else
-                    rootElement = document.GetOrCreateElement(rootElementName);
-            }
-            return rootElement;
-        }
         
-
     }
 }

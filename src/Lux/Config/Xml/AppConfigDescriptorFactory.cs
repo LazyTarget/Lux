@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Configuration;
+using Lux.Data;
+using Lux.IO;
 
 namespace Lux.Config.Xml
 {
-    public class AppConfigLocationFactory : IConfigLocationFactory
+    public class AppConfigDescriptorFactory : IConfigDescriptorFactory
     {
-        public AppConfigLocationFactory()
+        public AppConfigDescriptorFactory()
         {
+            FileSystem = new FileSystem();
             UserLevel = ConfigurationUserLevel.None;
         }
 
+        public IFileSystem FileSystem { get; set; }
+
         public ConfigurationUserLevel UserLevel { get; set; }
 
-
-        public virtual IConfigLocation CreateLocation<TConfig>()
-            where TConfig : IConfig
+        
+        public virtual IConfigDescriptor CreateDescriptor(Type configType)
         {
             string rootElementPath = null;
             var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
@@ -22,8 +26,7 @@ namespace Lux.Config.Xml
             {
                 var config = ConfigurationManager.OpenExeConfiguration(UserLevel);
                 configPath = config.FilePath;
-
-                var configType = typeof (TConfig);
+                
                 var configSection = config.FindConfigSection(section =>
                 {
                     var assName = configType.Assembly.GetName();
@@ -45,12 +48,28 @@ namespace Lux.Config.Xml
             }
             
             var configUri = new Uri(configPath);
-            IConfigLocation location = new XmlConfigLocation
+            IDataStore<IConfigDescriptor> dataStore = new ConfigXmlDataStore
+            {
+                Uri = configUri,
+            };
+
+            IConfigDescriptor location = new XmlConfigDescriptor
             {
                 Uri = configUri,
                 RootElementPath = rootElementPath,
+                DataStore = dataStore,
             };
             return location;
         }
+
+
+        public IConfigDescriptor CreateDescriptor<TConfig>() 
+            where TConfig : IConfig
+        {
+            var type = typeof (TConfig);
+            var result = CreateDescriptor(type);
+            return result;
+        }
+
     }
 }

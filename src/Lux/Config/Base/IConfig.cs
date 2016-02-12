@@ -2,7 +2,8 @@
 {
     public interface IConfig
     {
-        IConfigArguments Arguments { get; set; }
-        IConfigLocation Location { get; set; }
+        IConfigDescriptor Descriptor { get; set; }
+        //IConfigArguments Arguments { get; set; }
+        //IConfigLocation Location { get; set; }
     }
 }

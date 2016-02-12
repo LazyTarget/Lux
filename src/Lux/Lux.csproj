@@ -48,9 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Base\IConfigParser.cs" />
+    <Compile Include="Config\Base\IConfigDescriptorFactory.cs" />
+    <Compile Include="Config\Xml\AppConfigDescriptorFactory.cs" />
     <Compile Include="Config\Base\IConfigArguments.cs" />
     <Compile Include="Config\Base\ConfigBase.cs" />
-    <Compile Include="Config\Base\ConfigLocationBase.cs" />
     <Compile Include="Config\Base\IConfig.cs" />
     <Compile Include="Config\Base\IConfigLocation.cs" />
     <Compile Include="Config\Base\IConfigLocationFactory.cs" />
@@ -73,17 +75,24 @@
     <Compile Include="Diagnostics\Log\TraceLog.cs" />
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\LanguageExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="Config\Base\IConfigManager.cs" />
+    <Compile Include="Config\Base\IConfigDescriptor.cs" />
+    <Compile Include="Data\IDataStore.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Serialization\Base\ISerializer.cs" />
     <Compile Include="Serialization\Base\IDeserializer.cs" />
     <Compile Include="Serialization\Xml\XSerializer.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />
+    <Compile Include="Config\Xml\XmlConfigDescriptor.cs" />
+    <Compile Include="Config\Xml\XmlConfigParser.cs" />
+    <Compile Include="Config\Xml\XmlDataStore.cs" />
     <Compile Include="Xml\XNodeInterpreterExtensions.cs" />
     <Compile Include="Xml\FluentXElementBuilderOfT.cs" />
     <Compile Include="Xml\XElementBuilderOfT.cs" />
@@ -166,6 +175,7 @@
     <Folder Include="Serialization\Json\Base\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Config\ConfigFramework.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

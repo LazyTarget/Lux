@@ -1,5 +1,6 @@
 ﻿using System;
 using Lux.Config;
+using Lux.Config.Xml;
 using Lux.Diagnostics;
 using Lux.Interfaces;
 using Lux.Unittest;
