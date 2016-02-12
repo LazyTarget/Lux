@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Lux.Extensions;
 using Lux.Serialization.Xml;
 using Lux.Xml;
+using Lux.IO;
 
 namespace Lux.Config
 {
@@ -14,6 +15,7 @@ namespace Lux.Config
         public XmlConfigManager()
         {
             //DefaultLocationFactory = new AppConfigLocationFactory();
+            FileSystem = new FileSystem();
 
             XmlReaderSettings = new XmlReaderSettings();
             XmlReaderSettings.DtdProcessing = DtdProcessing.Parse;
@@ -27,6 +29,10 @@ namespace Lux.Config
         public XmlReaderSettings XmlReaderSettings { get; }
 
         public XmlWriterSettings XmlWriterSettings { get; }
+
+        public IFileSystem FileSystem { get; set; }
+
+        private bool CreateOnRead { get; set; }
 
         public bool SaveAndReplace { get; set; }
 
@@ -60,10 +66,11 @@ namespace Lux.Config
             if (xmlConfigLocation.Uri == null)
                 throw new ArgumentException("Invalid target uri", nameof(location));
 
-            XDocument document;
+            XDocument document = null;
             using (var stream = GetStreamForRead(location))
             {
-                document = LoadXDocument(stream);
+                if (stream != null)
+                    document = LoadXDocument(stream);
             }
 
             //var config = Framework.TypeInstantiator.Instantiate<TConfig>();
@@ -118,7 +125,8 @@ namespace Lux.Config
                 var source = (config.Location as IXmlConfigLocation) ?? location;
                 using (var sourceStream = GetStreamForRead(source))
                 {
-                    xdoc = LoadXDocument(sourceStream);
+                    if (sourceStream != null)
+                        xdoc = LoadXDocument(sourceStream);
                 }
             }
 
@@ -179,13 +187,23 @@ namespace Lux.Config
                 var fileInfo = new FileInfo(configUri.LocalPath);
                 if (fileInfo.Exists)
                 {
-                    var fileStream = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
                     return fileStream;
                 }
                 else
                 {
-                    var fileStream = File.Open(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
-                    return fileStream;
+                    if (CreateOnRead)
+                    {
+                        var dirPath = PathHelper.GetParent(fileInfo.FullName);
+                        if (!FileSystem.DirExists(dirPath))
+                            FileSystem.CreateDir(dirPath);
+                        var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
+                        return fileStream;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
             else
@@ -227,12 +245,15 @@ namespace Lux.Config
                 var fileInfo = new FileInfo(configUri.LocalPath);
                 if (fileInfo.Exists)
                 {
-                    var fileStream = File.Open(fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
+                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
                     return fileStream;
                 }
                 else
                 {
-                    var fileStream = File.Open(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
+                    var dirPath = PathHelper.GetParent(fileInfo.FullName);
+                    if (!FileSystem.DirExists(dirPath))
+                        FileSystem.CreateDir(dirPath);
+                    var fileStream = FileSystem.OpenFile(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                     return fileStream;
                 }
             }

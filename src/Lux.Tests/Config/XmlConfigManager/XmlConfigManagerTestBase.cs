@@ -85,15 +85,16 @@ namespace Lux.Tests.Config.XmlConfigManager
                 FileSystem = new MemoryFileSystem();
             }
 
-            public IFileSystem FileSystem { get; set; }
-
 
             protected override Stream GetStreamForRead(IConfigLocation location)
             {
+                Stream stream = null;
+                stream = base.GetStreamForRead(location);
+                return stream;
+
                 var xmlConfigLocation = (IXmlConfigLocation) location;
                 var fileName = xmlConfigLocation.Uri.LocalPath;
                 var exists = FileSystem.FileExists(fileName);
-                Stream stream = null;
                 if (exists)
                 {
                     stream = FileSystem.OpenFile(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -105,16 +106,18 @@ namespace Lux.Tests.Config.XmlConfigManager
                         FileSystem.CreateDir(dirPath);
                     stream = FileSystem.OpenFile(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                 }
-                //stream = base.GetStreamFromLocation(location);
                 return stream;
             }
 
             protected override Stream GetStreamForWrite(IConfigLocation location)
             {
+                Stream stream = null;
+                stream = base.GetStreamForWrite(location);
+                return stream;
+
                 var xmlConfigLocation = (IXmlConfigLocation) location;
                 var fileName = xmlConfigLocation.Uri.LocalPath;
                 var exists = FileSystem.FileExists(fileName);
-                Stream stream = null;
                 if (exists)
                 {
                     stream = FileSystem.OpenFile(fileName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
