@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Configuration;
+using System.Xml;
 using System.Xml.Linq;
 using Lux.Config;
+using Lux.IO;
 using Lux.Serialization.Xml;
 using Lux.Xml;
 using NUnit.Framework;
@@ -14,6 +17,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         {
             var sut = base.GetSUT();
             sut.DefaultLocationFactory = new AppConfigLocationFactory();
+            //sut.FileSystem = new FileSystem();
             return sut;
         }
 
@@ -131,7 +135,7 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         #region Classes
 
-        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable
+        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable, IConfigurationSectionHandler
         {
             public IConfigLocation Location { get; set; }
 
@@ -157,6 +161,11 @@ namespace Lux.Tests.Config.XmlConfigManager
             {
                 element.GetOrCreateElement(nameof(AppName)).Value = AppName;
                 element.GetOrCreateElement(nameof(AppVersion)).Value = AppVersion;
+            }
+
+            public object Create(object parent, object configContext, XmlNode section)
+            {
+                return section;
             }
         }
 

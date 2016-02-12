@@ -57,6 +57,8 @@ namespace Lux.Xml
             XElement rootElement = null;
             try
             {
+                if (path == null)
+                    throw new ArgumentNullException(nameof(path));
                 var expr = XPathExpression.Compile(path);
                 var navigator = node.CreateNavigator();
                 var iterator = (XPathNodeIterator) navigator.Evaluate(expr);
@@ -83,6 +85,8 @@ namespace Lux.Xml
         {
             try
             {
+                if (path == null)
+                    throw new ArgumentNullException(nameof(path));
                 var parts = path.Split('/');
                 XContainer parentNode = node;
                 for (var i = 1; i < parts.Length + 1; i++)

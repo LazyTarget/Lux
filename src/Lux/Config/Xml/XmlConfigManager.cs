@@ -60,8 +60,11 @@ namespace Lux.Config
             if (xmlConfigLocation.Uri == null)
                 throw new ArgumentException("Invalid target uri", nameof(location));
 
-            var stream = GetStreamFromLocation(location);
-            var document = LoadXDocument(stream);
+            XDocument document;
+            using (var stream = GetStreamForRead(location))
+            {
+                document = LoadXDocument(stream);
+            }
 
             //var config = Framework.TypeInstantiator.Instantiate<TConfig>();
             var config = ParseFromXDocument<TConfig>(document, location);
@@ -113,16 +116,17 @@ namespace Lux.Config
             else
             {
                 var source = (config.Location as IXmlConfigLocation) ?? location;
-                var sourceStream = GetStreamFromLocation(source);
-                xdoc = LoadXDocument(sourceStream);
+                using (var sourceStream = GetStreamForRead(source))
+                {
+                    xdoc = LoadXDocument(sourceStream);
+                }
             }
 
+            bool res;
             var document = ExportToXDocument(xdoc, config, location);
-            var targetStream = GetStreamFromLocation(location);
-            var res = SaveXDocument(document, targetStream);
-            if (res)
+            using (var targetStream = GetStreamForWrite(location))
             {
-                config.Location = location;
+                res = SaveXDocument(document, targetStream);
             }
             return res;
         }
@@ -158,7 +162,7 @@ namespace Lux.Config
         }
 
 
-        protected virtual Stream GetStreamFromLocation(IConfigLocation location)
+        protected virtual Stream GetStreamForRead(IConfigLocation location)
         {
             ValidateLocation(location);
             var xmlConfigLocation = (IXmlConfigLocation)location;
@@ -175,14 +179,11 @@ namespace Lux.Config
                 var fileInfo = new FileInfo(configUri.LocalPath);
                 if (fileInfo.Exists)
                 {
-                    // todo: truncate?
                     var fileStream = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
                     return fileStream;
                 }
                 else
                 {
-                    //throw new FileNotFoundException("Config file not found", fileInfo.FullName);
-
                     var fileStream = File.Open(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
                     return fileStream;
                 }
@@ -205,6 +206,39 @@ namespace Lux.Config
                     throw;
                 }
                 throw new NotImplementedException("Network paths not implemented");
+            }
+        }
+
+
+        protected virtual Stream GetStreamForWrite(IConfigLocation location)
+        {
+            ValidateLocation(location);
+            var xmlConfigLocation = (IXmlConfigLocation)location;
+
+            var configUri = xmlConfigLocation.Uri;
+            if (!configUri.IsAbsoluteUri)
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configUri.ToString());
+                configUri = new Uri(path);
+            }
+
+            if (configUri.IsFile)
+            {
+                var fileInfo = new FileInfo(configUri.LocalPath);
+                if (fileInfo.Exists)
+                {
+                    var fileStream = File.Open(fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
+                    return fileStream;
+                }
+                else
+                {
+                    var fileStream = File.Open(fileInfo.FullName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
+                    return fileStream;
+                }
+            }
+            else
+            {
+                throw new NotSupportedException($"Saving against a network path is not supported");
             }
         }
 

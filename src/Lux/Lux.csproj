@@ -53,6 +53,7 @@
     <Compile Include="Config\Base\IConfig.cs" />
     <Compile Include="Config\Base\IConfigLocation.cs" />
     <Compile Include="Config\Base\IConfigLocationFactory.cs" />
+    <Compile Include="Config\ConfigurationExtensions.cs" />
     <Compile Include="Config\Xml\AppConfigLocationFactory.cs" />
     <Compile Include="Config\Xml\IXmlConfigLocation.cs" />
     <Compile Include="Config\Xml\XmlConfigBase.cs" />

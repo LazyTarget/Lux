@@ -37,14 +37,24 @@ namespace Lux.Tests.Config.XmlConfigManager
             configurable.Configure(rootElement);
         }
 
-        protected void SaveToFile(IXmlConfigLocation target, IFileSystem fileSystem, IXmlExportable exportable)
+        protected void SaveToFile(IXmlConfigLocation location, IFileSystem fileSystem, IXmlExportable exportable, bool replace = false)
         {
-            var xdocument = new XDocument();
-            var path = target.RootElementPath ?? target.RootElementName;
+            XDocument xdocument;
+            var fileName = location.Uri.LocalPath;
+            if (!replace && fileSystem.FileExists(fileName))
+            {
+                using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    xdocument = XDocument.Load(stream);
+                }
+            }
+            else
+                xdocument = new XDocument();
+
+            var path = location.RootElementPath ?? location.RootElementName;
             var rootElement = xdocument.GetOrCreateElementAtPath(path);
             exportable.Export(rootElement);
-
-            var fileName = target.Uri.LocalPath;
+            
             var dirPath = PathHelper.GetParent(fileName);
             if (!fileSystem.DirExists(dirPath))
                 fileSystem.CreateDir(dirPath);
@@ -70,10 +80,15 @@ namespace Lux.Tests.Config.XmlConfigManager
         
         public class TestableXmlConfigManager : Lux.Config.XmlConfigManager
         {
-            public readonly IFileSystem FileSystem = new MemoryFileSystem();
+            public TestableXmlConfigManager()
+            {
+                FileSystem = new MemoryFileSystem();
+            }
+
+            public IFileSystem FileSystem { get; set; }
 
 
-            protected override Stream GetStreamFromLocation(IConfigLocation location)
+            protected override Stream GetStreamForRead(IConfigLocation location)
             {
                 var xmlConfigLocation = (IXmlConfigLocation) location;
                 var fileName = xmlConfigLocation.Uri.LocalPath;
@@ -81,8 +96,28 @@ namespace Lux.Tests.Config.XmlConfigManager
                 Stream stream = null;
                 if (exists)
                 {
-                    // todo: truncate?
                     stream = FileSystem.OpenFile(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                }
+                else
+                {
+                    var dirPath = PathHelper.GetParent(fileName);
+                    if (!FileSystem.DirExists(dirPath))
+                        FileSystem.CreateDir(dirPath);
+                    stream = FileSystem.OpenFile(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
+                }
+                //stream = base.GetStreamFromLocation(location);
+                return stream;
+            }
+
+            protected override Stream GetStreamForWrite(IConfigLocation location)
+            {
+                var xmlConfigLocation = (IXmlConfigLocation) location;
+                var fileName = xmlConfigLocation.Uri.LocalPath;
+                var exists = FileSystem.FileExists(fileName);
+                Stream stream = null;
+                if (exists)
+                {
+                    stream = FileSystem.OpenFile(fileName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read);
                 }
                 else
                 {
