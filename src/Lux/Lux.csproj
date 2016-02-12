@@ -48,12 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Base\IConfigArguments.cs" />
     <Compile Include="Config\Base\ConfigBase.cs" />
     <Compile Include="Config\Base\ConfigLocationBase.cs" />
     <Compile Include="Config\Base\IConfig.cs" />
     <Compile Include="Config\Base\IConfigLocation.cs" />
     <Compile Include="Config\Base\IConfigLocationFactory.cs" />
     <Compile Include="Config\ConfigurationExtensions.cs" />
+    <Compile Include="Config\Generic\UriConfigLocation.cs" />
     <Compile Include="Config\Xml\AppConfigLocationFactory.cs" />
     <Compile Include="Config\Xml\IXmlConfigLocation.cs" />
     <Compile Include="Config\Xml\XmlConfigBase.cs" />
