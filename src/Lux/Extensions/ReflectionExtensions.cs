@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -57,6 +59,60 @@ namespace Lux.Extensions
                 value = default(TValue);
             }
             return value;
+        }
+
+
+        /// <summary>
+        /// Checks a type to see if it derives from a raw generic (e.g. List[[]])
+        /// </summary>
+        /// <param name="toCheck"></param>
+        /// <param name="generic"></param>
+        /// <returns></returns>
+        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                Type cur = toCheck.IsGenericType
+                    ? toCheck.GetGenericTypeDefinition()
+                    : toCheck;
+
+                if (generic == cur)
+                {
+                    return true;
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Find a value from a System.Enum by trying several possible variants
+        /// of the string value of the enum.
+        /// </summary>
+        /// <param name="type">Type of enum</param>
+        /// <param name="value">Value for which to search</param>
+        /// <param name="culture">The culture used to calculate the name variants</param>
+        /// <returns></returns>
+        public static object FindEnumValue(this Type type, string value, CultureInfo culture)
+        {
+            Enum ret = Enum.GetValues(type)
+                           .Cast<Enum>()
+                           .FirstOrDefault(v => v.ToString()
+                                                 .GetNameVariants(culture)
+                                                 .Contains(value, StringComparer.Create(culture, true)));
+
+            if (ret == null)
+            {
+                object enumValueAsUnderlyingType = Convert.ChangeType(value, Enum.GetUnderlyingType(type), culture);
+
+                if (enumValueAsUnderlyingType != null && Enum.IsDefined(type, enumValueAsUnderlyingType))
+                {
+                    ret = (Enum) Enum.ToObject(type, enumValueAsUnderlyingType);
+                }
+            }
+            return ret;
         }
 
     }

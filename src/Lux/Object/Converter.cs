@@ -67,6 +67,8 @@ namespace Lux
                     var str = Convert<string>(value);
                     if (type == typeof (string))
                     {
+                        // todo: refactor to use ReflectionExtensions.FindEnumValue(..)
+
                         var values = Enum.GetValues(typeof(T)).Cast<T>().Select(x => x.ToString()).ToList();
                         var index = values.FindIndex(x => string.Equals(x, str, StringComparison.OrdinalIgnoreCase));
                         if (index >= 0)
@@ -180,6 +182,8 @@ namespace Lux
                     var str = Convert<string>(value);
                     if (type == typeof (string))
                     {
+                        // todo: refactor to use ReflectionExtensions.FindEnumValue(..)
+
                         var values = Enum.GetValues(targetType).Cast<Enum>().Select(x => x.ToString()).ToList();
                         var index = values.FindIndex(x => string.Equals(x, str, StringComparison.OrdinalIgnoreCase));
                         if (index >= 0)

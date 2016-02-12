@@ -72,10 +72,14 @@
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="Config\Base\IConfigManager.cs" />
     <Compile Include="Object\DisposableLock.cs" />
+    <Compile Include="Serialization\Base\ISerializer.cs" />
+    <Compile Include="Serialization\Base\IDeserializer.cs" />
+    <Compile Include="Serialization\Xml\XSerializer.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />
     <Compile Include="Xml\XNodeInterpreterExtensions.cs" />

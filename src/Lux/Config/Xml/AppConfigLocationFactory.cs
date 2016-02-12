@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Linq;
-using System.Reflection;
 
 namespace Lux.Config
 {
@@ -47,7 +45,7 @@ namespace Lux.Config
             }
             
             var configUri = new Uri(configPath);
-            var location = new XmlConfigLocation
+            IConfigLocation location = new XmlConfigLocation
             {
                 Uri = configUri,
                 RootElementPath = rootElementPath,
