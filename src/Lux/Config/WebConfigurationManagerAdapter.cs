@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Configuration;
+using System.Web.Configuration;
 
 namespace Lux.Config
 {
@@ -12,13 +13,13 @@ namespace Lux.Config
         /// Gets the System.Configuration.AppSettingsSection data for the current application's default configuration
         /// </summary>
         /// <returns>Returns a System.Collections.Specialized.NameValueCollection object that contains the contents of the System.Configuration.AppSettingsSection object for the current application's default configuration.</returns>
-        public NameValueCollection AppSettings => System.Web.Configuration.WebConfigurationManager.AppSettings;
+        public NameValueCollection AppSettings => WebConfigurationManager.AppSettings;
 
         /// <summary>
         /// Gets the System.Configuration.ConnectionStringsSection data for the current application's default configuration.
         /// </summary>
         /// <returns>Returns a System.Configuration.ConnectionStringSettingsCollection object that contains the contents of the System.Configuration.ConnectionStringsSection object for the current application's default configuration.</returns>
-        public ConnectionStringSettingsCollection ConnectionStrings => System.Web.Configuration.WebConfigurationManager.ConnectionStrings;
+        public ConnectionStringSettingsCollection ConnectionStrings => WebConfigurationManager.ConnectionStrings;
 
         /// <summary>
         /// Retrieves a specified configuration section for the current application's default configuration.
@@ -28,9 +29,15 @@ namespace Lux.Config
         /// <returns>The specified System.Configuration.ConfigurationSection object, or null if the section does not exist.</returns>
         public T GetSection<T>(string sectionName)
         {
-            var obj = System.Web.Configuration.WebConfigurationManager.GetSection(sectionName);
+            var obj = WebConfigurationManager.GetSection(sectionName);
             var result = (T) obj;
             return result;
+        }
+
+        public Configuration OpenConfiguration(string path, ConfigurationUserLevel userLevel)
+        {
+            var config = WebConfigurationManager.OpenWebConfiguration(path);
+            return config;
         }
     }
 }

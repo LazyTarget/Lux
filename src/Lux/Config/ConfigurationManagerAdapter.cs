@@ -12,13 +12,13 @@ namespace Lux.Config
         /// Gets the System.Configuration.AppSettingsSection data for the current application's default configuration
         /// </summary>
         /// <returns>Returns a System.Collections.Specialized.NameValueCollection object that contains the contents of the System.Configuration.AppSettingsSection object for the current application's default configuration.</returns>
-        public NameValueCollection AppSettings => System.Configuration.ConfigurationManager.AppSettings;
+        public NameValueCollection AppSettings => ConfigurationManager.AppSettings;
 
         /// <summary>
         /// Gets the System.Configuration.ConnectionStringsSection data for the current application's default configuration.
         /// </summary>
         /// <returns>Returns a System.Configuration.ConnectionStringSettingsCollection object that contains the contents of the System.Configuration.ConnectionStringsSection object for the current application's default configuration.</returns>
-        public ConnectionStringSettingsCollection ConnectionStrings => System.Configuration.ConfigurationManager.ConnectionStrings;
+        public ConnectionStringSettingsCollection ConnectionStrings => ConfigurationManager.ConnectionStrings;
 
         /// <summary>
         /// Retrieves a specified configuration section for the current application's default configuration.
@@ -28,9 +28,25 @@ namespace Lux.Config
         /// <returns>The specified System.Configuration.ConfigurationSection object, or null if the section does not exist.</returns>
         public T GetSection<T>(string sectionName)
         {
-            var obj = System.Configuration.ConfigurationManager.GetSection(sectionName);
+            var obj = ConfigurationManager.GetSection(sectionName);
             var result = (T) obj;
             return result;
+        }
+
+        public Configuration OpenConfiguration(string path, ConfigurationUserLevel userLevel)
+        {
+            Configuration config;
+            if (path == null)
+            {
+                config = ConfigurationManager.OpenExeConfiguration(userLevel);
+                return config;
+            }
+            
+            var fileMap = new ExeConfigurationFileMap();
+            fileMap.ExeConfigFilename = path;
+
+            config = ConfigurationManager.OpenMappedExeConfiguration(fileMap, userLevel);
+            return config;
         }
     }
 }

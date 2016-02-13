@@ -24,5 +24,7 @@ namespace Lux.Config
         /// <param name="sectionName">The configuration section path and name.</param>
         /// <returns>The specified System.Configuration.ConfigurationSection object, or null if the section does not exist.</returns>
         T GetSection<T>(string sectionName);
+
+        Configuration OpenConfiguration(string path, ConfigurationUserLevel userLevel);
     }
 }

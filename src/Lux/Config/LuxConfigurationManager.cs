@@ -21,13 +21,26 @@ namespace Lux.Config
 
         public T GetSection<T>(string sectionName)
         {
+            ActivateIfIsNot();
+            var result = _parent.GetSection<T>(sectionName);
+            return result;
+        }
+
+        public Configuration OpenConfiguration(string path, ConfigurationUserLevel userLevel)
+        {
+            ActivateIfIsNot();
+            var config = _parent.OpenConfiguration(path, userLevel);
+            return config;
+        }
+
+
+        private void ActivateIfIsNot()
+        {
             if (!_activated)
             {
                 LuxConfigSystem.Activate();
                 _activated = true;
             }
-            var result = _parent.GetSection<T>(sectionName);
-            return result;
         }
     }
 }

@@ -20,7 +20,8 @@ namespace Lux.Config.Xml
             var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             try
             {
-                var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(UserLevel);
+                //var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(UserLevel);
+                var config = Framework.ConfigurationManager.OpenConfiguration(configPath, UserLevel);
                 configPath = config.FilePath;
 
                 var configType = typeof (TConfig);
