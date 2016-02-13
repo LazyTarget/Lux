@@ -5,6 +5,7 @@ using System.Xml.Linq;
 
 namespace Lux.Serialization.Xml
 {
+    [Obsolete("Obsolete library")]
     public class XmlDocumentLoader
     {
         public XmlDocumentLoader()

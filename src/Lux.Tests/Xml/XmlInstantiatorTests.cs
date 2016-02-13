@@ -11,7 +11,7 @@ namespace Lux.Tests.Xml
     {
         private IXmlInstantiator GetSUT()
         {
-            return new XmlSerializer();
+            return new CustomXmlSerializer();
         }
 
 

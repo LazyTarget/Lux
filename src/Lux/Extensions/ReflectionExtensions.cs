@@ -138,5 +138,32 @@ namespace Lux.Extensions
             }
         }
 
+
+        /// <summary>
+        /// Retrieve an attribute from a member (property)
+        /// </summary>
+        /// <typeparam name="T">Type of attribute to retrieve</typeparam>
+        /// <param name="prop">Member to retrieve attribute from</param>
+        /// <returns></returns>
+        public static T GetAttribute<T>(this MemberInfo prop)
+            where T : Attribute
+        {
+            var res = Attribute.GetCustomAttribute(prop, typeof(T)) as T;
+            return res;
+        }
+
+        /// <summary>
+        /// Retrieve an attribute from a type
+        /// </summary>
+        /// <typeparam name="T">Type of attribute to retrieve</typeparam>
+        /// <param name="type">Type to retrieve attribute from</param>
+        /// <returns></returns>
+        public static T GetAttribute<T>(this Type type)
+            where T : Attribute
+        {
+            var res = Attribute.GetCustomAttribute(type, typeof(T)) as T;
+            return res;
+        }
+
     }
 }

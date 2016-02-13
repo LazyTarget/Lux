@@ -5,17 +5,18 @@ using Lux.Xml;
 
 namespace Lux.Serialization.Xml
 {
-    public class XmlSerializer : IXmlSerializer, IXmlInstantiator
+    [Obsolete("Obsolete library")]
+    public class CustomXmlSerializer : IXmlSerializer, IXmlInstantiator
     {
         private XmlSettings _xmlSettings;
 
-        public XmlSerializer()
+        public CustomXmlSerializer()
             : this(new XmlSettings())
         {
             //_xmlSettings.XmlSerializer = this;
         }
 
-        public XmlSerializer(XmlSettings settings)
+        public CustomXmlSerializer(XmlSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));

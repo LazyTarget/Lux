@@ -25,7 +25,7 @@ namespace Lux.Config.Xml
             if (dataStore == null)
                 throw new ArgumentException("Invalid datastore", nameof(descriptor));
 
-            var document = dataStore.Load(descriptor);
+            var document = ParseInputAsDocument(data);
             var config = ParseFromXDocument<TConfig>(document, descriptor);
             return config;
         }
@@ -33,14 +33,34 @@ namespace Lux.Config.Xml
         public object Export<TConfig>(TConfig config, object data) 
             where TConfig : IConfig
         {
-            var document = data as XDocument;
-            if (document == null)
-                throw new ArgumentException($"Invalid data. Must be of type '{nameof(XDocument)}'");
-
+            var document = ParseInputAsDocument(data);
             document = ExportToXDocument(document, config);
             return document;
         }
 
+
+        protected virtual XDocument ParseInputAsDocument(object data)
+        {
+            XDocument document;
+            if (data is string)
+            {
+                var xml = (data ?? "").ToString();
+                document = XDocument.Parse(xml);
+            }
+            else if (data is XDocument)
+            {
+                document = (XDocument) data;
+            }
+            else if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+            else
+            {
+                throw new NotSupportedException($"The type '{data.GetType().Name}' is not supported for parsing");
+            }
+            return document;
+        }
 
 
         protected virtual TConfig ParseFromXDocument<TConfig>(XDocument document, IConfigDescriptor descriptor)

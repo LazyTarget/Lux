@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Lux.Extensions;
 using Lux.Interfaces;
+using Lux.Xml;
 
 namespace Lux.Serialization.Xml
 {
@@ -16,7 +17,10 @@ namespace Lux.Serialization.Xml
     {
         public XmlDeserializer()
         {
-            this.Culture = CultureInfo.InvariantCulture;
+            Culture = Culture;
+            TypeInstantiator = Framework.TypeInstantiator;
+            //Converter = Framework.Converter;
+            Converter = new Converter(TypeInstantiator);
         }
 
         public string RootElement { get; set; }
@@ -39,7 +43,7 @@ namespace Lux.Serialization.Xml
             var result = (T) obj;
             return result;
         }
-
+        
         public object Deserialize(object input, Type type)
         {
             var xml = (input ?? "").ToString();
@@ -48,19 +52,19 @@ namespace Lux.Serialization.Xml
                 return null;
             }
 
-            XDocument doc = XDocument.Parse(xml);
-            XElement root = doc.Root;
+            var doc = XDocument.Parse(xml);
+            var root = doc.Root;
 
-            if (RootElement.HasValue() && doc.Root != null)
+            if (!RootElement.IsNullOrEmpty() && doc.Root != null)
             {
-                root = doc.Root.Element(RootElement);
+                root = doc.Root.Element(RootElement.AsNamespaced(Namespace));
             }
 
-            //// autodetect xml namespace
-            //if (!this.Namespace.HasValue())
-            //{
-            //    RemoveNamespace(doc);
-            //}
+            // autodetect xml namespace
+            if (Namespace.IsNullOrEmpty())
+            {
+                RemoveNamespace(doc);
+            }
 
             var obj = TypeInstantiator.Instantiate(type);
             if (obj != null)
@@ -104,10 +108,12 @@ namespace Lux.Serialization.Xml
             }
         }
 
+
+
         protected virtual object Map(object x, XElement root)
         {
-            Type objType = x.GetType();
-            PropertyInfo[] props = objType.GetProperties();
+            var objType = x.GetType();
+            var props = objType.GetProperties();
 
             foreach (PropertyInfo prop in props)
             {
@@ -119,24 +125,32 @@ namespace Lux.Serialization.Xml
                 }
 
                 XName name = prop.Name;
+                var options = prop.GetAttribute<DeserializeAsAttribute>();
+                if (options != null)
+                {
+                    name = options.Name.AsNamespaced(Namespace);
+                }
+                else
+                {
+                    name = prop.Name.AsNamespaced(Namespace);
+                }
 
-                object value = GetValueFromXml(root, name, prop);
+                var value = GetValueFromXml(root, name, prop);
                 if (value == null)
                 {
                     // special case for inline list items
                     if (type.IsGenericType)
                     {
-                        Type genericType = type.GetGenericArguments()[0];
-                        XElement first = this.GetElementByName(root, genericType.Name);
-                        IList list = (IList) Activator.CreateInstance(type);
+                        var genericType = type.GetGenericArguments()[0];
+                        var first = GetElementByName(root, genericType.Name);
+                        //var list = (IList) Activator.CreateInstance(type);
+                        var list = (IList) TypeInstantiator.Instantiate(type);
 
                         if (first != null && root != null)
                         {
-                            IEnumerable<XElement> elements = root.Elements(first.Name);
-
-                            this.PopulateListFromElements(genericType, elements, list);
+                            var elements = root.Elements(first.Name);
+                            PopulateListFromElements(genericType, elements, list);
                         }
-
                         prop.SetValue(x, list, null);
                     }
                     continue;
@@ -157,10 +171,9 @@ namespace Lux.Serialization.Xml
 
                 if (type == typeof(bool))
                 {
-                    string toConvert = value.ToString()
-                                            .ToLower();
-
-                    prop.SetValue(x, XmlConvert.ToBoolean(toConvert), null);
+                    var toConvert = value.ToString().ToLower();
+                    var b = XmlConvert.ToBoolean(toConvert);
+                    prop.SetValue(x, b, null);
                 }
                 else if (type.IsPrimitive)
                 {
@@ -170,14 +183,12 @@ namespace Lux.Serialization.Xml
                 }
                 else if (type.IsEnum)
                 {
-                    object converted = type.FindEnumValue(value.ToString(), Culture);
-
+                    var converted = type.FindEnumValue(value.ToString(), Culture);
                     prop.SetValue(x, converted, null);
                 }
                 else if (type == typeof(Uri))
                 {
-                    Uri uri = new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
-
+                    var uri = new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
                     prop.SetValue(x, uri, null);
                 }
                 else if (type == typeof(string))
@@ -186,7 +197,7 @@ namespace Lux.Serialization.Xml
                 }
                 else if (type == typeof(DateTime))
                 {
-                    value = this.DateFormat.HasValue()
+                    value = !DateFormat.IsNullOrEmpty()
                         ? DateTime.ParseExact(value.ToString(), DateFormat, Culture)
                         : DateTime.Parse(value.ToString(), Culture);
 
@@ -194,9 +205,8 @@ namespace Lux.Serialization.Xml
                 }
                 else if (type == typeof(DateTimeOffset))
                 {
-                    string toConvert = value.ToString();
-
-                    if (!string.IsNullOrEmpty(toConvert))
+                    var toConvert = value.ToString();
+                    if (!toConvert.IsNullOrEmpty())
                     {
                         DateTimeOffset deserialisedValue;
 
@@ -208,7 +218,6 @@ namespace Lux.Serialization.Xml
                         catch (Exception)
                         {
                             object result;
-
                             if (TryGetFromString(toConvert, out result, type))
                             {
                                 prop.SetValue(x, result, null);
@@ -239,24 +248,21 @@ namespace Lux.Serialization.Xml
                 }
                 else if (type == typeof(TimeSpan))
                 {
-                    TimeSpan timeSpan = XmlConvert.ToTimeSpan(value.ToString());
-
+                    var timeSpan = XmlConvert.ToTimeSpan(value.ToString());
                     prop.SetValue(x, timeSpan, null);
                 }
                 else if (type.IsGenericType)
                 {
-                    Type t = type.GetGenericArguments()[0];
-                    IList list = (IList) Activator.CreateInstance(type);
-                    XElement container = GetElementByName(root, prop.Name);
-
+                    var t = type.GetGenericArguments()[0];
+                    //var list = (IList) Activator.CreateInstance(type);
+                    var list = (IList) TypeInstantiator.Instantiate(type);
+                    var container = GetElementByName(root, prop.Name.AsNamespaced(Namespace));
                     if (container.HasElements)
                     {
-                        XElement first = container.Elements().FirstOrDefault();
-
+                        var first = container.Elements().FirstOrDefault();
                         if (first != null)
                         {
-                            IEnumerable<XElement> elements = container.Elements(first.Name);
-
+                            var elements = container.Elements(first.Name);
                             PopulateListFromElements(t, elements, list);
                         }
                     }
@@ -267,8 +273,7 @@ namespace Lux.Serialization.Xml
                 {
                     // handles classes that derive from List<T>
                     // e.g. a collection that also has attributes
-                    object list = this.HandleListDerivative(root, prop.Name, type);
-
+                    var list = HandleListDerivative(root, prop.Name, type);
                     prop.SetValue(x, list, null);
                 }
                 else
@@ -285,12 +290,10 @@ namespace Lux.Serialization.Xml
                         // nested property classes
                         if (root != null)
                         {
-                            XElement element = this.GetElementByName(root, name);
-
+                            var element = GetElementByName(root, name);
                             if (element != null)
                             {
-                                object item = this.CreateAndMap(type, element);
-
+                                var item = CreateAndMap(type, element);
                                 prop.SetValue(x, item, null);
                             }
                         }
@@ -303,53 +306,44 @@ namespace Lux.Serialization.Xml
 
         private static bool TryGetFromString(string inputString, out object result, Type type)
         {
-#if !SILVERLIGHT && !WINDOWS_PHONE
             TypeConverter converter = TypeDescriptor.GetConverter(type);
-
             if (converter.CanConvertFrom(typeof(string)))
             {
                 result = (converter.ConvertFromInvariantString(inputString));
-
                 return true;
             }
-
             result = null;
-
             return false;
-#else
-            result = null;
-
-            return false;
-#endif
         }
 
         private void PopulateListFromElements(Type t, IEnumerable<XElement> elements, IList list)
         {
-            foreach (object item in elements.Select(element => this.CreateAndMap(t, element)))
+            foreach (var elem in elements)
             {
+                var item = CreateAndMap(t, elem);
                 list.Add(item);
             }
         }
 
         private object HandleListDerivative(XElement root, string propName, Type type)
         {
-            Type t = type.IsGenericType
+            var t = type.IsGenericType
                 ? type.GetGenericArguments()[0]
                 : type.BaseType.GetGenericArguments()[0];
-            //IList list = (IList) Activator.CreateInstance(type);
-            IList list = (IList) TypeInstantiator.Instantiate(type);
-            IList<XElement> elements = root.Descendants(t.Name).ToList();
+            //var list = (IList) Activator.CreateInstance(type);
+            var list = (IList) TypeInstantiator.Instantiate(type);
+            var elements = root.Descendants(t.Name.AsNamespaced(Namespace)).ToList();
             string name = t.Name;
 
             if (!elements.Any())
             {
-                XName lowerName = name.ToLower();
+                XName lowerName = name.ToLower().AsNamespaced(Namespace);
                 elements = root.Descendants(lowerName).ToList();
             }
 
             if (!elements.Any())
             {
-                XName camelName = name.ToCamelCase(Culture);
+                XName camelName = name.ToCamelCase(Culture).AsNamespaced(Namespace);
                 elements = root.Descendants(camelName).ToList();
             }
 
@@ -362,7 +356,7 @@ namespace Lux.Serialization.Xml
 
             if (!elements.Any())
             {
-                XName lowerName = name.ToLower();
+                XName lowerName = name.ToLower().AsNamespaced(Namespace);
 
                 elements = root.Descendants()
                                .Where(e => e.Name.LocalName.RemoveUnderscoresAndDashes() == lowerName)
@@ -375,7 +369,7 @@ namespace Lux.Serialization.Xml
             // only if this isn't a generic type
             if (!type.IsGenericType)
             {
-                Map(list, root.Element(propName) ?? root);
+                Map(list, root.Element(propName.AsNamespaced(Namespace)) ?? root);
                 // when using RootElement, the heirarchy is different
             }
 
@@ -406,16 +400,31 @@ namespace Lux.Serialization.Xml
 
         protected virtual object GetValueFromXml(XElement root, XName name, PropertyInfo prop)
         {
-            object val = null;
+            //Check for the DeserializeAs attribute on the property
+            var isAttribute = false;
+            var options = prop.GetAttribute<DeserializeAsAttribute>();
+            if (options != null)
+            {
+                name = options.Name ?? name;
+                isAttribute = options.Attribute;
+            }
+            if (isAttribute)
+            {
+                var attributeVal = GetAttributeByName(root, name);
+                if (attributeVal != null)
+                {
+                    return attributeVal.Value;
+                }
+            }
 
+            
+            object val = null;
             if (root != null)
             {
-                XElement element = this.GetElementByName(root, name);
-
+                var element = GetElementByName(root, name);
                 if (element == null)
                 {
-                    XAttribute attribute = this.GetAttributeByName(root, name);
-
+                    var attribute = GetAttributeByName(root, name);
                     if (attribute != null)
                     {
                         val = attribute.Value;
@@ -429,14 +438,13 @@ namespace Lux.Serialization.Xml
                     }
                 }
             }
-
             return val;
         }
 
         protected virtual XElement GetElementByName(XElement root, XName name)
         {
-            XName lowerName = name.LocalName.ToLower();
-            XName camelName = name.LocalName.ToCamelCase(Culture);
+            XName lowerName = name.LocalName.ToLower().AsNamespaced(name.NamespaceName);
+            XName camelName = name.LocalName.ToCamelCase(Culture).AsNamespaced(name.NamespaceName);
 
             if (root.Element(name) != null)
             {
@@ -453,7 +461,7 @@ namespace Lux.Serialization.Xml
                 return root.Element(camelName);
             }
 
-            if (name == "Value")
+            if (name == "Value".AsNamespaced(name.NamespaceName))
             {
                 return root;
             }
@@ -476,8 +484,8 @@ namespace Lux.Serialization.Xml
             var names = new List<XName>
             {
                 name.LocalName,
-                name.LocalName.ToLower(),
-                name.LocalName.ToCamelCase(Culture),
+                name.LocalName.ToLower().AsNamespaced(name.NamespaceName),
+                name.LocalName.ToCamelCase(Culture).AsNamespaced(name.NamespaceName),
             };
 
             var attr = root.DescendantsAndSelf()
@@ -486,6 +494,5 @@ namespace Lux.Serialization.Xml
                 .FirstOrDefault(d => names.Contains(d.Name.LocalName.RemoveUnderscoresAndDashes()));
             return attr;
         }
-
     }
 }

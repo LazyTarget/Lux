@@ -91,9 +91,14 @@
     <Compile Include="Config\Base\IConfigDescriptor.cs" />
     <Compile Include="Data\IDataStore.cs" />
     <Compile Include="Object\DisposableLock.cs" />
+    <Compile Include="Serialization\Attributes\DeserializeAsAttribute.cs" />
+    <Compile Include="Serialization\Attributes\SerializeAsAttribute.cs" />
     <Compile Include="Serialization\Base\ISerializer.cs" />
     <Compile Include="Serialization\Base\IDeserializer.cs" />
-    <Compile Include="Serialization\Xml\XSerializer.cs" />
+    <Compile Include="Serialization\Xml\Attributes\XmlSerializationAttribute.cs" />
+    <Compile Include="Serialization\Xml\Serializers\XmlSerializer.cs" />
+    <Compile Include="Serialization\Xml\Serializers\DotNetXmlSerializer.cs" />
+    <Compile Include="Serialization\Xml\Serializers\XmlDeserializer.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />
     <Compile Include="Config\Xml\XmlConfigDescriptor.cs" />
@@ -169,7 +174,7 @@
     <Compile Include="Serialization\Xml\Patterns\DefaultXmlPattern.cs" />
     <Compile Include="Serialization\Xml\XmlPattern.cs" />
     <Compile Include="Serialization\Xml\XmlInstantiatorExtensions.cs" />
-    <Compile Include="Serialization\Xml\XmlSerializer.cs" />
+    <Compile Include="Serialization\Xml\CustomXmlSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlArray.cs" />
     <Compile Include="Serialization\Xml\XmlSettings.cs" />

@@ -144,9 +144,9 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         #region Classes
 
-        public class MyAppConfig : IConfig, IXmlNode, IXmlConfigurable, IXmlExportable, IConfigurationSectionHandler, IEquatable<MyAppConfig>
+        public class MyAppConfig : XmlConfigBase, IEquatable<MyAppConfig>//, IConfig, IXmlNode, IXmlConfigurable, IXmlExportable, IConfigurationSectionHandler
         {
-            public IConfigDescriptor Descriptor { get; set; }
+            //public IConfigDescriptor Descriptor { get; set; }
 
 
             public string AppName { get; set; }
@@ -176,7 +176,7 @@ namespace Lux.Tests.Config.XmlConfigManager
                 return eq;
             }
 
-            public void Configure(XElement element)
+            public override void Configure(XElement element)
             {
                 var elem = element.Element(nameof(AppName));
                 if (elem != null)
@@ -191,14 +191,14 @@ namespace Lux.Tests.Config.XmlConfigManager
                 }
             }
 
-            public void Export(XElement element)
+            public override void Export(XElement element)
             {
                 element.GetOrCreateElement(nameof(AppName)).Value = AppName;
                 element.GetOrCreateElement(nameof(AppVersion)).Value = AppVersion;
             }
 
 
-            public object Create(object parent, object configContext, XmlNode section)
+            public override object Create(object parent, object configContext, XmlNode section)
             {
                 return section;
             }

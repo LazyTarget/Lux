@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
@@ -160,6 +161,62 @@ namespace Lux.Tests.Config.XmlConfigManager
                     FileSystem = new MemoryFileSystem(),
                 };
             }
+        }
+
+        public class CustomXmlConfig : XmlConfigBase, IEquatable<CustomXmlConfig>
+        {
+            //public IConfigDescriptor Descriptor { get; set; }
+
+
+            public string AppName { get; set; }
+            public string AppVersion { get; set; }
+
+
+            public bool Equals(CustomXmlConfig other)
+            {
+                if (other == null)
+                    return false;
+
+                if (!string.Equals(AppName, other.AppName))
+                    return false;
+                if (!string.Equals(AppVersion, other.AppVersion))
+                    return false;
+                return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                var eq = base.Equals(obj);
+                if (!eq)
+                {
+                    if (obj is CustomXmlConfig)
+                        eq = Equals((CustomXmlConfig) obj);
+                }
+                return eq;
+            }
+
+
+            public override void Configure(XElement element)
+            {
+                var elem = element.Element(nameof(AppName));
+                if (elem != null)
+                {
+                    AppName = elem.Value;
+                }
+
+                elem = element.Element(nameof(AppVersion));
+                if (elem != null)
+                {
+                    AppVersion = elem.Value;
+                }
+            }
+
+            public override void Export(XElement element)
+            {
+                element.GetOrCreateElement(nameof(AppName)).Value = AppName;
+                element.GetOrCreateElement(nameof(AppVersion)).Value = AppVersion;
+            }
+            
         }
 
         #endregion
