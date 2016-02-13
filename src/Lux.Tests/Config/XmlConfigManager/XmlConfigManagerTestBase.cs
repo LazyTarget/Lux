@@ -10,8 +10,13 @@ namespace Lux.Tests.Config.XmlConfigManager
 {
     public abstract class XmlConfigManagerTestBase : TestBase
     {
-        protected IFileSystem FileSystem = new MemoryFileSystem();
+        protected IFileSystem FileSystem;
 
+        protected XmlConfigManagerTestBase()
+        {
+            FileSystem = new MemoryFileSystem();
+            //FileSystem = new FileSystem();
+        }
 
         protected virtual TestableXmlConfigManager GetSUT()
         {

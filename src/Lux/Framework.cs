@@ -10,14 +10,18 @@ namespace Lux
     public static class Framework
     {
         private static IConfigManager _configManager;
+        private static IConfigurationManager _configurationManager;
         private static ILogFactory _logFactory;
         private static ITypeInstantiator _typeInstantiator;
         private static IAsserter _asserter;
 
         static Framework()
         {
-            TypeInstantiator = new TypeInstantiator();
+            //ConfigurationManager = new ConfigurationManagerAdapter();
+            ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
+
             ConfigManager = new XmlConfigManager();
+            TypeInstantiator = new TypeInstantiator();
             Asserter = new EmptyAsserter();
             LogFactory = new NullObjectLogFactory();
 
@@ -59,7 +63,18 @@ namespace Lux
                 _configManager = value;
             }
         }
-        
+
+        public static IConfigurationManager ConfigurationManager
+        {
+            get { return _configurationManager; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                _configurationManager = value;
+            }
+        }
+
         public static IAsserter Asserter
         {
             get { return _asserter; }

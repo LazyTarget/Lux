@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
-using Lux.IO;
 using Lux.Serialization.Xml;
 using Lux.Xml;
 using NUnit.Framework;
@@ -12,8 +12,7 @@ using NUnit.Framework;
 namespace Lux.Tests.Config.XmlConfigManager
 {
     [TestFixture]
-    [Ignore("Obsolete code")]
-    public class XmlConfigManager_AppConfigDefaultLocationTests : XmlConfigManagerTestBase
+    public class XmlConfigManager_AppConfigDescriptorTests : XmlConfigManagerTestBase
     {
         protected override void SetUp()
         {
@@ -22,43 +21,44 @@ namespace Lux.Tests.Config.XmlConfigManager
             //FileSystem = new FileSystem();
         }
 
-        //protected override TestableXmlConfigManager GetSUT()
-        //{
-        //    var sut = base.GetSUT();
-        //    sut.DefaultDescriptorFactory = new AppConfigDescriptorFactory
-        //    {
-        //        FileSystem = FileSystem,
-        //    };
-        //    return sut;
-        //}
+        protected override TestableXmlConfigManager GetSUT()
+        {
+            var sut = base.GetSUT();
+            sut.DefaultDescriptorFactory = new AppConfigDescriptorFactory
+            {
+                FileSystem = FileSystem,
+            };
+            return sut;
+        }
 
 
         #region Tests
 
         [TestCase]
-        public void LoadWithNullLocation_ShouldDefaultToAppConfig()
+        public void Load()
         {
             var sut = GetSUT();
 
-            var expectedLocation = GetAppConfigLocation<MyAppConfig>();
+            var expectedDescriptor = GetAppConfigDescriptor<MyAppConfig>();
             var expectedConfig = new MyAppConfig
             {
                 AppName = "MyAppName",
                 AppVersion = "1.0.0.0",
             };
-            SaveToFile(expectedLocation, FileSystem, expectedConfig);
+            SaveToFile(expectedDescriptor, FileSystem, expectedConfig);
             
-            var canLoad = sut.CanLoad<MyAppConfig>(descriptor: null);
+            var canLoad = sut.CanLoad<MyAppConfig>(expectedDescriptor);
             Assert.IsTrue(canLoad);
 
-            var actualConfig = sut.Load<MyAppConfig>(descriptor: null);
+            var actualConfig = sut.Load<MyAppConfig>(expectedDescriptor);
             Assert.IsNotNull(actualConfig);
             Assert.AreNotSame(expectedConfig, actualConfig);
             Assert.AreEqual(expectedConfig, actualConfig);
 
+            CollectionAssert.AreEquivalent(expectedDescriptor.Properties, actualConfig.Descriptor.Properties);
             var actualDescriptor = (XmlConfigDescriptor) actualConfig.Descriptor;
-            Assert.AreEqual(expectedLocation.Uri, actualDescriptor.Uri);
-            Assert.AreEqual(expectedLocation.RootElementPath, actualDescriptor.RootElementPath);
+            Assert.AreEqual(expectedDescriptor.Uri, actualDescriptor.Uri);
+            Assert.AreEqual(expectedDescriptor.RootElementPath, actualDescriptor.RootElementPath);
         }
 
 

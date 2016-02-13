@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -113,6 +114,28 @@ namespace Lux.Extensions
                 }
             }
             return ret;
+        }
+
+
+
+        public static IEnumerable<Type> GetDerivedTypes(this Type type, bool includeNonPublic = false)
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var alltypes = assemblies.SelectMany(x =>
+            {
+                var res = includeNonPublic
+                    ? x.GetTypes()
+                    : x.GetExportedTypes();
+                return res;
+            });
+            foreach (var t in alltypes)
+            {
+                var res = t.IsAssignableFrom(type);
+                if (res)
+                {
+                    yield return t;
+                }
+            }
         }
 
     }

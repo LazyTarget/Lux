@@ -24,7 +24,7 @@ namespace Lux.Config.Xml
             var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             try
             {
-                var config = ConfigurationManager.OpenExeConfiguration(UserLevel);
+                var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(UserLevel);
                 configPath = config.FilePath;
                 
                 var configSection = config.FindConfigSection(section =>
