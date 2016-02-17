@@ -34,32 +34,9 @@ namespace Lux.Tests.Serialization.Xml
             }
 
             iterator
-                .AssertCount(1, nameof(PocoClass.StringProp))
-                .GetByTagName(nameof(PocoClass.StringProp))
-                    .AssertElementValue(expected.StringProp.ToString(cultureInfo))
-                    .ChildrenOfType(typeof (XElement))
-                        .AssertCount(0)
-                    .Return()
-                .Return()
-
-                .AssertCount(1, nameof(PocoClass.DoubleProp))
-                .GetByTagName(nameof(PocoClass.DoubleProp))
-                    .AssertTagName(nameof(PocoClass.DoubleProp))
-                    .AssertElementValue(expected.DoubleProp.ToString(cultureInfo))
-                    .ChildrenOfType(typeof (XContainer))
-                        .AssertCount(0)
-                    .Return()
-                .Return()
-
-                .AssertCount(1, nameof(PocoClass.IntProp))
-                .GetByTagName(nameof(PocoClass.IntProp))
-                    .AssertTagName(nameof(PocoClass.IntProp))
-                    .AssertElementValue(expected.IntProp.ToString(cultureInfo))
-                    .ChildrenOfType(typeof (XContainer))
-                        .AssertCount(0)
-                    .Return()
-                .Return();
-
+                .AssertProperty(nameof(PocoClass.StringProp),   expected.StringProp.ToString(cultureInfo))
+                .AssertProperty(nameof(PocoClass.DoubleProp),   expected.DoubleProp.ToString(cultureInfo))
+                .AssertProperty(nameof(PocoClass.IntProp),      expected.IntProp.ToString(cultureInfo));
 
             var pocoProp = interpreter.ChildrenWihTag(nameof(PocoClass.PocoProp)).Enumerate().FirstOrDefault();
             if (pocoProp != null)
@@ -72,6 +49,23 @@ namespace Lux.Tests.Serialization.Xml
             }
 
             return interpreter;
+        }
+
+
+        public static TIterator AssertProperty<TIterator>(this TIterator iterator, string propertyName, string expected)
+            where TIterator : IXNodeInterpreterIterator
+        {
+            iterator
+                .AssertCount(1, propertyName)
+                .GetByTagName(propertyName)
+                    .AssertTagName(propertyName)
+                    .AssertElementValue(expected)
+                    .ChildrenOfType(typeof (XContainer))
+                        .AssertCount(0)
+                    .Return()
+                .Return();
+
+            return iterator;
         }
 
     }

@@ -7,6 +7,15 @@ namespace Lux.Xml
 {
     public static class XNodeInterpreterIteratorExtensions
     {
+        public static IXNodeInterpreter<XElement, IXNodeInterpreterIterator> GetByTagName(this IXNodeInterpreterIterator iterator, XName tagName, int index = 0)
+        {
+            var enumerable = iterator.Enumerate().FilterByTagName(tagName);
+            var navigator = enumerable.ElementAt(index);
+            var node = navigator.GetNode();
+            var result = XNodeInterpreter<XElement, IXNodeInterpreterIterator>.Create(node, iterator);
+            return result;
+        }
+
         public static IXNodeInterpreter<XElement, IXNodeInterpreterIterator<TNode, TParent>> GetByTagName<TNode, TParent>(this IXNodeInterpreterIterator<TNode, TParent> iterator, XName tagName, int index = 0)
             where TNode : XNode
         {
