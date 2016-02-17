@@ -8,15 +8,42 @@ namespace Lux.Xml
     {
         public static IXNodeInterpreter<XNode> Create(XNode node)
         {
-            var interpreter = XNodeInterpreter<XNode, XNode>.Create(node);
+            var interpreter = XNodeInterpreter<XNode>.Create(node);
             return interpreter;
         }
 
         public static IXNodeInterpreter<TNode> Create<TNode>(TNode node)
             where TNode : XNode
         {
-            var interpreter = Create((XNode)node).To<TNode>();
+            var interpreter = XNodeInterpreter<TNode>.Create(node);
             return interpreter;
+        }
+    }
+
+
+    public class XNodeInterpreter<TNode> : XNodeInterpreter<TNode, double>
+        where TNode : XNode
+    {
+        protected XNodeInterpreter(XNodeInterpreter<TNode, double> interpreter)
+            : base(interpreter)
+        {
+        }
+
+        protected XNodeInterpreter(TNode node, double parent)
+            : base(node, parent)
+        {
+        }
+
+        protected XNodeInterpreter(TNode node)
+            : base(node)
+        {
+        }
+
+        
+        public static IXNodeInterpreter<TNode> Create(TNode node)
+        {
+            var navigator = new XNodeInterpreter<TNode>(node);
+            return navigator;
         }
     }
 
@@ -60,10 +87,17 @@ namespace Lux.Xml
         }
 
 
-        public static IXNodeInterpreter<XNode> Create(XNode node)
+        //public static IXNodeInterpreter<XNode> Create(XNode node)
+        //{
+        //    var navigator = new XNodeInterpreter<XNode, TParent>(node);
+        //    return navigator;
+        //}
+
+        public static IXNodeInterpreter<TNode, TParent> Create(XNode node, TParent parent)
         {
-            var navigator = new XNodeInterpreter<XNode, TParent>(node);
-            return navigator;
+            var n = (TNode) node;
+            var interpreter = Create(n, parent);
+            return interpreter;
         }
 
         public static IXNodeInterpreter<TNode, TParent> Create(TNode node, TParent parent)
