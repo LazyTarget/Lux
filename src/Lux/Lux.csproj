@@ -101,6 +101,7 @@
     <Compile Include="Serialization\Xml\Serializers\XmlSerializer.cs" />
     <Compile Include="Serialization\Xml\Serializers\DotNetXmlSerializer.cs" />
     <Compile Include="Serialization\Xml\Serializers\XmlDeserializer.cs" />
+    <Compile Include="Unittest\DotNetAsserter.cs" />
     <Compile Include="Unittest\IAsserter.cs" />
     <Compile Include="Unittest\EmptyAsserter.cs" />
     <Compile Include="Config\Xml\XmlConfigDescriptor.cs" />

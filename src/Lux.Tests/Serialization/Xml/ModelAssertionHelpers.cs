@@ -2,13 +2,16 @@
 using System.Linq;
 using System.Xml.Linq;
 using Lux.Tests.Serialization.Models;
+using Lux.Unittest;
 using Lux.Xml;
-using NUnit.Framework;
 
 namespace Lux.Tests.Serialization.Xml
 {
     public static class ModelAssertionHelpers
     {
+        public static IAsserter Assert = Framework.Asserter;
+
+
         public static TInterpreter AssertAreEquivalent<TInterpreter>(this TInterpreter interpreter, PocoClass expected, CultureInfo cultureInfo = null)
             where TInterpreter : IXNodeInterpreter
         {
@@ -45,27 +48,10 @@ namespace Lux.Tests.Serialization.Xml
             }
             else if (expected.PocoProp != null)
             {
-                throw new AssertionException($"Missing property element '{nameof(PocoClass.PocoProp)}'");
+                Assert.Fail($"Missing property element '{nameof(PocoClass.PocoProp)}'");
             }
 
             return interpreter;
-        }
-
-
-        public static TIterator AssertProperty<TIterator>(this TIterator iterator, string propertyName, string expected)
-            where TIterator : IXNodeInterpreterIterator
-        {
-            iterator
-                .AssertCount(1, propertyName)
-                .GetByTagName(propertyName)
-                    .AssertTagName(propertyName)
-                    .AssertElementValue(expected)
-                    .ChildrenOfType(typeof (XContainer))
-                        .AssertCount(0)
-                    .Return()
-                .Return();
-
-            return iterator;
         }
 
     }

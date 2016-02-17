@@ -8,9 +8,9 @@ namespace Lux.Xml
 {
     public static class XNodeInterpreterIteratorAssertionExtensions
     {
-        private static IAsserter Assert = Framework.Asserter;
+        public static IAsserter Assert = Framework.Asserter;
 
-            
+
         public static TIterator AssertCount<TIterator>(this TIterator iterator, int? count = null, XName tagName = null)
             where TIterator : IXNodeInterpreterIterator
         {
@@ -30,5 +30,23 @@ namespace Lux.Xml
                 Assert.IsTrue(actual > 0, "Node has no children");
             return iterator;
         }
+
+
+        public static TIterator AssertProperty<TIterator>(this TIterator iterator, string propertyName, string expected)
+            where TIterator : IXNodeInterpreterIterator
+        {
+            iterator
+                .AssertCount(1, propertyName)
+                .GetByTagName(propertyName)
+                    .AssertTagName(propertyName)
+                    .AssertElementValue(expected)
+                    .ChildrenOfType(typeof (XContainer))
+                        .AssertCount(0)
+                    .Return()
+                .Return();
+
+            return iterator;
+        }
+
     }
 }
