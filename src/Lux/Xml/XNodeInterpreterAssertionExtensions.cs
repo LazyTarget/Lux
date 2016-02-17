@@ -22,7 +22,7 @@ namespace Lux.Xml
             if (count.HasValue)
                 Assert.AreEqual(count.Value, children.Count, "Tag children count not equal to expectation");
             else
-                Assert.IsTrue(children.Count > 0, "Tag has no children");
+                Assert.IsTrue(children.Count > 0, "Node has no children");
             return interpreter;
         }
 

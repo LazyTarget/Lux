@@ -45,7 +45,9 @@ namespace Lux.Serialization.Xml
         {
             var doc = new XDocument();
             var t = obj.GetType();
-            var name = t.Name;
+            var name = t.IsAnonymousType()
+                ? "Object"
+                : t.Name;
 
             var options = t.GetAttribute<SerializeAsAttribute>();
             if (options != null)

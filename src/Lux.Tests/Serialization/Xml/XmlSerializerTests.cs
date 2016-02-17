@@ -12,6 +12,12 @@ namespace Lux.Tests.Serialization.Xml
             return new XmlSerializer();
             //return new DotNetXmlSerializer();
         }
-        
+
+
+        [TestCase]
+        public override void SerializePoco()
+        {
+            base.SerializePoco();
+        }
     }
 }

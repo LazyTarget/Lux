@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Lux.Extensions
 {
@@ -162,6 +163,24 @@ namespace Lux.Extensions
             where T : Attribute
         {
             var res = Attribute.GetCustomAttribute(type, typeof(T)) as T;
+            return res;
+        }
+
+
+        public static bool IsAnonymousType(this Type type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+
+            var res = type.IsGenericType
+                      && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic
+                      &&
+                      (type.Name.StartsWith("<>", StringComparison.OrdinalIgnoreCase) ||
+                       type.Name.StartsWith("VB$", StringComparison.OrdinalIgnoreCase))
+                      && (type.Name.Contains("AnonymousType") || type.Name.Contains("AnonType"))
+                      && Attribute.IsDefined(type, typeof (CompilerGeneratedAttribute), false);
             return res;
         }
 

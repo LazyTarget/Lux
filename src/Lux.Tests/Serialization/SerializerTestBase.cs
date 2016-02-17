@@ -12,11 +12,11 @@ namespace Lux.Tests.Serialization
 
         
         [TestCase]
-        public void Test()
+        public virtual void SerializePoco()
         {
             var sut = GetSUT();
 
-            var obj = new
+            var obj = new PocoClass
             {
                 StringProp = "Qwerty",
                 DoubleProp = 13.1,
@@ -26,7 +26,7 @@ namespace Lux.Tests.Serialization
 
             var node = XElement.Parse(xml);
             node.CreateInterpreter()
-                .AssertHasChildren(2)
+                .AssertHasChildren(3)
                 .GetChild(0)
                     .AssertHasChildren(0)
                     .AssertTagName(nameof(obj.StringProp))
@@ -47,6 +47,16 @@ namespace Lux.Tests.Serialization
                     .Return()
                 ;
         }
-        
+
+
+
+        public class PocoClass
+        {
+            public string StringProp { get; set; }
+            public double DoubleProp { get; set; }
+            public int IntProp { get; set; }
+            public object ObjectProp { get; set; }
+        }
+
     }
 }
