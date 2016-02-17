@@ -45,9 +45,7 @@ namespace Lux.Serialization.Xml
         {
             var doc = new XDocument();
             var t = obj.GetType();
-            var name = t.IsAnonymousType()
-                ? "Object"
-                : t.Name;
+            var name = GetNameFromType(t);
 
             var options = t.GetAttribute<SerializeAsAttribute>();
             if (options != null)
@@ -58,7 +56,7 @@ namespace Lux.Serialization.Xml
             var root = new XElement(name.AsNamespaced(Namespace));
             if (obj is IList)
             {
-                string itemTypeName = "";
+                string itemTypeName = null;
 
                 foreach (object item in (IList) obj)
                 {
@@ -70,9 +68,9 @@ namespace Lux.Serialization.Xml
                         itemTypeName = opts.TransformName(opts.Name ?? name);
                     }
 
-                    if (itemTypeName == "")
+                    if (string.IsNullOrEmpty(itemTypeName))
                     {
-                        itemTypeName = type.Name;
+                        itemTypeName = GetNameFromType(type);
                     }
 
                     XElement instance = new XElement(itemTypeName.AsNamespaced(Namespace));
@@ -171,7 +169,7 @@ namespace Lux.Serialization.Xml
 
                             itemTypeName = setting != null && !setting.Name.IsNullOrEmpty()
                                 ? setting.Name
-                                : type.Name;
+                                : GetNameFromType(type);
                         }
 
                         var instance = new XElement(itemTypeName.AsNamespaced(Namespace));
@@ -300,7 +298,7 @@ namespace Lux.Serialization.Xml
                     if (type.IsGenericType)
                     {
                         var genericType = type.GetGenericArguments()[0];
-                        var first = GetElementByName(root, genericType.Name);
+                        var first = GetElementByName(root, GetNameFromType(genericType));
                         //var list = (IList) Activator.CreateInstance(type);
                         var list = (IList) TypeInstantiator.Instantiate(type);
 
@@ -463,6 +461,16 @@ namespace Lux.Serialization.Xml
             }
 
             return x;
+        }
+
+        private static string GetNameFromType(Type type)
+        {
+            var name = type.IsAnonymousType()
+                ? "Object"
+                : type.Name;
+            if (type.IsGenericType)
+                name = name.Substring(0, name.IndexOf("`"));
+            return name;
         }
 
         private static bool TryGetFromString(string inputString, out object result, Type type)

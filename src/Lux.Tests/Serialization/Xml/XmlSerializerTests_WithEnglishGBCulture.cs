@@ -34,5 +34,17 @@ namespace Lux.Tests.Serialization.Xml
         {
             base.SerializePoco_WithNesting();
         }
+
+        [TestCase]
+        public override void SerializeList()
+        {
+            base.SerializeList();
+        }
+
+        [TestCase]
+        public override void SerializeList_WithNesting()
+        {
+            base.SerializeList_WithNesting();
+        }
     }
 }
