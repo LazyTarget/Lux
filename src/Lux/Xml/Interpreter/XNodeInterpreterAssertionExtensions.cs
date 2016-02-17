@@ -12,7 +12,7 @@ namespace Lux.Xml
         private static IAsserter Assert = Framework.Asserter;
 
 
-        [Obsolete]
+        [Obsolete("Replaced with XNodeInterpreterIteratorAssertionExtensions.AssertCount(..)")]
         public static IXNodeInterpreter<TNode> AssertHasChildren<TNode>(this IXNodeInterpreter<TNode> interpreter, int? count = null)
             where TNode : XNode
         {
@@ -26,36 +26,13 @@ namespace Lux.Xml
             return interpreter;
         }
 
-        [Obsolete]
+        [Obsolete("Replaced with XNodeInterpreterIteratorAssertionExtensions.AssertCount(..)")]
         public static IXNodeInterpreter<TNode, TParent> AssertHasChildren<TNode, TParent>(this IXNodeInterpreter<TNode, TParent> interpreter, int? count = null)
             where TNode : XNode
         {
             AssertHasChildren((IXNodeInterpreter<TNode>) interpreter, count);
             return interpreter;
         }
-
-
-        
-        public static IXNodeInterpreterIterator<TNode> AssertCount<TNode>(this IXNodeInterpreterIterator<TNode> iterator, int? count = null)
-            where TNode : XNode
-        {
-            var enumerable = iterator.Enumerate();
-            var actual = enumerable.Count();
-            if (count.HasValue)
-                Assert.AreEqual(count.Value, actual, "Tag children count not equal to expectation");
-            else
-                Assert.IsTrue(actual > 0, "Node has no children");
-            return iterator;
-        }
-
-        public static IXNodeInterpreterIterator<TNode, TParent> AssertCount<TNode, TParent>(this IXNodeInterpreterIterator<TNode, TParent> iterator, int? count = null)
-            where TNode : XNode
-        {
-            AssertCount((IXNodeInterpreterIterator<TNode>)iterator, count);
-            return iterator;
-        }
-
-
 
 
         public static IXNodeInterpreter<TNode> AssertHasAttribute<TNode>(this IXNodeInterpreter<TNode> interpreter, string attributeName)
