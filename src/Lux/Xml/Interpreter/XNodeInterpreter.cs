@@ -110,7 +110,8 @@ namespace Lux.Xml
         {
             var navigator = new XNodeInterpreter<TNode, TParent>(node);
             navigator.ParentInterpreter = parentInterpreter;
-            navigator._parent = parentInterpreter._parent;
+            if (parentInterpreter != null)
+                navigator._parent = parentInterpreter._parent;
             return navigator;
         }
 
