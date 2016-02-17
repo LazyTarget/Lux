@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
@@ -15,6 +16,7 @@ namespace Lux.Serialization.Xml
         /// </summary>
         public DotNetXmlSerializer()
         {
+            Culture = Framework.CultureInfo;
             ContentType = "application/xml";
             Encoding = Encoding.UTF8;
         }
@@ -55,6 +57,9 @@ namespace Lux.Serialization.Xml
         public Encoding Encoding { get; set; }
 
 
+        public CultureInfo Culture { get; set; }
+
+
         /// <summary>
         /// Serialize the object as XML
         /// </summary>
@@ -65,6 +70,7 @@ namespace Lux.Serialization.Xml
             var ns = new XmlSerializerNamespaces();
             ns.Add(string.Empty, Namespace);
 
+            // todo: Use culture
             var serializer = new System.Xml.Serialization.XmlSerializer(obj.GetType());
             var writer = new EncodingStringWriter(Encoding);
             serializer.Serialize(writer, obj, ns);

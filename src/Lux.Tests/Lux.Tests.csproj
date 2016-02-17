@@ -61,7 +61,10 @@
     <Compile Include="NUnitAsserter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\SerializerTestBase.cs" />
-    <Compile Include="Serialization\Xml\XmlSerializerTests.cs" />
+    <Compile Include="Serialization\Xml\XmlSerializerTests_WithEnglishUSCulture.cs" />
+    <Compile Include="Serialization\Xml\XmlSerializerTests_WithEnglishGBCulture.cs" />
+    <Compile Include="Serialization\Xml\XmlSerializerTests_WithSwedishCulture.cs" />
+    <Compile Include="Serialization\Xml\XmlSerializerTests_WithNullFormatProvider.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Xml\XElementBuilder\CodeSyntaxTests.cs" />
     <Compile Include="Xml\XmlSerialierTests.cs" />

@@ -8,15 +8,15 @@ namespace Lux.Xml
     {
         public static IXNodeInterpreter<XNode> Create(XNode node)
         {
-            var navigator = XNodeInterpreter<XNode, XNode>.Create(node);
-            return navigator;
+            var interpreter = XNodeInterpreter<XNode, XNode>.Create(node);
+            return interpreter;
         }
 
         public static IXNodeInterpreter<TNode> Create<TNode>(TNode node)
             where TNode : XNode
         {
-            var navigator = Create((XNode)node).To<TNode>();
-            return navigator;
+            var interpreter = Create((XNode)node).To<TNode>();
+            return interpreter;
         }
     }
 
@@ -64,6 +64,12 @@ namespace Lux.Xml
         {
             var navigator = new XNodeInterpreter<XNode, TParent>(node);
             return navigator;
+        }
+
+        public static IXNodeInterpreter<TNode, TParent> Create(TNode node, TParent parent)
+        {
+            var interpreter = new XNodeInterpreter<TNode, TParent>(node, parent);
+            return interpreter;
         }
 
         internal static IXNodeInterpreter<TNode> Create(TNode node, XNodeInterpreter<XContainer, TParent> parentInterpreter = null)
@@ -117,8 +123,43 @@ namespace Lux.Xml
         }
 
 
+        public IXNodeInterpreterIterator<TNode, IXNodeInterpreter<TNode, TParent>> Children()
+        {
+            var container = (XContainer)(object)_node;
+            var children = container.Nodes().OfType<TNode>();
+            var intepreters = children.Select(child =>
+            {
+                var interpreter = new XNodeInterpreter<TNode, IXNodeInterpreter<TNode, TParent>>(child, this);
+                return interpreter;
+            }).ToArray();
+
+            var iterator = new XNodeInterpreterIterator<TNode, IXNodeInterpreter<TNode, TParent>>(intepreters, this);
+            return iterator;
+        }
+
+        IXNodeInterpreterIterator<TNode, IXNodeInterpreter<TNode, TParent>> IXNodeInterpreter<TNode, TParent>.Children()
+        {
+            return Children();
+        }
+
+        IXNodeInterpreterIterator<TNode, IXNodeInterpreter<TNode>> IXNodeInterpreter<TNode>.Children()
+        {
+            return Children();
+        }
+
+        IXNodeInterpreterIterator<XNode, IXNodeInterpreter> IXNodeInterpreter.Children()
+        {
+            return Children();
+        }
+
+
         public IXNodeInterpreter<XNode, IXNodeInterpreter<TNode, TParent>> GetChild(int index)
         {
+            //var iterator = Children();
+            //var node = iterator.GetAtIndex(index).GetNode();
+            //var navigator = new XNodeInterpreter<XNode, IXNodeInterpreter<TNode, TParent>>(node, this);
+            //return navigator;
+
             var container = (XContainer)(object)_node;
             var child = container.Nodes().ElementAt(index);
 
@@ -131,14 +172,14 @@ namespace Lux.Xml
 
         IXNodeInterpreter<XNode, IXNodeInterpreter<TNode>> IXNodeInterpreter<TNode>.GetChild(int index)
         {
-            var navigator = GetChild(index);
-            return navigator;
+            var interpreter = GetChild(index);
+            return interpreter;
         }
 
         IXNodeInterpreter<XNode, IXNodeInterpreter<XNode>> IXNodeInterpreter.GetChild(int index)
         {
-            var navigator = GetChild(index);
-            return navigator;
+            var interpreter = GetChild(index);
+            return interpreter;
         }
 
         public TParent Return()

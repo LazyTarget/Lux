@@ -17,7 +17,7 @@ namespace Lux.Serialization.Xml
     {
         public XmlSerializer()
         {
-            Culture = Culture;
+            Culture = Framework.CultureInfo;
             TypeInstantiator = Framework.TypeInstantiator;
             //Converter = Framework.Converter;
             Converter = new Converter(TypeInstantiator);

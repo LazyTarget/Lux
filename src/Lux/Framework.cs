@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Lux.Config;
 using Lux.Config.Xml;
 using Lux.Diagnostics;
@@ -17,6 +18,9 @@ namespace Lux
 
         static Framework()
         {
+            //CultureInfo = CultureInfo.CurrentCulture;
+            CultureInfo = null;
+
             //ConfigurationManager = new ConfigurationManagerAdapter();
             ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
 
@@ -30,6 +34,8 @@ namespace Lux
 #endif
         }
 
+
+        public static CultureInfo CultureInfo { get; set; }
 
         public static ITypeInstantiator TypeInstantiator
         {

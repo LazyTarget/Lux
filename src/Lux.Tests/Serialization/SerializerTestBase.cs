@@ -1,4 +1,7 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Xml.Linq;
 using Lux.Serialization;
 using Lux.Xml;
 using NUnit.Framework;
@@ -10,10 +13,13 @@ namespace Lux.Tests.Serialization
     {
         protected abstract ISerializer GetSUT();
 
+        protected abstract CultureInfo GetCultureInfo();
+
         
         [TestCase]
         public virtual void SerializePoco()
         {
+            var cultureInfo = GetCultureInfo();
             var sut = GetSUT();
 
             var obj = new PocoClass
@@ -26,24 +32,31 @@ namespace Lux.Tests.Serialization
 
             var node = XElement.Parse(xml);
             node.CreateInterpreter()
-                .AssertHasChildren(3)
-                .GetChild(0)
-                    .AssertHasChildren(0)
-                    .AssertTagName(nameof(obj.StringProp))
-                    .AssertElementValue(obj.StringProp)
-                    //.AssertAttributeValue(nameof(obj.StringProp), obj.StringProp)
-                    .Return()
-                .GetChild(1)
-                    .AssertHasChildren(0)
-                    .AssertTagName(nameof(obj.DoubleProp))
-                    .AssertElementValue(obj.DoubleProp)
-                    //.AssertAttributeValue(nameof(obj.DoubleProp), obj.DoubleProp)
-                    .Return()
-                .GetChild(2)
-                    .AssertHasChildren(0)
-                    .AssertTagName(nameof(obj.IntProp))
-                    .AssertElementValue(obj.IntProp)
-                    //.AssertAttributeValue(nameof(obj.IntProp), obj.IntProp)
+                .AssertTagName(nameof(PocoClass))
+                //.Children()
+                .ChildrenOfType(typeof(XElement))
+                    .AssertCount(3)
+                    .GetAtIndex(0)
+                        .AssertTagName(nameof(obj.StringProp))
+                        .AssertElementValue(obj.StringProp.ToString(cultureInfo))
+                        .ChildrenOfType(typeof(XElement))
+                            .AssertCount(0)
+                            .Return()
+                        .Return()
+                    .GetAtIndex(1)
+                        .AssertTagName(nameof(obj.DoubleProp))
+                        .AssertElementValue(obj.DoubleProp.ToString(cultureInfo))
+                        .ChildrenOfType(typeof(XContainer))
+                            .AssertCount(0)
+                            .Return()
+                        .Return()
+                    .GetAtIndex(2)
+                        .AssertTagName(nameof(obj.IntProp))
+                        .AssertElementValue(obj.IntProp.ToString(cultureInfo))
+                        .ChildrenOfType(typeof(XContainer))
+                            .AssertCount(0)
+                            .Return()
+                        .Return()
                     .Return()
                 ;
         }
