@@ -38,7 +38,8 @@ namespace Lux.Config
         {
             if (!_activated)
             {
-                LuxConfigSystem.Activate();
+                if (!ConfigSystemProxy.IsActivated())
+                    ConfigSystemProxy.Activate();
                 _activated = true;
             }
         }

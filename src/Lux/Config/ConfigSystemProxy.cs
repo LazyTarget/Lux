@@ -4,14 +4,24 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 using System.Configuration.Internal;
+using System.IO;
 using System.Reflection;
 using Lux.Extensions;
+using Lux.IO;
 
 namespace Lux.Config
 {
-    public sealed class LuxConfigSystem : IInternalConfigSystem
+    public sealed class ConfigSystemProxy : IInternalConfigSystem
     {
+        private static ConfigSystemProxy _activatedConfigSystem;
         private static IInternalConfigSystem _clientConfigSystem;
+
+
+        public static bool IsActivated()
+        {
+            var res = _activatedConfigSystem != null;
+            return res;
+        }
 
         /// <summary>
         /// Re-initializes the ConfigurationManager, allowing us to merge in the settings from Core.Config
@@ -29,26 +39,40 @@ namespace Lux.Config
             FieldInfo fiInit = typeof(System.Configuration.ConfigurationManager).GetField("s_initState", BindingFlags.NonPublic | BindingFlags.Static);
             FieldInfo fiSystem = typeof(System.Configuration.ConfigurationManager).GetField("s_configSystem", BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (fiInit != null && fiSystem != null && null != fiStateValues)
+            if (fiInit != null && fiSystem != null && fiStateValues != null)
             {
-                fiInit.SetValue(null, fiStateValues[1].GetValue(null));
+                var state = fiStateValues[1].GetValue(null);
+                fiInit.SetValue(null, state);
                 fiSystem.SetValue(null, null);
             }
 
-            LuxConfigSystem confSys = new LuxConfigSystem();
+            ConfigSystemProxy confSys = new ConfigSystemProxy();
             Type configFactoryType = Type.GetType("System.Configuration.Internal.InternalConfigSettingsFactory, System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", true);
             IInternalConfigSettingsFactory configSettingsFactory = (IInternalConfigSettingsFactory)Activator.CreateInstance(configFactoryType, true);
             configSettingsFactory.SetConfigurationSystem(confSys, false);
 
             Type clientConfigSystemType = Type.GetType("System.Configuration.ClientConfigurationSystem, System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", true);
             _clientConfigSystem = (IInternalConfigSystem)Activator.CreateInstance(clientConfigSystemType, true);
+
+
+            // Fetch configHost
+            FieldInfo fiClientHost = clientConfigSystemType.GetField("_configHost", BindingFlags.NonPublic | BindingFlags.Instance);
+            var configClientHost = (IInternalConfigClientHost) fiClientHost?.GetValue(_clientConfigSystem);
+            
+            FieldInfo fiConfigHost = typeof(DelegatingConfigHost).GetField("_host", BindingFlags.NonPublic | BindingFlags.Instance);
+            var internalConfigHost = (IInternalConfigHost)fiConfigHost?.GetValue(configClientHost);
+
+            // Set custom configHost
+            var configHost = new LuxConfigHost(internalConfigHost);
+            fiConfigHost.SetValue(configClientHost, configHost);
         }
+        
 
-
+        
         private object _appSettings;
         private object _connectionStrings;
 
-        public LuxConfigSystem()
+        private ConfigSystemProxy()
         {
             
         }
@@ -58,33 +82,41 @@ namespace Lux.Config
 
         public object GetSection(string configKey)
         {
+            if (configKey == "appSettings")
+            {
+                if (_appSettings != null)
+                    return _appSettings;
+            }
+            else if (configKey == "connectionStrings")
+            {
+                if (_connectionStrings != null)
+                    return _connectionStrings;
+            }
+
+
             // get the section from the default location (web.config or app.config)
             object section = _clientConfigSystem.GetSection(configKey);
+            
 
             switch (configKey)
             {
                 case "appSettings":
-                    if (this._appSettings != null)
-                    {
-                        return this._appSettings;
-                    }
-
                     if (section is NameValueCollection)
                     {
                         // create a new collection because the underlying collection is read-only
                         var cfg = new NameValueCollection((NameValueCollection)section);
-
+                        _appSettings = cfg;
+                        
                         // merge the settings from core with the local appsettings
-                        this._appSettings = cfg.Merge(System.Configuration.ConfigurationManager.AppSettings);
-                        section = this._appSettings;
+                        _appSettings = cfg.Merge(System.Configuration.ConfigurationManager.AppSettings);
+                        section = _appSettings;
                     }
                     break;
 
                 case "connectionStrings":
-                    if (this._connectionStrings != null)
-                    {
-                        return this._connectionStrings;
-                    }
+                    // Cannot simply return our ConnectionStringSettingsCollection as the calling routine expects a ConnectionStringsSection result
+                    ConnectionStringsSection connectionStringsSection = new ConnectionStringsSection();
+                    _connectionStrings = connectionStringsSection;
 
                     // create a new collection because the underlying collection is read-only
                     var cssc = new ConnectionStringSettingsCollection();
@@ -95,20 +127,17 @@ namespace Lux.Config
                         cssc.Add(connectionStringSetting);
                     }
 
-                    // merge the settings from core with the local connectionStrings
+                    //// merge the settings from core with the local connectionStrings
                     cssc = cssc.Merge(System.Configuration.ConfigurationManager.ConnectionStrings);
-
-                    // Cannot simply return our ConnectionStringSettingsCollection as the calling routine expects a ConnectionStringsSection result
-                    ConnectionStringsSection connectionStringsSection = new ConnectionStringsSection();
-
+                    
                     // Add our merged connection strings to the new ConnectionStringsSection
                     foreach (ConnectionStringSettings connectionStringSetting in cssc)
                     {
                         connectionStringsSection.ConnectionStrings.Add(connectionStringSetting);
                     }
 
-                    this._connectionStrings = connectionStringsSection;
-                    section = this._connectionStrings;
+                    _connectionStrings = connectionStringsSection;
+                    section = _connectionStrings;
                     break;
             }
 
@@ -119,12 +148,12 @@ namespace Lux.Config
         {
             if (sectionName == "appSettings")
             {
-                this._appSettings = null;
+                _appSettings = null;
             }
 
             if (sectionName == "connectionStrings")
             {
-                this._connectionStrings = null;
+                _connectionStrings = null;
             }
 
             _clientConfigSystem.RefreshConfig(sectionName);

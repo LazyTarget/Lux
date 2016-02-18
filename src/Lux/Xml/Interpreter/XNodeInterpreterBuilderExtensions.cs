@@ -44,5 +44,19 @@ namespace Lux.Xml
             return builder;
         }
 
+        public static IFluentXElementBuilder<TNodeType, TInterpreter> BuildAndAppend<TNodeType, TNode, TInterpreter, TParent>(this TInterpreter interpreter)
+            where TInterpreter : IXNodeInterpreter<TNode, TParent>
+            where TNodeType : XElement, new()
+            where TNode : XElement
+        {
+            var builder = new FluentXElementBuilder<TNodeType, TInterpreter>(interpreter);
+            builder.OnCreate = (result) =>
+            {
+                var node = interpreter.GetNode();
+                node.Add(result);
+            };
+            return builder;
+        }
+
     }
 }

@@ -35,6 +35,8 @@ namespace Lux.Extensions
         {
             if (second == null)
                 return first;
+            if (ReferenceEquals(first, second))
+                return first;
 
             foreach (string item in second)
             {
@@ -61,9 +63,9 @@ namespace Lux.Extensions
         public static ConnectionStringSettingsCollection Merge(this ConnectionStringSettingsCollection first, ConnectionStringSettingsCollection second)
         {
             if (second == null)
-            {
                 return first;
-            }
+            if (ReferenceEquals(first, second))
+                return first;
 
             foreach (ConnectionStringSettings item in second)
             {
