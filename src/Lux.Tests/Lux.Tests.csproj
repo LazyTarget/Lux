@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\XmlConfigManager\XmlConfigManager_AppConfigDescriptorTests.cs" />
-    <Compile Include="Config\XmlConfigManager\XmlConfigManager_AppConfigDefaultLocationTests.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManagerTestBase.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManager_IXmlNodeTests.cs" />
     <Compile Include="IO\DirectoryManagerWithRealFileSystem_Tests.cs" />

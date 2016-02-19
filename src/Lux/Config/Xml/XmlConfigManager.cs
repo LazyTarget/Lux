@@ -12,7 +12,7 @@ namespace Lux.Config.Xml
         {
             DefaultDescriptorFactory = new AppConfigDescriptorFactory
             {
-                FileSystem = new FileSystem(),
+                ConfigurationManager = Framework.ConfigurationManager,
             };
         }
 
@@ -105,7 +105,10 @@ namespace Lux.Config.Xml
         {
             var descriptor = config.Descriptor;
             if (descriptor == null)
+            {
                 descriptor = GetDefaultDescriptor<TConfig>();
+                config.Descriptor = descriptor;
+            }
             ValidateDescriptor(descriptor);
 
             // Load

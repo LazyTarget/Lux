@@ -53,7 +53,8 @@ namespace Lux.Config.Xml
             }
             else if (data == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                //throw new ArgumentNullException(nameof(data));
+                document = null;
             }
             else
             {

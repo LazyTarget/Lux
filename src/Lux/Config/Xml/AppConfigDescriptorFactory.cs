@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using Lux.Data;
-using Lux.IO;
 
 namespace Lux.Config.Xml
 {
@@ -9,11 +8,11 @@ namespace Lux.Config.Xml
     {
         public AppConfigDescriptorFactory()
         {
-            FileSystem = new FileSystem();
+            ConfigurationManager = Framework.ConfigurationManager;
             UserLevel = ConfigurationUserLevel.None;
         }
-
-        public IFileSystem FileSystem { get; set; }
+        
+        public IConfigurationManager ConfigurationManager { get; set; }
 
         public ConfigurationUserLevel UserLevel { get; set; }
 
@@ -24,8 +23,7 @@ namespace Lux.Config.Xml
             var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             try
             {
-                //var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(UserLevel);
-                var config = Framework.ConfigurationManager.OpenConfiguration(configPath, UserLevel);
+                var config = ConfigurationManager.OpenConfiguration(configPath, UserLevel);
                 configPath = config.FilePath;
                 
                 var configSection = config.FindConfigSection(section =>

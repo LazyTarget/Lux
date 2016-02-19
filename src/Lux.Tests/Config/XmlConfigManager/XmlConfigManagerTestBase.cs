@@ -15,6 +15,7 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         protected XmlConfigManagerTestBase()
         {
+            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
             FileSystem = new MemoryFileSystem();
             //FileSystem = new FileSystem();
         }
@@ -24,7 +25,7 @@ namespace Lux.Tests.Config.XmlConfigManager
             var sut = new TestableXmlConfigManager();
             sut.DefaultDescriptorFactory = new AppConfigDescriptorFactory
             {
-                FileSystem = FileSystem,
+                ConfigurationManager = Framework.ConfigurationManager,
             };
             return sut;
         }
@@ -33,25 +34,6 @@ namespace Lux.Tests.Config.XmlConfigManager
         #region Helpers
 
         
-        protected void LoadFromFile(IXmlConfigLocation location, IFileSystem fileSystem, IXmlConfigurable configurable)
-        {
-            XDocument xdocument;
-            var fileName = location.Uri.LocalPath;
-            if (fileSystem.FileExists(fileName))
-            {
-                using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    xdocument = XDocument.Load(stream);
-                }
-            }
-            else
-                throw new FileNotFoundException("The requested file was not found", fileName);
-            
-            var path = location.RootElementPath ?? location.RootElementName;
-            var rootElement = xdocument.GetOrCreateElementAtPath(path);
-            configurable.Configure(rootElement);
-        }
-
         protected void LoadFromFile(XmlConfigDescriptor descriptor, IFileSystem fileSystem, IXmlConfigurable configurable)
         {
             XDocument xdocument;
@@ -72,33 +54,6 @@ namespace Lux.Tests.Config.XmlConfigManager
         }
 
 
-
-        protected void SaveToFile(IXmlConfigLocation location, IFileSystem fileSystem, IXmlExportable exportable, bool replace = false)
-        {
-            XDocument xdocument;
-            var fileName = location.Uri.LocalPath;
-            if (!replace && fileSystem.FileExists(fileName))
-            {
-                using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    xdocument = XDocument.Load(stream);
-                }
-            }
-            else
-                xdocument = new XDocument();
-
-            var path = location.RootElementPath ?? location.RootElementName;
-            var rootElement = xdocument.GetOrCreateElementAtPath(path);
-            exportable.Export(rootElement);
-            
-            var dirPath = PathHelper.GetParent(fileName);
-            if (!fileSystem.DirExists(dirPath))
-                fileSystem.CreateDir(dirPath);
-            using (var stream = fileSystem.OpenFile(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
-                xdocument.Save(stream);
-            }
-        }
         
         protected void SaveToFile(XmlConfigDescriptor descriptor, IFileSystem fileSystem, IXmlExportable exportable, bool replace = false)
         {
@@ -128,16 +83,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         }
 
 
-
-        protected IXmlConfigLocation GetAppConfigLocation<TConfig>()
-            where TConfig : IConfig
-        {
-            var factory = new AppConfigLocationFactory();
-            var location = factory.CreateLocation<TConfig>();
-            var result = (IXmlConfigLocation) location;
-            return result;
-        }
-
+        
         protected XmlConfigDescriptor GetAppConfigDescriptor<TConfig>()
             where TConfig : IConfig
         {
@@ -158,7 +104,7 @@ namespace Lux.Tests.Config.XmlConfigManager
             {
                 DefaultDescriptorFactory = new AppConfigDescriptorFactory
                 {
-                    FileSystem = new MemoryFileSystem(),
+                    ConfigurationManager = Framework.ConfigurationManager,
                 };
             }
         }

@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
-using Lux.Serialization.Xml;
+using Lux.IO;
 using Lux.Xml;
 using NUnit.Framework;
 
@@ -18,7 +18,12 @@ namespace Lux.Tests.Config.XmlConfigManager
         {
             base.SetUp();
             
-            //FileSystem = new FileSystem();
+            FileSystem = new FileSystem();
+
+            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter())
+            {
+                FileSystem = FileSystem,
+            };
         }
 
         protected override TestableXmlConfigManager GetSUT()
@@ -26,12 +31,7 @@ namespace Lux.Tests.Config.XmlConfigManager
             var sut = base.GetSUT();
             sut.DefaultDescriptorFactory = new AppConfigDescriptorFactory
             {
-                FileSystem = FileSystem,
-            };
-
-            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter())
-            {
-                FileSystem = FileSystem,
+                ConfigurationManager = Framework.ConfigurationManager,
             };
             return sut;
         }
@@ -72,7 +72,7 @@ namespace Lux.Tests.Config.XmlConfigManager
         {
             var sut = GetSUT();
 
-            var expectedLocation = GetAppConfigLocation<MyAppConfig>();
+            var expectedDescriptor = GetAppConfigDescriptor<MyAppConfig>();
             var expectedConfig = new MyAppConfig
             {
                 AppName = "MyAppName",
@@ -87,7 +87,7 @@ namespace Lux.Tests.Config.XmlConfigManager
 
             // Assert
             var actualConfig = new MyAppConfig();
-            LoadFromFile(expectedLocation, FileSystem, actualConfig);
+            LoadFromFile(expectedDescriptor, FileSystem, actualConfig);
 
             Assert.IsNotNull(actualConfig);
             Assert.AreNotSame(expectedConfig, actualConfig);

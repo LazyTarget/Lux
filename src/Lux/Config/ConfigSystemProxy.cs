@@ -13,7 +13,8 @@ namespace Lux.Config
 {
     public sealed class ConfigSystemProxy : IInternalConfigSystem
     {
-        internal static IFileSystem _fileSystem;
+        public static IFileSystem FileSystem;
+
         private static ConfigSystemProxy _activatedConfigSystem;
         internal static IInternalConfigSystem _clientConfigSystem;
         internal static IInternalConfigClientHost _internalConfigClientHost;
@@ -67,8 +68,6 @@ namespace Lux.Config
 
             // Set custom configHost
             var configHost = new LuxConfigHost(_internalConfigHost);
-            if (_fileSystem != null)
-                configHost.FileSystem = _fileSystem;
             fiConfigHost.SetValue(_internalConfigClientHost, configHost);
         }
         

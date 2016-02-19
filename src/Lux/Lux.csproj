@@ -66,11 +66,7 @@
     <Compile Include="Config\Base\IConfigLocation.cs" />
     <Compile Include="Config\Base\IConfigLocationFactory.cs" />
     <Compile Include="Config\ConfigurationExtensions.cs" />
-    <Compile Include="Config\Generic\UriConfigLocation.cs" />
-    <Compile Include="Config\Xml\AppConfigLocationFactory.cs" />
-    <Compile Include="Config\Xml\IXmlConfigLocation.cs" />
     <Compile Include="Config\Xml\XmlConfigBase.cs" />
-    <Compile Include="Config\Xml\XmlConfigLocation.cs" />
     <Compile Include="Config\Xml\XmlConfigManager.cs" />
     <Compile Include="Diagnostics\Interfaces\ILog.cs" />
     <Compile Include="Diagnostics\Interfaces\ILogFactory.cs" />
@@ -189,6 +185,7 @@
     <Compile Include="Xml\Interpreter\XNodeInterpreterIteratorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Config\Generic\" />
     <Folder Include="Config\System\" />
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />

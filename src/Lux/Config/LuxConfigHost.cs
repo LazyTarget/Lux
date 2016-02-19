@@ -20,8 +20,8 @@ namespace Lux.Config
         public LuxConfigHost(IInternalConfigHost internalConfigHost)
         {
             FileSystem = new FileSystem();
-            if (ConfigSystemProxy._fileSystem != null)
-                FileSystem = ConfigSystemProxy._fileSystem;
+            if (ConfigSystemProxy.FileSystem != null)
+                FileSystem = ConfigSystemProxy.FileSystem;
             Host = internalConfigHost;
         }
         

@@ -58,7 +58,7 @@ namespace Lux.Config
             {
                 if (!ConfigSystemProxy.IsActivated())
                 {
-                    ConfigSystemProxy._fileSystem = FileSystem;
+                    ConfigSystemProxy.FileSystem = FileSystem;
                     ConfigSystemProxy.Activate();
                 }
                 _activated = true;

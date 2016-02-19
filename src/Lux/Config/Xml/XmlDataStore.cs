@@ -115,12 +115,12 @@ namespace Lux.Config.Xml
 
         protected virtual Stream GetStreamForRead(IConfigDescriptor descriptor)
         {
-            //Uri uri = descriptor?.Properties?.GetOrDefault("Uri").Cast<Uri>();
-            //if (uri == null)
-            //{
-            //    throw new ArgumentException("Configuration uri is not defined");
-            //}
             Uri uri = Uri;
+            uri = uri ?? descriptor?.Properties?.GetOrDefault("Uri").CastTo<Uri>();
+            if (uri == null)
+            {
+                throw new ArgumentException("Configuration uri is not defined");
+            }
 
             if (!uri.IsAbsoluteUri)
             {
@@ -175,12 +175,12 @@ namespace Lux.Config.Xml
         
         protected virtual Stream GetStreamForWrite(IConfigDescriptor descriptor)
         {
-            //Uri uri = descriptor?.Properties?.GetOrDefault("Uri").Cast<Uri>();
-            //if (uri == null)
-            //{
-            //    throw new ArgumentException("Configuration uri is not defined");
-            //}
             Uri uri = Uri;
+            uri = uri ?? descriptor?.Properties?.GetOrDefault("Uri").CastTo<Uri>();
+            if (uri == null)
+            {
+                throw new ArgumentException("Configuration uri is not defined");
+            }
 
             if (!uri.IsAbsoluteUri)
             {
