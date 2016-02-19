@@ -14,7 +14,7 @@ namespace Lux.Serialization.Xml
         {
             _typeInstantiator = new TypeInstantiator();
             _converter = new Converter(_typeInstantiator);
-            _xmlInstantiator = new XmlSerializer(this);
+            _xmlInstantiator = new CustomXmlSerializer(this);
             _xmlPattern = Xml.XmlPattern.Default;
         }
 

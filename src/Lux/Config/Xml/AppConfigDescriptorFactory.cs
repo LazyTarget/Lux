@@ -1,29 +1,31 @@
 ﻿using System;
 using System.Configuration;
+using Lux.Data;
 
-namespace Lux.Config
+namespace Lux.Config.Xml
 {
-    public class AppConfigLocationFactory : IConfigLocationFactory
+    public class AppConfigDescriptorFactory : IConfigDescriptorFactory
     {
-        public AppConfigLocationFactory()
+        public AppConfigDescriptorFactory()
         {
+            ConfigurationManager = Framework.ConfigurationManager;
             UserLevel = ConfigurationUserLevel.None;
         }
+        
+        public IConfigurationManager ConfigurationManager { get; set; }
 
         public ConfigurationUserLevel UserLevel { get; set; }
 
-
-        public virtual IConfigLocation CreateLocation<TConfig>()
-            where TConfig : IConfig
+        
+        public virtual IConfigDescriptor CreateDescriptor(Type configType)
         {
             string rootElementPath = null;
             var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             try
             {
-                var config = ConfigurationManager.OpenExeConfiguration(UserLevel);
+                var config = ConfigurationManager.OpenConfiguration(configPath, UserLevel);
                 configPath = config.FilePath;
-
-                var configType = typeof (TConfig);
+                
                 var configSection = config.FindConfigSection(section =>
                 {
                     var assName = configType.Assembly.GetName();
@@ -45,12 +47,28 @@ namespace Lux.Config
             }
             
             var configUri = new Uri(configPath);
-            IConfigLocation location = new XmlConfigLocation
+            IDataStore<IConfigDescriptor> dataStore = new ConfigXmlDataStore
+            {
+                Uri = configUri,
+            };
+
+            IConfigDescriptor location = new XmlConfigDescriptor
             {
                 Uri = configUri,
                 RootElementPath = rootElementPath,
+                DataStore = dataStore,
             };
             return location;
         }
+
+
+        public IConfigDescriptor CreateDescriptor<TConfig>() 
+            where TConfig : IConfig
+        {
+            var type = typeof (TConfig);
+            var result = CreateDescriptor(type);
+            return result;
+        }
+
     }
 }

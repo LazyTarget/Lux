@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Lux.Extensions
 {
@@ -113,6 +115,75 @@ namespace Lux.Extensions
                 }
             }
             return ret;
+        }
+
+
+
+        public static IEnumerable<Type> GetDerivedTypes(this Type type, bool includeNonPublic = false)
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var alltypes = assemblies.SelectMany(x =>
+            {
+                var res = includeNonPublic
+                    ? x.GetTypes()
+                    : x.GetExportedTypes();
+                return res;
+            });
+            foreach (var t in alltypes)
+            {
+                if (t == type)
+                    continue;
+                var res = type.IsAssignableFrom(t);
+                if (res)
+                {
+                    yield return t;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieve an attribute from a member (property)
+        /// </summary>
+        /// <typeparam name="T">Type of attribute to retrieve</typeparam>
+        /// <param name="prop">Member to retrieve attribute from</param>
+        /// <returns></returns>
+        public static T GetAttribute<T>(this MemberInfo prop)
+            where T : Attribute
+        {
+            var res = Attribute.GetCustomAttribute(prop, typeof(T)) as T;
+            return res;
+        }
+
+        /// <summary>
+        /// Retrieve an attribute from a type
+        /// </summary>
+        /// <typeparam name="T">Type of attribute to retrieve</typeparam>
+        /// <param name="type">Type to retrieve attribute from</param>
+        /// <returns></returns>
+        public static T GetAttribute<T>(this Type type)
+            where T : Attribute
+        {
+            var res = Attribute.GetCustomAttribute(type, typeof(T)) as T;
+            return res;
+        }
+
+
+        public static bool IsAnonymousType(this Type type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+
+            var res = type.IsGenericType
+                      && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic
+                      &&
+                      (type.Name.StartsWith("<>", StringComparison.OrdinalIgnoreCase) ||
+                       type.Name.StartsWith("VB$", StringComparison.OrdinalIgnoreCase))
+                      && (type.Name.Contains("AnonymousType") || type.Name.Contains("AnonType"))
+                      && Attribute.IsDefined(type, typeof (CompilerGeneratedAttribute), false);
+            return res;
         }
 
     }

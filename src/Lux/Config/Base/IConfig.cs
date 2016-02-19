@@ -2,6 +2,6 @@
 {
     public interface IConfig
     {
-        IConfigLocation Location { get; set; }
+        IConfigDescriptor Descriptor { get; set; }
     }
 }

@@ -7,13 +7,23 @@ namespace Lux.Extensions
     public static class StringExtensions
     {
         /// <summary>
-        /// Check that a string is not null or empty
+        /// Indicates whether the specified string is null or an System.String.Empty string.
         /// </summary>
-        /// <param name="input">String to check</param>
+        /// <param name="value">The string to test.</param>
         /// <returns>bool</returns>
-        public static bool HasValue(this string input)
+        public static bool IsNullOrEmpty(this string value)
         {
-            return !string.IsNullOrEmpty(input);
+            return string.IsNullOrEmpty(value);
+        }
+
+        /// <summary>
+        /// Indicates whether a specified string is null, empty, or consists only of white-space characters.
+        /// </summary>
+        /// <param name="value">The string to test.</param>
+        /// <returns>bool</returns>
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
         }
 
         /// <summary>
