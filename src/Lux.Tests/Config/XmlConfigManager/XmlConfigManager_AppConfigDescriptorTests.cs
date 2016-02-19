@@ -28,6 +28,11 @@ namespace Lux.Tests.Config.XmlConfigManager
             {
                 FileSystem = FileSystem,
             };
+
+            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter())
+            {
+                FileSystem = FileSystem,
+            };
             return sut;
         }
 

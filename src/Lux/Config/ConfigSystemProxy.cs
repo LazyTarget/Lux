@@ -13,8 +13,11 @@ namespace Lux.Config
 {
     public sealed class ConfigSystemProxy : IInternalConfigSystem
     {
+        internal static IFileSystem _fileSystem;
         private static ConfigSystemProxy _activatedConfigSystem;
-        private static IInternalConfigSystem _clientConfigSystem;
+        internal static IInternalConfigSystem _clientConfigSystem;
+        internal static IInternalConfigClientHost _internalConfigClientHost;
+        internal static IInternalConfigHost _internalConfigHost;
 
 
         public static bool IsActivated()
@@ -57,14 +60,16 @@ namespace Lux.Config
 
             // Fetch configHost
             FieldInfo fiClientHost = clientConfigSystemType.GetField("_configHost", BindingFlags.NonPublic | BindingFlags.Instance);
-            var configClientHost = (IInternalConfigClientHost) fiClientHost?.GetValue(_clientConfigSystem);
+            _internalConfigClientHost = (IInternalConfigClientHost) fiClientHost?.GetValue(_clientConfigSystem);
             
             FieldInfo fiConfigHost = typeof(DelegatingConfigHost).GetField("_host", BindingFlags.NonPublic | BindingFlags.Instance);
-            var internalConfigHost = (IInternalConfigHost)fiConfigHost?.GetValue(configClientHost);
+            _internalConfigHost = (IInternalConfigHost)fiConfigHost?.GetValue(_internalConfigClientHost);
 
             // Set custom configHost
-            var configHost = new LuxConfigHost(internalConfigHost);
-            fiConfigHost.SetValue(configClientHost, configHost);
+            var configHost = new LuxConfigHost(_internalConfigHost);
+            if (_fileSystem != null)
+                configHost.FileSystem = _fileSystem;
+            fiConfigHost.SetValue(_internalConfigClientHost, configHost);
         }
         
 

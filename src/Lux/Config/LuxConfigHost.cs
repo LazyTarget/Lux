@@ -11,18 +11,29 @@ namespace Lux.Config
 {
     public class LuxConfigHost : DelegatingConfigHost//, IInternalConfigClientHost
     {
+        public LuxConfigHost()
+            : this((IInternalConfigHost)ConfigSystemProxy._internalConfigClientHost)
+        {
+            
+        }
+
         public LuxConfigHost(IInternalConfigHost internalConfigHost)
         {
             FileSystem = new FileSystem();
+            if (ConfigSystemProxy._fileSystem != null)
+                FileSystem = ConfigSystemProxy._fileSystem;
             Host = internalConfigHost;
         }
-
+        
         public IFileSystem FileSystem { get; set; }
 
 
         public override bool IsTrustedConfigPath(string configPath)
         {
-            return base.IsTrustedConfigPath(configPath);
+            bool res;
+            res = configPath == LuxConfigurationManager.MachineConfigPath;
+            //res = base.IsTrustedConfigPath(configPath);
+            return res;
         }
 
         public override bool PrefetchSection(string sectionGroupName, string sectionName)

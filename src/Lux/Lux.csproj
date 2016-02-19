@@ -189,6 +189,7 @@
     <Compile Include="Xml\Interpreter\XNodeInterpreterIteratorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Config\System\" />
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />
     <Folder Include="Serialization\Json\Base\" />
