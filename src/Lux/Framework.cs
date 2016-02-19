@@ -21,8 +21,8 @@ namespace Lux
             //CultureInfo = CultureInfo.CurrentCulture;
             CultureInfo = null;
 
-            //ConfigurationManager = new ConfigurationManagerAdapter();
-            ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
+            ConfigurationManager = new ConfigurationManagerAdapter();
+            //ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
 
             ConfigManager = new XmlConfigManager();
             TypeInstantiator = new TypeInstantiator();
@@ -36,7 +36,7 @@ namespace Lux
 
 
         public static CultureInfo CultureInfo { get; set; }
-
+        
         public static ITypeInstantiator TypeInstantiator
         {
             get { return _typeInstantiator; }
@@ -90,6 +90,14 @@ namespace Lux
                     throw new ArgumentNullException(nameof(value));
                 _asserter = value;
             }
+        }
+
+
+
+        public static void LoadFromConfig()
+        {
+            var section = ConfigurationManager.GetSection<object>("lux.framework");
+            
         }
 
     }

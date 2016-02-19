@@ -131,7 +131,9 @@ namespace Lux.Extensions
             });
             foreach (var t in alltypes)
             {
-                var res = t.IsAssignableFrom(type);
+                if (t == type)
+                    continue;
+                var res = type.IsAssignableFrom(t);
                 if (res)
                 {
                     yield return t;

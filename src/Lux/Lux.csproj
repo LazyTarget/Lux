@@ -54,17 +54,15 @@
     <Compile Include="Config\Base\IConfigParser.cs" />
     <Compile Include="Config\Base\IConfigDescriptorFactory.cs" />
     <Compile Include="Config\Base\IConfigurationManager.cs" />
+    <Compile Include="Config\Generic\EmptyConfigManager.cs" />
     <Compile Include="Config\System\LuxConfigHost.cs" />
     <Compile Include="Config\System\LuxConfigurationManager.cs" />
     <Compile Include="Config\System\WebConfigurationManagerAdapter.cs" />
     <Compile Include="Config\System\ConfigurationManagerAdapter.cs" />
     <Compile Include="Config\System\ConfigSystemProxy.cs" />
     <Compile Include="Config\Xml\AppConfigDescriptorFactory.cs" />
-    <Compile Include="Config\Base\IConfigArguments.cs" />
     <Compile Include="Config\Base\ConfigBase.cs" />
     <Compile Include="Config\Base\IConfig.cs" />
-    <Compile Include="Config\Base\IConfigLocation.cs" />
-    <Compile Include="Config\Base\IConfigLocationFactory.cs" />
     <Compile Include="Config\ConfigurationExtensions.cs" />
     <Compile Include="Config\Xml\XmlConfigBase.cs" />
     <Compile Include="Config\Xml\XmlConfigManager.cs" />
@@ -185,7 +183,6 @@
     <Compile Include="Xml\Interpreter\XNodeInterpreterIteratorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Config\Generic\" />
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />
     <Folder Include="Serialization\Json\Base\" />
