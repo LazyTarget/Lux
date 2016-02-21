@@ -8,13 +8,18 @@ namespace Lux
 {
     public class FrameworkConfig : XmlConfigBase
     {
-        public CultureInfo CultureInfo { get; set; }
-
+        private AssignableVariable<CultureInfo> _cultureInfo = new AssignableVariable<CultureInfo>();
+        public CultureInfo CultureInfo
+        {
+            get { return _cultureInfo?.Value; }
+            set { _cultureInfo.Value = value; }
+        }
 
 
         public virtual void Apply()
         {
-            Framework.CultureInfo = CultureInfo;
+            if (_cultureInfo.Assigned)
+                Framework.CultureInfo = CultureInfo;
         }
 
         public override void Configure(XElement element)
