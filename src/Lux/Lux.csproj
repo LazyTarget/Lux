@@ -87,6 +87,7 @@
     <Compile Include="Config\Base\IConfigManager.cs" />
     <Compile Include="Config\Base\IConfigDescriptor.cs" />
     <Compile Include="Data\IDataStore.cs" />
+    <Compile Include="FrameworkConfig.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Serialization\Attributes\DeserializeAsAttribute.cs" />
     <Compile Include="Serialization\Attributes\SerializeAsAttribute.cs" />

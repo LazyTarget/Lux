@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
 using Lux.Diagnostics;
@@ -97,8 +98,14 @@ namespace Lux
         public static void LoadFromConfig()
         {
             var section = ConfigurationManager.GetSection<object>("lux.framework");
-            
-        }
 
+
+            var element = section as XElement;
+
+            var config = new FrameworkConfig();
+            config.Configure(element);
+            config.Apply();
+        }
+        
     }
 }

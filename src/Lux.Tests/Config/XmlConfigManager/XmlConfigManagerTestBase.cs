@@ -15,9 +15,13 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         protected XmlConfigManagerTestBase()
         {
-            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter());
             FileSystem = new MemoryFileSystem();
             //FileSystem = new FileSystem();
+
+            Framework.ConfigurationManager = new LuxConfigurationManager(new ConfigurationManagerAdapter())
+            {
+                FileSystem = FileSystem,
+            };
         }
 
         protected virtual TestableXmlConfigManager GetSUT()
@@ -32,6 +36,34 @@ namespace Lux.Tests.Config.XmlConfigManager
 
         
         #region Helpers
+
+
+        protected void SaveAppConfigFile(string xml, IFileSystem fileSystem)
+        {
+            xml = xml.Trim();
+            var document = XDocument.Parse(xml);
+            SaveAppConfigFile(document, fileSystem);
+        }
+        
+        protected void SaveAppConfigFile(XDocument document, IFileSystem fileSystem)
+        {
+            var fileName = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+
+
+            var dirPath = PathHelper.GetParent(fileName);
+            if (!fileSystem.DirExists(dirPath))
+                fileSystem.CreateDir(dirPath);
+
+            var exists = fileSystem.FileExists(fileName);
+            var fileMode = exists ? FileMode.Truncate : FileMode.CreateNew;
+            var fileAccess = FileAccess.ReadWrite;
+            var fileShare = FileShare.Read;
+            using (var stream = fileSystem.OpenFile(fileName, fileMode, fileAccess, fileShare))
+            {
+                document.Save(stream);
+            }
+        }
+
 
         
         protected void LoadFromFile(XmlConfigDescriptor descriptor, IFileSystem fileSystem, IXmlConfigurable configurable)

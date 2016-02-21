@@ -8,7 +8,7 @@ namespace Lux.Tests
         [SetUp]
         protected void GlobalSetUp()
         {
-            Lux.Framework.Asserter = new NUnitAsserter();
+            Framework.Asserter = new NUnitAsserter();
 
             SetUp();
         }
