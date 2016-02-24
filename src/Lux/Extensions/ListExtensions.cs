@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Lux.Extensions
 {
@@ -11,22 +13,26 @@ namespace Lux.Extensions
             l.Sort(comparer);
             return l;
         }
-
         
-        public static T[] Append<T>(this T[] array, T obj)
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
+                                                                     Expression<Func<TSource, TKey>> keySelector)
         {
-            var objects = new T[] {obj};
-            var res = Append<T>(array, objects);
-            return res;
+            var func = keySelector.Compile();
+            var result = DistinctBy(source, func);
+            return result;
         }
 
-        public static T[] Append<T>(this T[] array, params T[] objects)
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
+                                                                     Func<TSource, TKey> keySelector)
         {
-            var arr = (array ?? new T[0]);
-            if (objects == null)
-                return arr;
-            var res = arr.Concat(objects).ToArray();
-            return res;
+            var knownKeys = new HashSet<TKey>();
+            foreach (TSource element in source)
+            {
+                if (knownKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
+            }
         }
 
     }

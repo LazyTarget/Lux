@@ -77,6 +77,8 @@
     <Compile Include="Diagnostics\Log\NullObjectLog.cs" />
     <Compile Include="Diagnostics\Log\TraceLog.cs" />
     <Compile Include="Events\DictionaryPairChangedEventArgs.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ConvertExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\LanguageExtensions.cs" />
