@@ -19,7 +19,14 @@ namespace Lux.Tests.Model.PropertyTests
             var property = CreateProperty<object>(name: name, value: value, isReadOnly: isReadOnly);
             return property;
         }
-        
+
+
+        [TestCase, Ignore("Test not applicable")]
+        public override void WhenNoTypeConstraint()
+        {
+            Assert.Inconclusive("Test not applicable");
+        }
+
 
         [TestCase]
         public virtual void ThrowsExceptionWhenWrongTypeOfT()

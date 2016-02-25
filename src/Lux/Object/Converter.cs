@@ -191,17 +191,6 @@ namespace Lux
                     }
                     result = Enum.Parse(targetType, str);
                 }
-                else if (typeof(IConvertible).IsAssignableFrom(targetType))
-                {
-                    if (type == typeof (string))
-                    {
-                        var str = Convert<string>(value) ?? "";
-                        var isNumeric = str.Length > 0 && str.All(c => char.IsDigit(c) || char.IsPunctuation(c) || c == ',' || c == '+');
-                        if (isNumeric)
-                            value = str.Replace(',', '.');
-                    }
-                    result = System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
-                }
                 else if (typeof(TimeSpan) == targetType)
                 {
                     var str = Convert<string>(value) ?? "";
@@ -220,10 +209,22 @@ namespace Lux
                     object guid = new Guid(str);
                     result = guid;
                 }
+                else if (typeof(IConvertible).IsAssignableFrom(targetType) &&
+                         typeof(IConvertible).IsAssignableFrom(type))
+                {
+                    if (type == typeof(string))
+                    {
+                        var str = Convert<string>(value) ?? "";
+                        var isNumeric = str.Length > 0 && str.All(c => char.IsDigit(c) || char.IsPunctuation(c) || c == ',' || c == '+');
+                        if (isNumeric)
+                            value = str.Replace(',', '.');
+                    }
+                    result = System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+                }
                 else
                 {
                     //result = (T) value;       // todo?
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
                 return result;
             }

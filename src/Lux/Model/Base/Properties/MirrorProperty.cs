@@ -13,7 +13,7 @@ namespace Lux.Model
         private readonly IConverter _converter;
 
         public MirrorProperty(object instance, PropertyInfo propertyInfo)
-            : this(instance, propertyInfo, new Converter())
+            : this(instance, propertyInfo, new Converter() { ThrowOnError = true })
         {
         }
 

@@ -62,6 +62,10 @@
     <Compile Include="IO\ZipFileCompressorMockTests.cs" />
     <Compile Include="IO\ZipFileCompressorMockWithRealFileSystem_Tests.cs" />
     <Compile Include="IO\ZipFileMockTests.cs" />
+    <Compile Include="Model\Models\PocoClass.cs" />
+    <Compile Include="Model\ModelTests\ObjectModelTestBase.cs" />
+    <Compile Include="Model\ModelTests\ModelTestBase.cs" />
+    <Compile Include="Model\ModelTests\MirrorObjectModelTests.cs" />
     <Compile Include="Model\Models\BaseClass.cs" />
     <Compile Include="Model\Models\IBaseClass.cs" />
     <Compile Include="Model\PropertyTests\PropertyTestBase.cs" />
@@ -95,9 +99,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\ModelsTests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

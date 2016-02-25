@@ -20,6 +20,16 @@ namespace Lux.Tests.Model.PropertyTests
 
 
         [TestCase]
+        public virtual void WhenNoTypeConstraint()
+        {
+            var expected = Fixture.Create<BaseClass>();
+            var property = CreateProperty(name: Fixture.Create<string>(), type: null, value: expected);
+            var actual = property.Value;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [TestCase]
         public virtual void AllowsValueWhenSameType()
         {
             var expected = Fixture.Create<BaseClass>();

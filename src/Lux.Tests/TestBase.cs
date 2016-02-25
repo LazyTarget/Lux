@@ -36,7 +36,7 @@ namespace Lux.Tests
         }
 
 
-        protected IFixture CreateFixture()
+        protected virtual IFixture CreateFixture()
         {
             var fixture = new Fixture();
             return fixture;
