@@ -88,6 +88,16 @@
     <Compile Include="Config\Base\IConfigDescriptor.cs" />
     <Compile Include="Data\IDataStore.cs" />
     <Compile Include="FrameworkConfig.cs" />
+    <Compile Include="Model\Base\Models\MirrorObjectModel.cs" />
+    <Compile Include="Model\Base\Properties\MirrorProperty.cs" />
+    <Compile Include="Model\Base\Properties\Property.cs" />
+    <Compile Include="Model\Base\Properties\StronglyTypedProperty.cs" />
+    <Compile Include="Model\Base\Properties\StronglyTypedPropertyOfT.cs" />
+    <Compile Include="Model\Interfaces\IArrayModel.cs" />
+    <Compile Include="Model\Interfaces\IModel.cs" />
+    <Compile Include="Model\Interfaces\IObjectModel.cs" />
+    <Compile Include="Model\Interfaces\IProperty.cs" />
+    <Compile Include="Model\ModelExtensions.cs" />
     <Compile Include="Object\AssignableVariable.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Serialization\Attributes\DeserializeAsAttribute.cs" />
@@ -188,6 +198,7 @@
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />
     <Folder Include="Serialization\Json\Base\" />
+    <Folder Include="Xml\Model\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
