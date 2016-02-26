@@ -98,8 +98,10 @@
     <Compile Include="Model\Interfaces\IObjectModel.cs" />
     <Compile Include="Model\Interfaces\IProperty.cs" />
     <Compile Include="Model\ModelExtensions.cs" />
+    <Compile Include="Model\Xml\IXmlObjectModelPropertyParser.cs" />
+    <Compile Include="Model\Xml\XElementPropertyParser.cs" />
     <Compile Include="Model\Xml\XmlObjectModel.cs" />
-    <Compile Include="Object\AssignableVariable.cs" />
+    <Compile Include="Object\Assignable.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Serialization\Attributes\DeserializeAsAttribute.cs" />
     <Compile Include="Serialization\Attributes\SerializeAsAttribute.cs" />

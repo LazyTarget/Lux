@@ -1,15 +1,15 @@
 ﻿namespace Lux
 {
-    public class AssignableVariable<T>
+    public class Assignable<T>
     {
         private T _value;
 
-        public AssignableVariable()
+        public Assignable()
         {
             
         }
 
-        public AssignableVariable(T value)
+        public Assignable(T value)
         {
             Value = value;
         } 

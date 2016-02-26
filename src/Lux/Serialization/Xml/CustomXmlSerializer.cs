@@ -162,7 +162,8 @@ namespace Lux.Serialization.Xml
                 {
                     value = propertyValue;
                 }
-                else if (type != null)
+
+                if (type != null)
                 {
                     if (typeof(IXmlObject).IsAssignableFrom(type))
                     {
@@ -201,7 +202,7 @@ namespace Lux.Serialization.Xml
                         obj.Configure(element);
                         value = obj;
                     }
-                    else if (!type.IsPrimitive)
+                    else if (!type.IsPrimitive && type != typeof(string))
                     {
                         var temp = Activator.CreateInstance(type);
                         value = temp;
