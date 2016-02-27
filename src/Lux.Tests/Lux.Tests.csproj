@@ -68,6 +68,7 @@
     <Compile Include="Model\ModelTests\MirrorObjectModelTests.cs" />
     <Compile Include="Model\Models\BaseClass.cs" />
     <Compile Include="Model\Models\IBaseClass.cs" />
+    <Compile Include="Model\ModelTests\ObjectModelTests.cs" />
     <Compile Include="Model\ModelTests\XmlObjectModelTests.cs" />
     <Compile Include="Model\PropertyTests\PropertyTestBase.cs" />
     <Compile Include="Model\PropertyTests\StronglyTypedPropertyOfTTests.cs" />

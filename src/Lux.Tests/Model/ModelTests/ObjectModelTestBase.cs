@@ -42,5 +42,26 @@ namespace Lux.Tests.Model.ModelTests
             }
         }
 
+
+        [TestCase]
+        public virtual void VerifyPropertyValues()
+        {
+            var instance = Fixture.Create<BaseClass>();
+            var properties = instance.GetType().GetProperties();
+            if (properties.Length <= 0)
+                Assert.Fail("Class has no properties");
+
+            var objectModel = CreateObjectModel(instance);
+
+            foreach (var propertyInfo in properties)
+            {
+                var prop = objectModel.GetProperty(propertyInfo.Name);
+                Assert.IsNotNull(prop, "Property '{0}' is not defined", propertyInfo.Name);
+                var expected = propertyInfo.GetValue(instance);
+                var actual = prop.Value;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
     }
 }

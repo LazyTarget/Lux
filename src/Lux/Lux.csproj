@@ -89,6 +89,7 @@
     <Compile Include="Data\IDataStore.cs" />
     <Compile Include="FrameworkConfig.cs" />
     <Compile Include="Model\Base\Models\MirrorObjectModel.cs" />
+    <Compile Include="Model\Base\Models\ObjectModel.cs" />
     <Compile Include="Model\Base\Properties\MirrorProperty.cs" />
     <Compile Include="Model\Base\Properties\Property.cs" />
     <Compile Include="Model\Base\Properties\StronglyTypedProperty.cs" />
