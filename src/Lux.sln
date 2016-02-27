@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lux.Diagnostics.Log4net", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lux.Serialization.Json.JsonNet", "Lux.Serialization.Json.JsonNet\Lux.Serialization.Json.JsonNet.csproj", "{2DE71436-C0D8-4B98-90C0-D3076B329D60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lux.Dependency.Unity", "Lux.Dependency.Unity\Lux.Dependency.Unity.csproj", "{F3413D0F-C3A7-41B7-BA74-DA257096F39F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2DE71436-C0D8-4B98-90C0-D3076B329D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DE71436-C0D8-4B98-90C0-D3076B329D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DE71436-C0D8-4B98-90C0-D3076B329D60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3413D0F-C3A7-41B7-BA74-DA257096F39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3413D0F-C3A7-41B7-BA74-DA257096F39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3413D0F-C3A7-41B7-BA74-DA257096F39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3413D0F-C3A7-41B7-BA74-DA257096F39F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
