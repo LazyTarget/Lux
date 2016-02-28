@@ -71,6 +71,7 @@
     <Compile Include="Model\ModelTests\ObjectModelTests.cs" />
     <Compile Include="Model\ModelTests\XmlObjectModelTests.cs" />
     <Compile Include="Model\PropertyTests\PropertyTestBase.cs" />
+    <Compile Include="Model\PropertyTests\XmlPropertyTests.cs" />
     <Compile Include="Model\PropertyTests\StronglyTypedPropertyOfTTests.cs" />
     <Compile Include="Model\PropertyTests\StronglyTypedPropertyTests.cs" />
     <Compile Include="Model\PropertyTests\PropertyTests.cs" />
