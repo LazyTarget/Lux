@@ -81,18 +81,6 @@ namespace Lux
                     var obj = Enum.Parse(typeof(T), str);
                     result = (T)obj;
                 }
-                else if (typeof(IConvertible).IsAssignableFrom(typeof (T)))
-                {
-                    if (type == typeof (string))
-                    {
-                        var str = Convert<string>(value) ?? "";
-                        var isNumeric = str.Length > 0 && str.All(c => char.IsDigit(c) || char.IsPunctuation(c) || c == ',' || c == '+');
-                        if (isNumeric)
-                            value = str.Replace(',', '.');
-                    }
-                    var obj = System.Convert.ChangeType(value, typeof (T), CultureInfo.InvariantCulture);
-                    result = (T) obj;
-                }
                 else if (typeof(TimeSpan) == typeof(T))
                 {
                     var str = Convert<string>(value) ?? "";
@@ -109,7 +97,26 @@ namespace Lux
                 {
                     var str = Convert<string>(value) ?? "";
                     object guid = new Guid(str);
-                    result = (T) guid;
+                    result = (T)guid;
+                }
+                else if (typeof(T).IsGenericType &&
+                         typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    var t = typeof(T).GenericTypeArguments[0];
+                    var obj = ConvertWithDefault(value, t, defaultValue);
+                    result = (T)obj;
+                }
+                else if (typeof(IConvertible).IsAssignableFrom(typeof (T)))
+                {
+                    if (type == typeof (string))
+                    {
+                        var str = Convert<string>(value) ?? "";
+                        var isNumeric = str.Length > 0 && str.All(c => char.IsDigit(c) || char.IsPunctuation(c) || c == ',' || c == '+');
+                        if (isNumeric)
+                            value = str.Replace(',', '.');
+                    }
+                    var obj = System.Convert.ChangeType(value, typeof (T), CultureInfo.InvariantCulture);
+                    result = (T) obj;
                 }
                 else
                 {
@@ -208,6 +215,12 @@ namespace Lux
                     var str = Convert<string>(value) ?? "";
                     object guid = new Guid(str);
                     result = guid;
+                }
+                else if (targetType.IsGenericType &&
+                         targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    var t = targetType.GenericTypeArguments[0];
+                    result = ConvertWithDefault(value, t, defaultValue);
                 }
                 else if (typeof(IConvertible).IsAssignableFrom(targetType) &&
                          typeof(IConvertible).IsAssignableFrom(type))
