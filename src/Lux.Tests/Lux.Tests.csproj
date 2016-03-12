@@ -35,6 +35,10 @@
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.40.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.3.40.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -50,6 +54,7 @@
     <Compile Include="Config\XmlConfigManager\XmlConfigManager_AppConfigDescriptorTests.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManagerTestBase.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManager_IXmlNodeTests.cs" />
+    <Compile Include="Convert\ObjectModelTestBase.cs" />
     <Compile Include="IO\DirectoryManagerWithRealFileSystem_Tests.cs" />
     <Compile Include="IO\FileSystemHelperTests.cs" />
     <Compile Include="IO\Helpers\DataFactory.cs" />
@@ -58,6 +63,19 @@
     <Compile Include="IO\ZipFileCompressorMockTests.cs" />
     <Compile Include="IO\ZipFileCompressorMockWithRealFileSystem_Tests.cs" />
     <Compile Include="IO\ZipFileMockTests.cs" />
+    <Compile Include="Model\Models\PocoClass.cs" />
+    <Compile Include="Model\ModelTests\ObjectModelTestBase.cs" />
+    <Compile Include="Model\ModelTests\ModelTestBase.cs" />
+    <Compile Include="Model\ModelTests\MirrorObjectModelTests.cs" />
+    <Compile Include="Model\Models\BaseClass.cs" />
+    <Compile Include="Model\Models\IBaseClass.cs" />
+    <Compile Include="Model\ModelTests\ObjectModelTests.cs" />
+    <Compile Include="Model\ModelTests\XmlObjectModelTests.cs" />
+    <Compile Include="Model\PropertyTests\PropertyTestBase.cs" />
+    <Compile Include="Model\PropertyTests\XmlPropertyTests.cs" />
+    <Compile Include="Model\PropertyTests\StronglyTypedPropertyOfTTests.cs" />
+    <Compile Include="Model\PropertyTests\StronglyTypedPropertyTests.cs" />
+    <Compile Include="Model\PropertyTests\PropertyTests.cs" />
     <Compile Include="NUnitAsserter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Xml\ModelAssertionHelpers.cs" />
@@ -81,7 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

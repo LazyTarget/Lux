@@ -2,46 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
 
-namespace Lux.Serialization
+namespace Lux.Model
 {
-    public class ObjectMirror : IObject
+    public class MirrorObjectModel : IObjectModel
     {
-        private bool _isLoading;
         private readonly object _instance;
         private readonly IDictionary<string, IProperty> _properties;
         private BindingFlags _bindingFlags = BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public;
 
-        public ObjectMirror(object instance)
+        public MirrorObjectModel(object instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
             _instance = instance;
             var dict = new DictionaryEx<string, IProperty>();
-            dict.OnPairChanged += Properties_OnPairChanged;
             _properties = dict;
 
             Load();
+
+            dict.OnPairChanged += Properties_OnPairChanged;
         }
 
 
         private void Properties_OnPairChanged(object sender, DictionaryPairChangedEventArgs<string, IProperty> args)
         {
-            if (_isLoading)
-                return;
             if (!args.Removed)
                 SetPropertyValue(args.Key, args.Value);
             else
             {
-                // remove property from object??
+                // remove property from object?? or set default value?
             }
         }
 
         protected void Load()
         {
-            _isLoading = true;
             var type = _instance.GetType();
             var properties = type.GetProperties(_bindingFlags).ToList();
 
@@ -54,7 +50,6 @@ namespace Lux.Serialization
                 var property = MirrorProperty.Create(_instance, propertyName);
                 _properties[propertyName] = property;
             }
-            _isLoading = false;
         }
 
 

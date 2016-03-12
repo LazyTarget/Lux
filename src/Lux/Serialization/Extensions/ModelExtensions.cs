@@ -4,6 +4,7 @@ using Lux.Extensions;
 
 namespace Lux.Serialization
 {
+    [Obsolete]
     public static class ModelExtensions
     {
         //public static IProperty CreateMirrorProperty(this object obj, string propertyName)
@@ -19,6 +20,7 @@ namespace Lux.Serialization
         //}
 
 
+        [Obsolete]
         public static T GetPropertyValue<T>(this T obj, Expression<Func<T, object>> propertyLambda)
             where T : IObject
         {
@@ -32,6 +34,7 @@ namespace Lux.Serialization
             return res;
         }
 
+        [Obsolete]
         public static object GetPropertyValue(this IObject obj, string propertyName)
         {
             object res = null;

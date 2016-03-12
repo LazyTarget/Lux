@@ -4,7 +4,7 @@ using System.Reflection;
 using Lux.Extensions;
 using Lux.Interfaces;
 
-namespace Lux.Serialization
+namespace Lux.Model
 {
     public class MirrorProperty : IProperty
     {
@@ -13,7 +13,7 @@ namespace Lux.Serialization
         private readonly IConverter _converter;
 
         public MirrorProperty(object instance, PropertyInfo propertyInfo)
-            : this(instance, propertyInfo, new Converter())
+            : this(instance, propertyInfo, new Converter() { ThrowOnError = true })
         {
         }
 
@@ -29,9 +29,11 @@ namespace Lux.Serialization
         }
 
 
-        public string Name { get { return _propertyInfo.Name; } }
-        public Type Type { get { return _propertyInfo.PropertyType; } }
-        public object Value { get { return _propertyInfo.GetValue(_instance); } }
+        public string Name      => _propertyInfo.Name;
+        public Type Type        => _propertyInfo.PropertyType;
+        public bool ReadOnly    => !_propertyInfo.CanWrite;
+        public object Value     => _propertyInfo.GetValue(_instance);
+
 
         public virtual void SetValue(object value)
         {
@@ -41,6 +43,8 @@ namespace Lux.Serialization
             }
             _propertyInfo.SetValue(_instance, value);
         }
+
+
 
 
         public static MirrorProperty Create(object instance, string propertyName)
@@ -54,7 +58,6 @@ namespace Lux.Serialization
             return prop;
         }
 
-
         public static MirrorProperty Create(object instance, string propertyName, IConverter converter)
         {
             if (instance == null)
@@ -63,6 +66,18 @@ namespace Lux.Serialization
             var type = instance.GetType();
             var propertyInfo = type.GetProperty(propertyName);
             var prop = Create(instance, propertyInfo, converter);
+            return prop;
+        }
+        
+        public static MirrorProperty Create(object instance, PropertyInfo propertyInfo)
+        {
+            var prop = new MirrorProperty(instance, propertyInfo);
+            return prop;
+        }
+
+        public static MirrorProperty Create(object instance, PropertyInfo propertyInfo, IConverter converter)
+        {
+            var prop = new MirrorProperty(instance, propertyInfo, converter);
             return prop;
         }
 
@@ -86,17 +101,5 @@ namespace Lux.Serialization
             return prop;
         }
 
-
-        public static MirrorProperty Create(object instance, PropertyInfo propertyInfo)
-        {
-            var prop = new MirrorProperty(instance, propertyInfo);
-            return prop;
-        }
-
-        public static MirrorProperty Create(object instance, PropertyInfo propertyInfo, IConverter converter)
-        {
-            var prop = new MirrorProperty(instance, propertyInfo, converter);
-            return prop;
-        }
     }
 }

@@ -35,5 +35,23 @@ namespace Lux.Extensions
             }
         }
 
+
+        public static int RemoveAll<T>(this IList<T> list, Expression<Func<T, bool>> predicate)
+        {
+            var removed = 0;
+            var func = predicate.Compile();
+            for (var index = 0; index < list.Count; index++)
+            {
+                var item = list.ElementAt(index);
+                var shouldRemove = func(item);
+                if (shouldRemove)
+                {
+                    list.RemoveAt(index);
+                    index--;
+                }
+            }
+            return removed;
+        }
+
     }
 }

@@ -91,13 +91,26 @@
     <Compile Include="Config\Base\IConfigDescriptor.cs" />
     <Compile Include="Data\IDataStore.cs" />
     <Compile Include="FrameworkConfig.cs" />
-    <Compile Include="Object\AssignableVariable.cs" />
+    <Compile Include="Model\Base\Models\MirrorObjectModel.cs" />
+    <Compile Include="Model\Base\Models\ObjectModel.cs" />
+    <Compile Include="Model\Base\Properties\MirrorProperty.cs" />
+    <Compile Include="Model\Base\Properties\Property.cs" />
+    <Compile Include="Model\Base\Properties\StronglyTypedProperty.cs" />
+    <Compile Include="Model\Base\Properties\StronglyTypedPropertyOfT.cs" />
+    <Compile Include="Model\Interfaces\IArrayModel.cs" />
+    <Compile Include="Model\Interfaces\IModel.cs" />
+    <Compile Include="Model\Interfaces\IObjectModel.cs" />
+    <Compile Include="Model\Interfaces\IProperty.cs" />
+    <Compile Include="Model\ModelExtensions.cs" />
+    <Compile Include="Model\Xml\IXmlObjectModelPropertyParser.cs" />
+    <Compile Include="Model\Xml\XElementPropertyParser.cs" />
+    <Compile Include="Model\Xml\XmlObjectModel.cs" />
+    <Compile Include="Object\Assignable.cs" />
     <Compile Include="Object\DisposableLock.cs" />
     <Compile Include="Serialization\Attributes\DeserializeAsAttribute.cs" />
     <Compile Include="Serialization\Attributes\SerializeAsAttribute.cs" />
     <Compile Include="Serialization\Base\ISerializer.cs" />
     <Compile Include="Serialization\Base\IDeserializer.cs" />
-    <Compile Include="Serialization\Xml\Attributes\XmlSerializationAttribute.cs" />
     <Compile Include="Serialization\Xml\Serializers\XmlSerializer.cs" />
     <Compile Include="Serialization\Xml\Serializers\DotNetXmlSerializer.cs" />
     <Compile Include="Serialization\Xml\Serializers\XmlDeserializer.cs" />
@@ -141,19 +154,14 @@
     <Compile Include="Serialization\Extensions\ModelExtensions.cs" />
     <Compile Include="Serialization\Interfaces\IArray.cs" />
     <Compile Include="Serialization\Interfaces\IObject.cs" />
-    <Compile Include="Serialization\Interfaces\IProperty.cs" />
     <Compile Include="Interfaces\ITypeInstantiator.cs" />
     <Compile Include="Object\TypeInstantiator.cs" />
     <Compile Include="Object\Converter.cs" />
     <Compile Include="Serialization\Interfaces\INode.cs" />
-    <Compile Include="Serialization\Model\ObjectMirror.cs" />
-    <Compile Include="Serialization\Model\MirrorProperty.cs" />
-    <Compile Include="Serialization\Model\StronglyTypedProperty.cs" />
     <Compile Include="Serialization\Xml\Base\XmlContainer.cs" />
     <Compile Include="Serialization\Xml\Base\XmlList.cs" />
     <Compile Include="Serialization\Xml\Base\XmlObject.cs" />
     <Compile Include="Serialization\Xml\Base\XmlDocument.cs" />
-    <Compile Include="Serialization\Model\Property.cs" />
     <Compile Include="Serialization\Xml\Interfaces\IXmlElement.cs" />
     <Compile Include="Interfaces\Fluent\IFluentReturn.cs" />
     <Compile Include="Xml\XElementBuilder.cs" />
@@ -190,7 +198,7 @@
   <ItemGroup>
     <Folder Include="IO\Components\" />
     <Folder Include="IO\Extensions\" />
-    <Folder Include="Serialization\Json\Base\" />
+    <Folder Include="Xml\Model\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

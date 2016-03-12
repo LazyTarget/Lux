@@ -1,6 +1,10 @@
-﻿namespace Lux.Serialization
+﻿using System;
+using Lux.Model;
+
+namespace Lux.Serialization
 {
-    public interface INode
+    [Obsolete]
+    public interface INode : IModel
     {
     }
 }

@@ -10,7 +10,7 @@ namespace Lux
 {
     public class FrameworkConfig : XmlConfigBase
     {
-        private AssignableVariable<CultureInfo> _cultureInfo = new AssignableVariable<CultureInfo>();
+        private Assignable<CultureInfo> _cultureInfo = new Assignable<CultureInfo>();
         public CultureInfo CultureInfo
         {
             get { return _cultureInfo?.Value; }
@@ -18,8 +18,8 @@ namespace Lux
         }
 
 
-        private AssignableVariable<IDependencyContainer> _dependencyContainer =
-            new AssignableVariable<IDependencyContainer>();
+        private Assignable<IDependencyContainer> _dependencyContainer =
+            new Assignable<IDependencyContainer>();
 
         public IDependencyContainer DependencyContainer
         {

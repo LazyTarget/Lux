@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Lux.Model;
 
 namespace Lux.Serialization.Xml
 {
@@ -51,12 +52,12 @@ namespace Lux.Serialization.Xml
         }
         
 
-        IEnumerable<object> IArray.Items()
+        IEnumerable<object> IArrayModel.Items()
         {
             return Data.Cast<object>().AsEnumerable();
         }
 
-        IEnumerable<T> IArray<T>.Items()
+        IEnumerable<T> IArrayModel<T>.Items()
         {
             return Data.AsEnumerable();
         }

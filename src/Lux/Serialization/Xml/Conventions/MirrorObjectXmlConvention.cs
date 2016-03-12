@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using Lux.Model;
 using Lux.Xml;
 
 namespace Lux.Serialization.Xml
@@ -54,7 +55,7 @@ namespace Lux.Serialization.Xml
         
         public override void Export(IXmlObject obj, XElement target)
         {
-            var mirror = new ObjectMirror(obj);
+            var mirror = new MirrorObjectModel(obj);
 
             //var properties = target.GetProperties();
             var properties = mirror.GetProperties();
