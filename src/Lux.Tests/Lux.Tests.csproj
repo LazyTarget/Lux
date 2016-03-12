@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Config\XmlConfigManager\ConfigDeserializationTests.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManager_AppConfigDescriptorTests.cs" />
     <Compile Include="Config\XmlConfigManager\XmlConfigManagerTestBase.cs" />
