@@ -66,6 +66,7 @@
     <Compile Include="Config\ConfigurationExtensions.cs" />
     <Compile Include="Config\Xml\XmlConfigBase.cs" />
     <Compile Include="Config\Xml\XmlConfigManager.cs" />
+    <Compile Include="Dependency\IDependencyContainer.cs" />
     <Compile Include="Diagnostics\Interfaces\ILog.cs" />
     <Compile Include="Diagnostics\Interfaces\ILogFactory.cs" />
     <Compile Include="Diagnostics\LogFactory\NullObjectLogFactory.cs" />

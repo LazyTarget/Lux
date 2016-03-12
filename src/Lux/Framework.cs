@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
+using Lux.Dependency;
 using Lux.Diagnostics;
 using Lux.Interfaces;
 using Lux.Unittest;
@@ -16,6 +17,7 @@ namespace Lux
         private static ILogFactory _logFactory;
         private static ITypeInstantiator _typeInstantiator;
         private static IAsserter _asserter;
+        private static IDependencyContainer _dependencyContainer;
 
         static Framework()
         {
@@ -90,6 +92,17 @@ namespace Lux
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 _asserter = value;
+            }
+        }
+
+        public static IDependencyContainer DependencyContainer
+        {
+            get { return _dependencyContainer; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                _dependencyContainer = value;
             }
         }
 
