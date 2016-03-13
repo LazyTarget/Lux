@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyTitle("Lux")]
 //[assembly: AssemblyDescription("")]
 //[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Peter Åslund")]
 [assembly: AssemblyProduct("Lux")]
 [assembly: AssemblyCopyright("Copyright © Peter Åslund 2016")]
 [assembly: AssemblyTrademark("")]

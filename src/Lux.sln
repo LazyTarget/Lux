@@ -15,7 +15,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lux.Dependency.Unity", "Lux
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{AF37E7EC-A577-470C-84E0-8882DC071E3F}"
 	ProjectSection(SolutionItems) = preProject
+		..\.travis.yml = ..\.travis.yml
+		..\README.md = ..\README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpec", "NuSpec", "{6756C5EC-CDE2-4FB1-B5EF-B349B60E6782}"
+	ProjectSection(SolutionItems) = preProject
+		..\NuGet\Lux.nuspec = ..\NuGet\Lux.nuspec
 	EndProjectSection
 EndProject
 Global
