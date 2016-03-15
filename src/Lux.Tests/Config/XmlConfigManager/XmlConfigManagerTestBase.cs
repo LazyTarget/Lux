@@ -6,9 +6,11 @@ using Lux.Config.Xml;
 using Lux.IO;
 using Lux.Serialization.Xml;
 using Lux.Xml;
+using NUnit.Framework;
 
 namespace Lux.Tests.Config.XmlConfigManager
 {
+    [TestFixture]
     public abstract class XmlConfigManagerTestBase : TestBase
     {
         protected IFileSystem FileSystem;

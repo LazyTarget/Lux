@@ -45,11 +45,11 @@ namespace Lux.Config.Xml
             ValidateDescriptor(descriptor);
 
             var configXmlDataStore = descriptor.DataStore as ConfigXmlDataStore;
-            if (configXmlDataStore != null)
-            {
-                if (configXmlDataStore.Uri == null)
-                    return false;
-            }
+            var xmlConfigDescriptor = descriptor as XmlConfigDescriptor;
+
+            var uri = xmlConfigDescriptor?.Uri ?? configXmlDataStore?.Uri;
+            if (uri == null)
+                return false;
 
             if (typeof(TConfig).IsAssignableFrom(typeof(IXmlConfigurable)))
                 return false;   // todo: extend, use a XmlSerializer?
@@ -85,13 +85,13 @@ namespace Lux.Config.Xml
             ValidateDescriptor(descriptor);
             
             var configXmlDataStore = dataStore as ConfigXmlDataStore;
-            if (configXmlDataStore != null)
-            {
-                if (configXmlDataStore.Uri == null)
-                    return false;
-                if (!configXmlDataStore.Uri.IsFile)
-                    return false;
-            }
+            var xmlConfigDescriptor = descriptor as XmlConfigDescriptor;
+            
+            var uri = xmlConfigDescriptor?.Uri ?? configXmlDataStore?.Uri;
+            if (uri == null)
+                return false;
+            if (uri.IsFile)
+                return false;
 
             if (typeof(TConfig).IsAssignableFrom(typeof(IXmlExportable)))
                 return false;   // todo: extend, use a XmlSerializer?

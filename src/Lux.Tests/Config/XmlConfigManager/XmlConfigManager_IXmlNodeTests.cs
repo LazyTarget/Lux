@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using Lux.Config;
 using Lux.Config.Xml;
+using Lux.IO;
 using Lux.Serialization.Xml;
 using Lux.Xml;
 using NUnit.Framework;
@@ -13,9 +14,9 @@ namespace Lux.Tests.Config.XmlConfigManager
     {
         protected override void SetUp()
         {
+            FileSystem = new MemoryFileSystem();
+
             base.SetUp();
-            
-            //FileSystem = new FileSystem();
         }
 
         protected override TestableXmlConfigManager GetSUT()
