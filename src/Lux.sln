@@ -22,7 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpec", "NuSpec", "{6756C5EC-CDE2-4FB1-B5EF-B349B60E6782}"
 	ProjectSection(SolutionItems) = preProject
-		..\NuGet\Lux.nuspec = ..\NuGet\Lux.nuspec
+		..\NuGet\Lux.Diagnostics.Log4net\Lux.Diagnostics.Log4net.nuspec = ..\NuGet\Lux.Diagnostics.Log4net\Lux.Diagnostics.Log4net.nuspec
+		..\NuGet\Lux\Lux.nuspec = ..\NuGet\Lux\Lux.nuspec
 	EndProjectSection
 EndProject
 Global
