@@ -21,6 +21,8 @@ namespace Lux
 
         static Framework()
         {
+            // Default
+
             //CultureInfo = CultureInfo.CurrentCulture;
             CultureInfo = null;
 
@@ -35,6 +37,31 @@ namespace Lux
 #if DEBUG
             LogFactory = new DebugLogFactory();
 #endif
+
+
+            // Load
+            try
+            {
+                if (FrameworkConfig.AutoLoadConfig)
+                    LoadFromConfig();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
+
+            // Init
+            try
+            {
+                LogFactory?.Init();
+                var log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+                log?.InfoFormat("LogFactory '{0}' initialized...", LogFactory.GetType());
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
 
@@ -110,14 +137,29 @@ namespace Lux
 
         public static void LoadFromConfig()
         {
-            var section = ConfigurationManager.GetSection<object>("lux.framework");
+            FrameworkConfig config = null;
+
+            //var section = ConfigurationManager.GetSection<object>("lux.framework");
+            //var element = section as XElement;
+            //config = new FrameworkConfig();
+            //config.Configure(element);
+
+            if (ConfigManager != null)
+            {
+                IConfigDescriptorFactory descriptorFactory = new AppConfigDescriptorFactory();
+                var descriptor = descriptorFactory.CreateDescriptor<FrameworkConfig>();
+                var canLoad = ConfigManager.CanLoad<FrameworkConfig>(descriptor);
+                if (canLoad)
+                {
+                    config = ConfigManager.Load<FrameworkConfig>(descriptor);
+                }
+            }
 
 
-            var element = section as XElement;
-
-            var config = new FrameworkConfig();
-            config.Configure(element);
-            config.Apply();
+            if (config != null)
+            {
+                config.Apply();
+            }
         }
         
     }

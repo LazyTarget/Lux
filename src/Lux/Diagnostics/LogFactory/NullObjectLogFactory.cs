@@ -4,6 +4,11 @@ namespace Lux.Diagnostics
 {
     public class NullObjectLogFactory : ILogFactory
     {
+        public void Init()
+        {
+            
+        }
+
         public ILog GetLog(string name)
         {
             var log = new NullObjectLog();
