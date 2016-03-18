@@ -48,9 +48,10 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ILog4NetLogFactoryInitializer.cs" />
+    <Compile Include="Initializers\Log4NetBasicConfiguratorInitializer.cs" />
     <Compile Include="Log4NetLogFactory.cs" />
     <Compile Include="Log4NetLog.cs" />
-    <Compile Include="Log4NetXmlConfiguratorInitializer.cs" />
+    <Compile Include="Initializers\Log4NetXmlConfiguratorInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

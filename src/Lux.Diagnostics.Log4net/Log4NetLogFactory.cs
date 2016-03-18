@@ -7,12 +7,15 @@ namespace Lux.Diagnostics.Log4net
         private readonly ILog4NetLogFactoryInitializer _initializer;
 
         public Log4NetLogFactory()
+            : this(new Log4NetXmlConfiguratorInitializer())
         {
-            _initializer = new Log4NetXmlConfiguratorInitializer();
+            
         }
 
         public Log4NetLogFactory(ILog4NetLogFactoryInitializer initializer)
         {
+            //if (initializer == null)
+            //    throw new ArgumentNullException(nameof(initializer));
             _initializer = initializer;
         }
 
