@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Lux</id>
+    <version>1.0.2</version>
+    <title>Lux Helper Library</title>
+    <authors>Peter Åslund</authors>
+    <owners>Peter Åslund</owners>
+    <licenseUrl>https://github.com/LazyTarget/Lux</licenseUrl>
+    <projectUrl>https://github.com/LazyTarget/Lux</projectUrl>
+    <iconUrl>http://flatdesign.im/_ph/6/651685526.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A easy and lightweight library for various extension methods and utils</description>
+    <summary>Lightweight helper framework</summary>
+    <releaseNotes>https://github.com/LazyTarget/Lux/releases</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Lux Helper Framework Library</tags>
+    <dependencies>
+      <dependency id="Moq" version="4.2.1510.2205" />
+    </dependencies>
+  </metadata>
+</package>
