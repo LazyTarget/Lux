@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Lux.Serialization.Json.JsonNet</id>
+    <version>1.0.2</version>
+    <title>Lux Helper Library</title>
+    <authors>Peter Åslund</authors>
+    <owners>Peter Åslund</owners>
+    <licenseUrl>https://github.com/LazyTarget/Lux</licenseUrl>
+    <projectUrl>https://github.com/LazyTarget/Lux</projectUrl>
+    <iconUrl>http://flatdesign.im/_ph/6/651685526.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides easy plugin integration with Lux and Json.NET</description>
+    <summary>Lightweight helper framework</summary>
+    <releaseNotes>https://github.com/LazyTarget/Lux/releases</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Lux Helper Framework Library Json Json.NET</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="8.0.1" />
+    </dependencies>
+  </metadata>
+</package>

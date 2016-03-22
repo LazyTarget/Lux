@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -73,8 +77,10 @@
     <Compile Include="Model\Models\BaseClass.cs" />
     <Compile Include="Model\Models\IBaseClass.cs" />
     <Compile Include="Model\ModelTests\ObjectModelTests.cs" />
+    <Compile Include="Model\ModelTests\JsonObjectModelTests.cs" />
     <Compile Include="Model\ModelTests\XmlObjectModelTests.cs" />
     <Compile Include="Model\PropertyTests\PropertyTestBase.cs" />
+    <Compile Include="Model\PropertyTests\JsonPropertyTests.cs" />
     <Compile Include="Model\PropertyTests\XmlPropertyTests.cs" />
     <Compile Include="Model\PropertyTests\StronglyTypedPropertyOfTTests.cs" />
     <Compile Include="Model\PropertyTests\StronglyTypedPropertyTests.cs" />
@@ -95,6 +101,10 @@
     <Compile Include="Xml\XNodeNavigator\CodeSyntaxTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lux.Serialization.Json.JsonNet\Lux.Serialization.Json.JsonNet.csproj">
+      <Project>{2de71436-c0d8-4b98-90c0-d3076b329d60}</Project>
+      <Name>Lux.Serialization.Json.JsonNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lux\Lux.csproj">
       <Project>{e311bb74-8aed-44ef-ada9-d8d9c85d9979}</Project>
       <Name>Lux</Name>

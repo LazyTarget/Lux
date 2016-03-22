@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpec", "NuSpec", "{6756C5
 	ProjectSection(SolutionItems) = preProject
 		..\NuGet\Lux.Diagnostics.Log4net\Lux.Diagnostics.Log4net.nuspec = ..\NuGet\Lux.Diagnostics.Log4net\Lux.Diagnostics.Log4net.nuspec
 		..\NuGet\Lux\Lux.nuspec = ..\NuGet\Lux\Lux.nuspec
+		..\NuGet\Lux.Serialization.Json.JsonNet\Lux.Serialization.Json.JsonNet.nuspec = ..\NuGet\Lux.Serialization.Json.JsonNet\Lux.Serialization.Json.JsonNet.nuspec
 	EndProjectSection
 EndProject
 Global
