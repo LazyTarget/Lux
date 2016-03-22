@@ -49,10 +49,19 @@
     </Compile>
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Converters\TickDateTimeConverter.cs" />
+    <Compile Include="Model\IJObjectPropertyParser.cs" />
+    <Compile Include="Model\JsonObjectModel.cs" />
+    <Compile Include="Model\JObjectPropertyParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lux\Lux.csproj">
+      <Project>{e311bb74-8aed-44ef-ada9-d8d9c85d9979}</Project>
+      <Name>Lux</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
