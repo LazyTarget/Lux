@@ -9,3 +9,7 @@ cd Lux.Diagnostics.Log4net
 call .\nupack.bat
 
 cd /d %~dp0
+cd Lux.Serialization.Json.JsonNet
+call .\nupack.bat
+
+cd /d %~dp0
