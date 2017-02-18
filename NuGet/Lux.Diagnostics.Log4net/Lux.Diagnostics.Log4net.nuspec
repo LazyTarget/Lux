@@ -8,7 +8,7 @@
     <owners>Peter Åslund</owners>
     <licenseUrl>https://github.com/LazyTarget/Lux</licenseUrl>
     <projectUrl>https://github.com/LazyTarget/Lux</projectUrl>
-    <iconUrl>http://flatdesign.im/_ph/6/651685526.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/LazyTarget/Lux/master/NuGet/favicon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides easy plugin integration with Lux and Log4net</description>
     <summary>Lightweight helper framework</summary>
