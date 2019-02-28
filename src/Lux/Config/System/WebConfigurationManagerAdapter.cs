@@ -1,9 +1,10 @@
 ﻿using System.Collections.Specialized;
 using System.Configuration;
-using System.Web.Configuration;
+//using System.Web.Configuration;
 
 namespace Lux.Config
 {
+	/*
     /// <summary>
     /// Class that wraps the functionality within the Web Configuration Manager class
     /// </summary>
@@ -40,4 +41,5 @@ namespace Lux.Config
             return config;
         }
     }
+	*/
 }

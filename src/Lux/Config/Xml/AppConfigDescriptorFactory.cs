@@ -20,7 +20,9 @@ namespace Lux.Config.Xml
         public virtual IConfigDescriptor CreateDescriptor(Type configType)
         {
             string rootElementPath = null;
-            var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            //var configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            var configPath = AppDomain.CurrentDomain.BaseDirectory + "/App.config";		// todo: fix
+
             try
             {
                 var config = ConfigurationManager.OpenConfiguration(configPath, UserLevel);

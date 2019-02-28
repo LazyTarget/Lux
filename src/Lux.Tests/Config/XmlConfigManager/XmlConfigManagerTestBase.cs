@@ -49,7 +49,8 @@ namespace Lux.Tests.Config.XmlConfigManager
         
         protected void SaveAppConfigFile(XDocument document, IFileSystem fileSystem)
         {
-            var fileName = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            //var fileName = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            var fileName = AppDomain.CurrentDomain.BaseDirectory + "/App.config";		// todo: fix
 
 
             var dirPath = PathHelper.GetParent(fileName);
