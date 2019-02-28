@@ -159,6 +159,6 @@ $RECYCLE.BIN/
 
 
 # Custom ignores
-/FantasySimulator/.vs/config/applicationhost.config
 project.lock.json
 NuGet/package/
+/src/.vs
