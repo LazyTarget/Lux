@@ -1,8 +1,6 @@
 Lux C# Helper Library
 ============
 
-[![Build Status](https://travis-ci.org/LazyTarget/Lux.svg?branch=master)](https://travis-ci.org/LazyTarget/Lux)
-
 A easy and lightweight library for various extension methods and utils.
 
 ### NuGet
